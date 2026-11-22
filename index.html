@@ -60,9 +60,9 @@ body{background:radial-gradient(ellipse at top,#292112 0%,#120f0a 50%,#070605 10
 .nav-btn span{font-size:15px}.nav-btn.active{color:#fbbf24}
 .toast{position:fixed;top:14px;background:#10b981;color:#fff;padding:7px 14px;border-radius:18px;font-size:12px;font-weight:bold;opacity:0;pointer-events:none;transition:opacity 0.2s;z-index:120}
 .toast.show{opacity:1}
-.modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.85);z-index:100;align-items:center;justify-content:center;padding:16px}
+.modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.88);z-index:100;align-items:center;justify-content:center;padding:16px}
 .modal.open{display:flex}
-.receipt{background:#1c1917;border:2px solid #f59e0b;border-radius:14px;padding:16px;width:100%;max-width:310px;text-align:center}
+.receipt{background:#1c1917;border:2px solid #f59e0b;border-radius:14px;padding:16px;width:100%;max-width:330px;text-align:center}
 .r-body{background:rgba(0,0,0,0.45);border:1px dashed #78716c;border-radius:8px;padding:10px;margin:10px 0;font-size:12px;line-height:1.5;text-align:left}
 @keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-4px)}75%{transform:translateX(4px)}}
 </style>
@@ -70,6 +70,7 @@ body{background:radial-gradient(ellipse at top,#292112 0%,#120f0a 50%,#070605 10
 <body>
 <canvas id="bgCanvas"></canvas>
 <div class="toast" id="toast">Готово!</div>
+
 <div class="modal" id="recModal">
   <div class="receipt">
     <h3 style="color:#fbbf24">🧾 ЧЕК НАГРАДЫ</h3>
@@ -78,6 +79,30 @@ body{background:radial-gradient(ellipse at top,#292112 0%,#120f0a 50%,#070605 10
   </div>
 </div>
 
+<div class="modal" id="admModal">
+  <div class="receipt" style="border-color:#10b981">
+    <h3 style="color:#34d399">🔐 Конструктор Промокодов</h3>
+    <div style="text-align:left;margin-top:8px;font-size:11px;color:#d6d3d1">
+      <label>1. Своё слово (необязательно):</label>
+      <input class="inp" id="admWord" placeholder="Например: ZIMA или BONUS" style="width:100%;margin:3px 0 8px;text-transform:uppercase">
+      <label>2. Выбери тип награды:</label>
+      <select class="inp" id="admType" onchange="toggleAdmAmt()" style="width:100%;margin:3px 0 8px;background:#0c0a09">
+        <option value="C">❇️ Кристаллы в кошелёк</option>
+        <option value="MH">🔥 Карточка «Хайролл» (x1.5)</option>
+        <option value="MB">🖤 «Чёрная карта» (1 бомба)</option>
+        <option value="MN">🔄 Обычная карта (сброс 24ч)</option>
+        <option value="SP">🎰 Бесплатный прокрут Рулетки (25❇️)</option>
+      </select>
+      <div id="admAmtBox">
+        <label>3. Сколько кристаллов начислить:</label>
+        <input class="inp" id="admAmt" type="number" value="10" style="width:100%;margin:3px 0 8px">
+      </div>
+    </div>
+    <button class="btn btn-green" style="width:100%;margin-top:4px" onclick="buildCustomPromo()">✨ Создать и скопировать</button>
+    <div class="r-body" id="admOut" style="text-align:center;font-weight:bold;color:#fde047;font-size:13px;word-break:break-all">Здесь появится код</div>
+    <button class="btn" style="width:100%;background:#44403c" onclick="document.getElementById('admModal').classList.remove('open')">Закрыть панель</button>
+  </div>
+</div>
 <div class="header">
   <h1>👑 Минное Поле 2.0 ❇️</h1>
   <div class="badges">
@@ -102,7 +127,7 @@ body{background:radial-gradient(ellipse at top,#292112 0%,#120f0a 50%,#070605 10
     <div id="status" style="font-size:13px">Выбери любые 3 клетки!</div>
     <div class="timer-box" id="tBox">Новая через: <span id="cd">24:00:00</span></div>
   </div>
-  <div class="inp-row"><input class="inp" id="promoIn" placeholder="Промокод (HIGH1234 / ADD5-1234)..." style="text-transform:uppercase"><button class="btn" onclick="applyPromo()">ОК</button></div>
+  <div class="inp-row"><input class="inp" id="promoIn" placeholder="Введи секретный код..." style="text-transform:uppercase"><button class="btn" onclick="applyPromo()">ОК</button></div>
   <div id="rMeta" style="font-size:10px;color:#78716c;margin-top:6px"></div>
 </div>
 <div class="tab" id="tab-mini">
@@ -242,7 +267,7 @@ body{background:radial-gradient(ellipse at top,#292112 0%,#120f0a 50%,#070605 10
   draw();
 })();
 
-const CD=86400000,K='m_v12',BK='m_bal',UK='m_used',RK='m_rec',SK='m_stat',LK='m_log',CK='m_chest',SFK='m_safe',NK='m_nick',MK='m_mini_cd';
+const CD=86400000,K='m_v16',BK='m_bal',UK='m_used_sec4',RK='m_rec',SK='m_stat',LK='m_log',CK='m_chest',SFK='m_safe',NK='m_nick',MK='m_mini_cd';
 let snd=true,ctx=null,tag='Гость',lastRec='',bet=2;
 
 const SHOP_ITEMS=[
@@ -254,10 +279,9 @@ const SHOP_ITEMS=[
 ];
 const MARKET_ITEMS=[
   {n:'Карта «Хайролл» (x1.5)',p:'1 500 🪙'},{n:'VIP-Пропуск (7 дней)',p:'6 500 🪙'},{n:'«Чёрная карта» (1 бомба)',p:'5 000 🪙'},
-  {n:'1 Кристалл (ADD1)',p:'1 000 🪙'},{n:'5 Кристаллов (ADD5)',p:'4 500 🪙'},{n:'10 Кристаллов (ADD10)',p:'15 ⭐️'},{n:'50 Кристаллов (ADD50)',p:'65 ⭐️'},
+  {n:'1 Кристалл (код от админа)',p:'1 000 🪙'},{n:'5 Кристаллов (код от админа)',p:'4 500 🪙'},{n:'10 Кристаллов (код от админа)',p:'15 ⭐️'},{n:'50 Кристаллов (код от админа)',p:'65 ⭐️'},
   {n:'«Подкинуть мину» врагу',p:'1 200 🪙'},{n:'«Сканер сапёра»',p:'2 000 🪙'},{n:'«Второй шанс» (Щит)',p:'2 500 🪙'},{n:'«Украсть попытку»',p:'3 500 🪙'}
 ];
-
 function tone(t){
   if(!snd)return;
   try{
@@ -377,7 +401,6 @@ function flipCoin(side){
   else{tone('bomb');document.getElementById('coinRes').innerHTML=`💥 Выпало: <b>${w}</b>! Минус ${bet} ❇️`;}
   setMiniCD('coin');
 }
-
 function spinWheel(type){
   const isElite=(type==='elite'),cost=isElite?60:25;
   if(getBal()<cost){toast(`❌ Нужно ${cost} ❇️`);return;}
@@ -408,6 +431,60 @@ function spinWheel(type){
       else{log(`🎰 Рулетка (${cost}❇️): ${win.l}`);makeRec(`${isElite?'Элитная':'Обычная'} рулетка: ${win.l}`,cost,`Рулетка (${cost} ❇️)`);}
     }
   })();
+}
+
+const SEC_SALT='ZOLOTO_991_MAKS';
+function makeSig(str){
+  let h=2166136261;
+  for(let i=0;i<str.length;i++){h^=str.charCodeAt(i);h=Math.imul(h,16777619);}
+  return (h>>>0).toString(36).toUpperCase().slice(0,4).padStart(4,'X');
+}
+function toggleAdmAmt(){
+  document.getElementById('admAmtBox').style.display=(document.getElementById('admType').value==='C')?'block':'none';
+}
+function buildCustomPromo(){
+  const rawWord=document.getElementById('admWord').value.trim().toUpperCase().replace(/[^A-Z0-9]/g,'');
+  const prefix=rawWord||'MP';
+  const t=document.getElementById('admType').value;
+  let payload=t;
+  if(t==='C'){
+    const amt=parseInt(document.getElementById('admAmt').value,10)||1;
+    payload='C'+amt;
+  }
+  const rnd=Math.random().toString(36).substring(2,4).toUpperCase();
+  const sig=makeSig(prefix+payload+rnd+SEC_SALT);
+  const code=`${prefix}-${payload}-${rnd}${sig}`;
+  document.getElementById('admOut').innerText=code;
+  navigator.clipboard?.writeText(code);
+  toast('📋 Промокод создан и скопирован!');
+}
+
+function applyPromo(){
+  const inp=document.getElementById('promoIn'),c=inp.value.trim().toUpperCase();if(!c)return;
+  if(c==='MAKS2026'){inp.value='';document.getElementById('admModal').classList.add('open');return;}
+
+  const u=JSON.parse(localStorage.getItem(UK)||'[]');
+  if(u.includes(c)){toast('❌ Код уже использован');return;}
+
+  const parts=c.split('-');
+  if(parts.length!==3){toast('❌ Неверный код');return;}
+  const prefix=parts.at(0),payload=parts.at(1),tail=parts.at(2);
+  if(tail.length!==6){toast('❌ Неверный код');return;}
+  const rnd=tail.slice(0,2),sig=tail.slice(2);
+  if(makeSig(prefix+payload+rnd+SEC_SALT)!==sig){toast('❌ Поддельный или неверный код');return;}
+
+  u.push(c);localStorage.setItem(UK,JSON.stringify(u));inp.value='';
+  if(payload.startsWith('C')){
+    const v=parseInt(payload.slice(1),10);setBal(getBal()+v);tone('win');
+    log(`🎟 Промокод (${prefix}): +${v}❇️`);toast(`✅ Зачислено +${v} ❇️!`);
+  }else if(payload==='SP'){
+    setBal(getBal()+25);tone('win');log(`🎟 Промокод (${prefix}): Фри-спин (+25❇️)`);
+    toast('🎰 Начислено 25 ❇️ на прокрут Рулетки!');
+  }else{
+    const tm=payload==='MH'?'high':(payload==='MB'?'black':'normal');
+    if(tint)clearInterval(tint);localStorage.removeItem(K);tone('win');
+    log(`🎟 Промокод (${prefix}): Карта [${tm.toUpperCase()}]`);toast('✅ Карта активирована!');start(tm);
+  }
 }
 let board=[],opened=[],tries=3,score=0,over=false,tint=null,mode='normal',mult=1,bHit=0;
 function start(m='normal'){
@@ -463,17 +540,6 @@ function makeRec(name,price,src){
 }
 function copyRec(){navigator.clipboard?.writeText(lastRec);toast('📋 Чек скопирован!');}
 function closeRec(){document.getElementById('recModal').classList.remove('open');}
-
-function applyPromo(){
-  const inp=document.getElementById('promoIn'),c=inp.value.trim().toUpperCase();if(!c)return;
-  const u=JSON.parse(localStorage.getItem(UK)||'[]');if(u.includes(c)&&c!=='ADMINRESET'){toast('❌ Уже использован');return;}
-  const am=c.match(/^ADD(\d+)-\d{4}$/);
-  if(am){const v=parseInt(am.at(1),10);setBal(getBal()+v);u.push(c);localStorage.setItem(UK,JSON.stringify(u));inp.value='';tone('win');log(`🎟 Код: +${v}❇️`);toast(`+${v} ❇️!`);return;}
-  let tm=/^FREE\d{4}$/.test(c)||c==='ADMINRESET'?'normal':(/^HIGH\d{4}$/.test(c)?'high':(/^BLACK\d{4}$/.test(c)?'black':null));
-  if(!tm){toast('❌ Неверный код');return;}
-  if(c!=='ADMINRESET'){u.push(c);localStorage.setItem(UK,JSON.stringify(u));}
-  inp.value='';if(tint)clearInterval(tint);localStorage.removeItem(K);toast('✅ Карта активирована!');start(tm);
-}
 
 function renderProf(){
   const s=getSt();document.getElementById('stGames').innerText=s.g;document.getElementById('stBombs').innerText=s.b;document.getElementById('stJack').innerText=s.j;
