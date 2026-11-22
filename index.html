@@ -288,7 +288,7 @@ let ptColor='251,191,36';
   draw();
 })();
 
-const CD=86400000,K='m_v26',BK='m_bal',UK='m_used_sec14',RK='m_rec',SK='m_stat',LK='m_log',CK='m_chest',SFK='m_safe',NK='m_nick',MK='m_mini_cd',LCK='m_luck',THK='m_theme';
+const CD=86400000,K='m_v27',BK='m_bal',UK='m_used_sec15',RK='m_rec',SK='m_stat',LK='m_log',CK='m_chest',SFK='m_safe',NK='m_nick',MK='m_mini_cd',LCK='m_luck',THK='m_theme';
 let snd=true,ctx=null,tag='Гость',lastRec='',bet=2;
 function syncCloud(k,v){
   try{
@@ -369,7 +369,7 @@ const getSt=()=>JSON.parse(localStorage.getItem(SK)||'{"g":0,"b":0,"j":0,"a":[]}
 function ach(id){const s=getSt();if(!s.a.includes(id)){s.a.push(id);localStorage.setItem(SK,JSON.stringify(s));renderProf();}}
 
 function updLuck(){const ok=Date.now()-parseInt(localStorage.getItem(LCK)||'0',10)>=CD;document.getElementById('luckBtn').disabled=!ok;document.getElementById('luckBtn').innerText=ok?'Крутить':'Завтра';document.getElementById('luckDesc').innerText=ok?'Выиграй +1 до +5 ❇️!':'Уже крутил сегодня';}
-function spinDailyLuck(){if(Date.now()-parseInt(localStorage.getItem(LCK)||'0',10)<CD)return;const now=Date.now();localStorage.setItem(LCK,now);syncCloud(LCK,now);updLuck();const prizes=,w=prizes.at(Math.floor(Math.random()*prizes.length));setBal(getBal()+w);tone('win');log(`🎡 Колесо дня: +${w}❇️`);toast(`🎉 Выпало +${w} ❇️!`);}
+function spinDailyLuck(){if(Date.now()-parseInt(localStorage.getItem(LCK)||'0',10)<CD)return;const now=Date.now();localStorage.setItem(LCK,now);syncCloud(LCK,now);updLuck();const w=Math.floor(Math.random()*5)+1;setBal(getBal()+w);tone('win');log(`🎡 Колесо дня: +${w}❇️`);toast(`🎉 Выпало +${w} ❇️!`);}
 const D_REW=['+1❇️','+2❇️','🛡Щит','+3❇️','🔥x1.5','+5❇️','👑VIP'];
 function updChest(){
   const c=JSON.parse(localStorage.getItem(CK)||'{"l":0,"s":1}'),ok=Date.now()-c.l>=CD;
