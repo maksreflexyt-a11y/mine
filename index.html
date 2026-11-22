@@ -91,7 +91,7 @@ body{background:radial-gradient(ellipse at top,#292112 0%,#120f0a 50%,#070605 10
         <option value="MH">🔥 Карточка «Хайролл» (x1.5)</option>
         <option value="MB">🖤 «Чёрная карта» (1 бомба)</option>
         <option value="MN">🔄 Обычная карта (сброс 24ч)</option>
-        <option value="SP">🎰 Бесплатный прокрут Рулетки (25❇️)</option>
+        <option value="SP">🎰 Бесплатный прокрут Рулетки (30❇️)</option>
       </select>
       <div id="admAmtBox">
         <label>3. Сколько кристаллов начислить:</label>
@@ -183,17 +183,17 @@ body{background:radial-gradient(ellipse at top,#292112 0%,#120f0a 50%,#070605 10
 </div>
 <div class="tab" id="tab-shop">
   <div class="box" style="border-color:#3b82f6;text-align:center">
-    <h3 style="font-size:14px;color:#93c5fd">🎰 Обычная Рулетка (25 ❇️)</h3>
+    <h3 style="font-size:14px;color:#93c5fd">🎰 Обычная Рулетка (30 ❇️)</h3>
     <p style="font-size:10px;color:#a8a29e">Падают: Кристаллы (15–50 ❇️), Карточки и Баффы</p>
     <div class="slot" id="slotStd" style="border-color:#1d4ed8">❓ От 15 до 50 ❇️ + Карточки ❓</div>
-    <button class="btn btn-std" id="btnStd" onclick="spinWheel('std')">Крутить за 25 ❇️</button>
+    <button class="btn btn-std" id="btnStd" onclick="spinWheel('std')">Крутить за 30 ❇️</button>
   </div>
 
   <div class="box" style="border-color:#eab308;text-align:center;background:linear-gradient(145deg,rgba(66,44,6,0.65),rgba(24,20,15,0.9))">
-    <h3 style="font-size:14px;color:#fde047">👑 Элитная Рулетка (60 ❇️)</h3>
+    <h3 style="font-size:14px;color:#fde047">👑 Элитная Рулетка (100 ❇️)</h3>
     <p style="font-size:10px;color:#fde68a">Падают: 50–80 ❇️ • 15 / 25 / 50 / 100 ⭐️ • Префикс • Модерка • VIP</p>
     <div class="slot" id="slotElite" style="border-color:#ca8a04">👑 50–80 ❇️, Звёзды и VIP 👑</div>
-    <button class="btn btn-elite" id="btnElite" onclick="spinWheel('elite')">Крутить Элитную за 60 ❇️</button>
+    <button class="btn btn-elite" id="btnElite" onclick="spinWheel('elite')">Крутить Элитную за 100 ❇️</button>
   </div>
 
   <div class="sec">🛒 Магазин (Списание с кошелька + Чек)</div>
@@ -204,7 +204,6 @@ body{background:radial-gradient(ellipse at top,#292112 0%,#120f0a 50%,#070605 10
   <div class="sec">🕶 Чёрный рынок (За бкоины и Звёзды)</div>
   <div id="marketList" style="width:100%"></div>
 </div>
-
 <div class="tab" id="tab-profile">
   <div class="box">
     <b style="font-size:12px;color:#fde68a">👤 Твой ник в чате (для Чеков):</b>
@@ -267,8 +266,8 @@ body{background:radial-gradient(ellipse at top,#292112 0%,#120f0a 50%,#070605 10
   draw();
 })();
 
-const CD=86400000,K='m_v16',BK='m_bal',UK='m_used_sec4',RK='m_rec',SK='m_stat',LK='m_log',CK='m_chest',SFK='m_safe',NK='m_nick',MK='m_mini_cd';
-let snd=true,ctx=null,tag='Гость',lastRec='',bet=2;
+const CD=86400000,K='m_v20',BK='m_bal',UK='m_used_sec8',RK='m_rec',SK='m_stat',LK='m_log',CK='m_chest',SFK='m_safe',NK='m_nick',MK='m_mini_cd';
+let snd=true,ctx=null,tag='Гость',lastRec='',bet=2,bgmOn=false,bgmStep=0;
 
 const SHOP_ITEMS=[
   {n:'Снятие лимитов (12ч)',p:5},{n:'Вечный Префикс',p:10},{n:'Аватарка группы (2д)',p:20},
@@ -282,6 +281,28 @@ const MARKET_ITEMS=[
   {n:'1 Кристалл (код от админа)',p:'1 000 🪙'},{n:'5 Кристаллов (код от админа)',p:'4 500 🪙'},{n:'10 Кристаллов (код от админа)',p:'15 ⭐️'},{n:'50 Кристаллов (код от админа)',p:'65 ⭐️'},
   {n:'«Подкинуть мину» врагу',p:'1 200 🪙'},{n:'«Сканер сапёра»',p:'2 000 🪙'},{n:'«Второй шанс» (Щит)',p:'2 500 🪙'},{n:'«Украсть попытку»',p:'3 500 🪙'}
 ];
+function startBGM(){
+  if(bgmOn||!snd)return;
+  try{
+    if(!ctx)ctx=new(window.AudioContext||window.webkitAudioContext)();
+    if(ctx.state==='suspended')ctx.resume();
+    bgmOn=true;
+    const notes=[146.83,174.61,220.00,261.63,293.66,261.63,220.00,174.61];
+    setInterval(()=>{
+      if(!snd||!ctx)return;
+      if(ctx.state==='suspended')ctx.resume();
+      const now=ctx.currentTime,f=notes.at(bgmStep%notes.length);bgmStep++;
+      const o=ctx.createOscillator(),g=ctx.createGain();
+      o.type='sine';o.frequency.setValueAtTime(f,now);
+      g.gain.setValueAtTime(0.001,now);
+      g.gain.linearRampToValueAtTime(0.032,now+0.35);
+      g.gain.exponentialRampToValueAtTime(0.0008,now+1.35);
+      o.connect(g);g.connect(ctx.destination);o.start(now);o.stop(now+1.4);
+    },1100);
+  }catch(e){}
+}
+document.addEventListener('pointerdown',startBGM,{once:true});
+
 function tone(t){
   if(!snd)return;
   try{
@@ -293,7 +314,7 @@ function tone(t){
     else if(t==='bomb'){const o=ctx.createOscillator(),g=ctx.createGain();o.type='sawtooth';o.frequency.setValueAtTime(130,n);o.frequency.exponentialRampToValueAtTime(28,n+0.5);g.gain.setValueAtTime(0.35,n);g.gain.exponentialRampToValueAtTime(0.001,n+0.5);o.connect(g);g.connect(ctx.destination);o.start(n);o.stop(n+0.5);}
   }catch(e){}
 }
-function toggleSnd(){snd=!snd;document.getElementById('sndBtn').innerText=snd?'🔊':'🔇';}
+function toggleSnd(){snd=!snd;document.getElementById('sndBtn').innerText=snd?'🔊':'🔇';if(snd)startBGM();}
 function toast(m){const e=document.getElementById('toast');e.innerText=m;e.classList.add('show');setTimeout(()=>e.classList.remove('show'),2000);}
 
 function setNick(n){if(!n)return;tag=n.trim();localStorage.setItem(NK,tag);document.getElementById('pName').innerText='✏️ '+tag;const ni=document.getElementById('nickIn');if(ni)ni.value=tag;}
@@ -381,7 +402,6 @@ function pickCup(idx){
   else{tone('bomb');document.getElementById('cupInfo').innerText='💥 Пусто! Повезёт завтра';}
   setTimeout(()=>{cups.forEach(c=>c.innerText='🥤');cupLock=false;setMiniCD('cups');},1100);
 }
-
 function initSafe(){let sf=JSON.parse(localStorage.getItem(SFK)||'null');if(!sf||(sf.done&&Date.now()-sf.fin>=CD)){sf={code:Math.floor(Math.random()*1000),tries:5,done:false,fin:0};localStorage.setItem(SFK,JSON.stringify(sf));}updSafeUI(sf);}
 function updSafeUI(sf){document.getElementById('safeTriesBadge').innerText=`Попыток: ${sf.tries}`;document.getElementById('safeControls').style.display=sf.done?'none':'flex';document.getElementById('safeTimer').style.display=sf.done?'block':'none';}
 function guessSafe(){
@@ -402,7 +422,7 @@ function flipCoin(side){
   setMiniCD('coin');
 }
 function spinWheel(type){
-  const isElite=(type==='elite'),cost=isElite?60:25;
+  const isElite=(type==='elite'),cost=isElite?100:30;
   if(getBal()<cost){toast(`❌ Нужно ${cost} ❇️`);return;}
   setBal(getBal()-cost);
   const btn=document.getElementById(isElite?'btnElite':'btnStd');
@@ -432,7 +452,6 @@ function spinWheel(type){
     }
   })();
 }
-
 const SEC_SALT='ZOLOTO_991_MAKS';
 function makeSig(str){
   let h=2166136261;
@@ -478,8 +497,8 @@ function applyPromo(){
     const v=parseInt(payload.slice(1),10);setBal(getBal()+v);tone('win');
     log(`🎟 Промокод (${prefix}): +${v}❇️`);toast(`✅ Зачислено +${v} ❇️!`);
   }else if(payload==='SP'){
-    setBal(getBal()+25);tone('win');log(`🎟 Промокод (${prefix}): Фри-спин (+25❇️)`);
-    toast('🎰 Начислено 25 ❇️ на прокрут Рулетки!');
+    setBal(getBal()+30);tone('win');log(`🎟 Промокод (${prefix}): Фри-спин (+30❇️)`);
+    toast('🎰 Начислено 30 ❇️ на прокрут Рулетки!');
   }else{
     const tm=payload==='MH'?'high':(payload==='MB'?'black':'normal');
     if(tint)clearInterval(tint);localStorage.removeItem(K);tone('win');
@@ -540,7 +559,6 @@ function makeRec(name,price,src){
 }
 function copyRec(){navigator.clipboard?.writeText(lastRec);toast('📋 Чек скопирован!');}
 function closeRec(){document.getElementById('recModal').classList.remove('open');}
-
 function renderProf(){
   const s=getSt();document.getElementById('stGames').innerText=s.g;document.getElementById('stBombs').innerText=s.b;document.getElementById('stJack').innerText=s.j;
   s.a.forEach(a=>document.getElementById(a)?.classList.add('unlocked'));
