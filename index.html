@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Минное Поле 2.0</title>
+  <script src="https://telegram.org"></script>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Roboto, sans-serif; user-select: none; }
+    body {
+      background: radial-gradient(circle at top, #0d1f2d, #050a0f);
+      color: #fff;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 16px;
+    }
+    .header { text-align: center; margin-bottom: 16px; }
+    .header h1 {
+      font-size: 24px;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      color: #00ffcc;
+      text-shadow: 0 0 12px rgba(0, 255, 204, 0.6);
+    }
+    .stats {
+      display: flex;
+      gap: 16px;
+      background: rgba(255, 255, 255, 0.06);
+      border: 1px solid rgba(0, 255, 204, 0.3);
+      padding: 10px 20px;
+      border-radius: 12px;
+      margin-bottom: 18px;
+      font-size: 16px;
+      font-weight: bold;
+    }
+    .stat-crystals { color: #2ecc71; }
+    .stat-tries { color: #38bdf8; }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 10px;
+      width: 100%;
+      max-width: 340px;
+      background: rgba(13, 31, 45, 0.8);
+      padding: 12px;
+      border-radius: 16px;
+      border: 2px solid #1e3a5f;
+      box-shadow: 0 0 25px rgba(0, 200, 255, 0.15);
+    }
+    .cell {
+      aspect-ratio: 1;
+      background: linear-gradient(145deg, #13293d, #0b1926);
+      border: 2px solid #234b6e;
+      border-radius: 12px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      font-size: 24px;
+      font-weight: bold;
+      color: #7dd3fc;
+      cursor: pointer;
+      transition: transform 0.15s, box-shadow 0.2s, border-color 0.2s;
+      position: relative;
+    }
+    .cell:active { transform: scale(0.94); }
+    .cell.open-crystal {
+      background: linear-gradient(145deg, #063b27, #042417);
+      border-color: #2ecc71;
+      box-shadow: 0 0 15px rgba(46, 204, 113, 0.5);
+      color: #fff;
+      cursor: default;
+    }
+    .cell.open-jackpot {
+      background: linear-gradient(145deg, #3b2d06, #241b04);
+      border-color: #f1c40f;
+      box-shadow: 0 0 18px rgba(241, 196, 15, 0.7);
+      color: #fff;
+      cursor: default;
+    }
+    .cell.open-bomb {
+      background: linear-gradient(145deg, #450a0a, #260404);
+      border-color: #ef4444;
+      box-shadow: 0 0 18px rgba(239, 68, 68, 0.7);
+      animation: shake 0.35s;
+      cursor: default;
+    }
+    .cell-num {
+      position: absolute;
+      top: 4px;
+      left: 6px;
+      font-size: 11px;
+      color: rgba(255, 255, 255, 0.5);
+    }
+    .cell-val { font-size: 14px; margin-top: 2px; font-weight: 800; }
+    .result-box {
+      margin-top: 18px;
+      text-align: center;
+      min-height: 75px;
+      max-width: 340px;
+    }
+    .result-text {
+      font-size: 15px;
+      line-height: 1.4;
+      color: #e2e8f0;
+      margin-bottom: 12px;
+    }
+    .btn {
+      background: linear-gradient(90deg, #00c6ff, #0072ff);
+      border: none;
+      color: white;
+      padding: 12px 24px;
+      font-size: 15px;
+      font-weight: bold;
+      border-radius: 10px;
+      cursor: pointer;
+      box-shadow: 0 4px 15px rgba(0, 114, 255, 0.4);
+    }
+    .meta {
+      margin-top: 14px;
+      font-size: 11px;
+      color: #64748b;
+    }
+    @keyframes shake {
+      0%, 100% { transform: translateX(0); }
+      25% { transform: translateX(-5px); }
+      75% { transform: translateX(5px); }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="header">
+    <h1>💣 Минное Поле ❇️</h1>
+  </div>
+
+  <div class="stats">
+    <div class="stat-crystals">Лут: <span id="score">0</span> ❇️</div>
+    <div class="stat-tries">Попыток: <span id="tries">3</span></div>
+  </div>
+
+  <div class="grid" id="grid"></div>
+
+  <div class="result-box">
+    <div class="result-text" id="status">Выбери любые 3 клетки!</div>
+    <button class="btn" id="restartBtn" style="display:none;" onclick="initGame()">Новая карточка</button>
+  </div>
+
+  <div class="meta" id="roundMeta"></div>
+
+  <script>
+    if (window.Telegram && window.Telegram.WebApp) {
+      window.Telegram.WebApp.expand();
+    }
+
+    let board = [];
+    let triesLeft = 3;
+    let totalScore = 0;
+    let gameOver = false;
+
+    function initGame() {
+      triesLeft = 3;
+      totalScore = 0;
+      gameOver = false;
+      document.getElementById('score').innerText = totalScore;
+      document.getElementById('tries').innerText = triesLeft;
+      document.getElementById('status').innerText = 'Выбери любые 3 клетки!';
+      document.getElementById('restartBtn').style.display = 'none';
+
+      // 4 бомбы, 1 джекпот (+5), 3 по +2, 8 по +1
+      const items = [
+        { type: 'bomb', icon: '💣', val: 0, label: 'БУМ!' },
+        { type: 'bomb', icon: '💣', val: 0, label: 'БУМ!' },
+        { type: 'bomb', icon: '💣', val: 0, label: 'БУМ!' },
+        { type: 'bomb', icon: '💣', val: 0, label: 'БУМ!' },
+        { type: 'jackpot', icon: '💎', val: 5, label: '+5' },
+        { type: 'crystal', icon: '❇️', val: 2, label: '+2' },
+        { type: 'crystal', icon: '❇️', val: 2, label: '+2' },
+        { type: 'crystal', icon: '❇️', val: 2, label: '+2' },
+        { type: 'crystal', icon: '❇️', val: 1, label: '+1' },
+        { type: 'crystal', icon: '❇️', val: 1, label: '+1' },
+        { type: 'crystal', icon: '❇️', val: 1, label: '+1' },
+        { type: 'crystal', icon: '❇️', val: 1, label: '+1' },
+        { type: 'crystal', icon: '❇️', val: 1, label: '+1' },
+        { type: 'crystal', icon: '❇️', val: 1, label: '+1' },
+        { type: 'crystal', icon: '❇️', val: 1, label: '+1' },
+        { type: 'crystal', icon: '❇️', val: 1, label: '+1' }
+      ];
+
+      board = items.sort(() => Math.random() - 0.5);
+
+      const grid = document.getElementById('grid');
+      grid.innerHTML = '';
+
+      board.forEach((item, index) => {
+        const cell = document.createElement('div');
+        cell.className = 'cell';
+        cell.innerText = index + 1;
+        cell.onclick = () => openCell(index, cell);
+        grid.appendChild(cell);
+      });
+
+      const now = new Date();
+      const code = Math.floor(1000 + Math.random() * 9000);
+      document.getElementById('roundMeta').innerText = `Код игры: #${code} | ${now.toLocaleTimeString().slice(0,5)}`;
+    }
+
+    function openCell(index, cellEl) {
+      if (gameOver || cellEl.classList.contains('opened')) return;
+
+      cellEl.classList.add('opened');
+      const item = board[index];
+      triesLeft--;
+      document.getElementById('tries').innerText = triesLeft;
+
+      if (item.type === 'bomb') {
+        cellEl.classList.add('open-bomb');
+        cellEl.innerHTML = `<span class="cell-num">${index + 1}</span><span>${item.icon}</span><span class="cell-val">${item.label}</span>`;
+      } else if (item.type === 'jackpot') {
+        cellEl.classList.add('open-jackpot');
+        totalScore += item.val;
+        cellEl.innerHTML = `<span class="cell-num">${index + 1}</span><span>${item.icon}</span><span class="cell-val">${item.label}</span>`;
+      } else {
+        cellEl.classList.add('open-crystal');
+        totalScore += item.val;
+        cellEl.innerHTML = `<span class="cell-num">${index + 1}</span><span>${item.icon}</span><span class="cell-val">${item.label}</span>`;
+      }
+
+      document.getElementById('score').innerText = totalScore;
+
+      if (triesLeft === 0) {
+        gameOver = true;
+        document.getElementById('status').innerHTML = `Раунд окончен! Твой лут: <b>+${totalScore} ❇️</b>.<br>Сделай скриншот и кинь админу в чат!`;
+        document.getElementById('restartBtn').style.display = 'inline-block';
+      }
+    }
+
+    initGame();
+  </script>
+</body>
+</html>
