@@ -7,7 +7,9 @@
 <script src="https://telegram.org"></script>
 <style>
 *{box-sizing:border-box;margin:0;padding:0;font-family:'Segoe UI',Roboto,sans-serif;user-select:none}
-body{background:radial-gradient(ellipse at top,#292112 0%,#120f0a 50%,#070605 100%);color:#f8fafc;min-height:100vh;display:flex;flex-direction:column;align-items:center;padding:10px 10px 72px;position:relative;overflow-x:hidden}
+body{background:radial-gradient(ellipse at top,#292112 0%,#120f0a 50%,#070605 100%);color:#f8fafc;min-height:100vh;display:flex;flex-direction:column;align-items:center;padding:10px 10px 72px;position:relative;overflow-x:hidden;transition:background 0.4s}
+body.th-snow{background:radial-gradient(ellipse at top,#172554 0%,#0f172a 55%,#020617 100%)}
+body.th-magma{background:radial-gradient(ellipse at top,#450a0a 0%,#1c0909 55%,#090303 100%)}
 #bgCanvas{position:fixed;inset:0;pointer-events:none;z-index:-1}
 .header{text-align:center;margin-bottom:8px;width:100%;max-width:360px}
 .header h1{font-size:19px;text-transform:uppercase;letter-spacing:1.2px;background:linear-gradient(90deg,#fde047,#f59e0b,#fef08a);-webkit-background-clip:text;-webkit-text-fill-color:transparent;filter:drop-shadow(0 2px 8px rgba(245,158,11,0.35))}
@@ -15,7 +17,7 @@ body{background:radial-gradient(ellipse at top,#292112 0%,#120f0a 50%,#070605 10
 .badge{padding:3px 9px;background:rgba(255,255,255,0.06);border:1px solid rgba(251,191,36,0.35);border-radius:16px;font-size:11px;color:#fde68a;font-weight:600;cursor:pointer;backdrop-filter:blur(6px)}
 .badge-bal{background:rgba(16,185,129,0.16);border-color:#10b981;color:#6ee7b7;font-weight:800;cursor:default}
 .badge-mode{background:rgba(245,158,11,0.18);border-color:#f59e0b;color:#fcd34d;cursor:default}
-.snd-btn{background:rgba(255,255,255,0.08);border:1px solid rgba(251,191,36,0.35);color:#fde68a;border-radius:50%;width:24px;height:24px;font-size:11px;cursor:pointer}
+.snd-btn{background:rgba(255,255,255,0.08);border:1px solid rgba(251,191,36,0.35);color:#fde68a;border-radius:14px;padding:2px 7px;height:24px;font-size:11px;cursor:pointer;font-weight:bold}
 .tab{display:none;width:100%;max-width:360px;flex-direction:column;align-items:center}
 .tab.active{display:flex}
 .box{width:100%;background:rgba(24,20,15,0.78);backdrop-filter:blur(10px);border:1px solid rgba(251,191,36,0.22);border-radius:12px;padding:10px;margin-bottom:8px;box-shadow:0 4px 20px rgba(0,0,0,0.4)}
@@ -69,6 +71,7 @@ body{background:radial-gradient(ellipse at top,#292112 0%,#120f0a 50%,#070605 10
 </head>
 <body>
 <canvas id="bgCanvas"></canvas>
+<audio id="bgAudio" loop preload="none" src="music.mp3"></audio>
 <div class="toast" id="toast">Готово!</div>
 
 <div class="modal" id="recModal">
@@ -78,7 +81,6 @@ body{background:radial-gradient(ellipse at top,#292112 0%,#120f0a 50%,#070605 10
     <div class="row-sb"><button class="btn btn-green" style="flex:1" onclick="copyRec()">📋 Скопировать</button><button class="btn" style="background:#44403c" onclick="closeRec()">Закрыть</button></div>
   </div>
 </div>
-
 <div class="modal" id="admModal">
   <div class="receipt" style="border-color:#10b981">
     <h3 style="color:#34d399">🔐 Конструктор Промокодов</h3>
@@ -109,6 +111,7 @@ body{background:radial-gradient(ellipse at top,#292112 0%,#120f0a 50%,#070605 10
     <div class="badge" id="pName" onclick="askNick()">✏️ Игрок: Гость</div>
     <div class="badge badge-bal">Кошелёк: <span id="balVal">0</span> ❇️</div>
     <div class="badge badge-mode" id="mBadge">Обычная (x1)</div>
+    <button class="snd-btn" id="bgmBtn" onclick="nextTrack()" title="Сменить музыку">🎵 Весёлая</button>
     <button class="snd-btn" id="sndBtn" onclick="toggleSnd()">🔊</button>
   </div>
 </div>
@@ -159,7 +162,6 @@ body{background:radial-gradient(ellipse at top,#292112 0%,#120f0a 50%,#070605 10
     </div>
     <div class="mini-cd" id="cdCupsBox">Доступно через: <span id="cdCups">24:00:00</span></div>
   </div>
-
   <div class="box" style="border-color:#38bdf8">
     <div class="row-sb"><h3 style="font-size:14px;color:#7dd3fc">🔐 Взлом Сейфа (Раз в 24ч)</h3><span id="safeTriesBadge" class="badge">Попыток: 5</span></div>
     <p style="font-size:11px;color:#a8a29e;margin:4px 0 6px">Код от <b>000</b> до <b>999</b> — награда <b style="color:#4ade80">+10 ❇️</b>!</p>
@@ -212,6 +214,26 @@ body{background:radial-gradient(ellipse at top,#292112 0%,#120f0a 50%,#070605 10
       <button class="btn" onclick="saveNickInput()">Сохранить</button>
     </div>
   </div>
+
+  <div class="box" style="border-color:#10b981">
+    <div class="row-sb">
+      <div><b style="font-size:12px;color:#6ee7b7">🎡 Колесо дня (Бесплатно)</b><p id="luckDesc" style="font-size:11px;color:#d6d3d1">Выиграй +1 до +5 ❇️!</p></div>
+      <button class="btn btn-green" id="luckBtn" onclick="spinDailyLuck()">Крутить</button>
+    </div>
+  </div>
+
+  <div class="box">
+    <b style="font-size:11px;color:#fde68a">🎨 Оформление и 🎵 Своя музыка:</b>
+    <div class="row-sb" style="margin-top:6px">
+      <button class="btn-out" style="flex:1" onclick="setTheme('gold')">👑 Золото</button>
+      <button class="btn-out" style="flex:1" onclick="setTheme('snow')">❄️ Зима</button>
+      <button class="btn-out" style="flex:1" onclick="setTheme('magma')">🌋 Магма</button>
+    </div>
+    <label class="btn-out" style="display:block;text-align:center;margin-top:6px;cursor:pointer">
+      📂 Включить свой MP3 с телефона
+      <input type="file" accept="audio/*" style="display:none" onchange="loadUserMP3(this)">
+    </label>
+  </div>
   <div class="box" style="text-align:center;border-color:#f59e0b;font-size:12px">⏳ До финала (10 дек): <b id="eventCd">...</b></div>
   <div class="stat-grid">
     <div class="stat-card"><b id="stGames">0</b><span>Игр</span></div>
@@ -230,7 +252,6 @@ body{background:radial-gradient(ellipse at top,#292112 0%,#120f0a 50%,#070605 10
   <div class="sec">📜 История</div>
   <div class="log-box" id="opLog">Пусто</div>
 </div>
-
 <div class="tab" id="tab-dev">
   <div class="box" style="text-align:center;padding:30px 16px;border-color:#f59e0b;margin-top:20px">
     <div style="font-size:48px;margin-bottom:10px">🚧</div>
@@ -249,6 +270,7 @@ body{background:radial-gradient(ellipse at top,#292112 0%,#120f0a 50%,#070605 10
   <button class="nav-btn" onclick="switchTab('dev',this)"><span>🚧</span>2 Сезон</button>
 </div>
 <script>
+let ptColor='251,191,36';
 (function(){
   const c=document.getElementById('bgCanvas'),x=c.getContext('2d');
   let w,h,pts=[];
@@ -259,16 +281,21 @@ body{background:radial-gradient(ellipse at top,#292112 0%,#120f0a 50%,#070605 10
     x.clearRect(0,0,w,h);
     pts.forEach(p=>{
       p.y+=p.vy;if(p.y<0){p.y=h;p.x=Math.random()*w;}
-      x.beginPath();x.arc(p.x,p.y,p.r,0,Math.PI*2);x.fillStyle=`rgba(251,191,36,${p.a})`;x.fill();
+      x.beginPath();x.arc(p.x,p.y,p.r,0,Math.PI*2);x.fillStyle=`rgba(${ptColor},${p.a})`;x.fill();
     });
     requestAnimationFrame(draw);
   }
   draw();
 })();
 
-const CD=86400000,K='m_v20',BK='m_bal',UK='m_used_sec8',RK='m_rec',SK='m_stat',LK='m_log',CK='m_chest',SFK='m_safe',NK='m_nick',MK='m_mini_cd';
-let snd=true,ctx=null,tag='Гость',lastRec='',bet=2,bgmOn=false,bgmStep=0;
-
+const CD=86400000,K='m_v26',BK='m_bal',UK='m_used_sec14',RK='m_rec',SK='m_stat',LK='m_log',CK='m_chest',SFK='m_safe',NK='m_nick',MK='m_mini_cd',LCK='m_luck',THK='m_theme';
+let snd=true,ctx=null,tag='Гость',lastRec='',bet=2;
+function syncCloud(k,v){
+  try{
+    const cs=window.Telegram?.WebApp?.CloudStorage;
+    if(cs){if(v===null)cs.removeItem(k);else cs.setItem(k,String(v));}
+  }catch(e){}
+}
 const SHOP_ITEMS=[
   {n:'Снятие лимитов (12ч)',p:5},{n:'Вечный Префикс',p:10},{n:'Аватарка группы (2д)',p:20},
   {n:'Модератор (5 дней)',p:30},{n:'Своё правило чата (24ч)',p:50},{n:'Временный Админ (3д)',p:70},
@@ -281,28 +308,37 @@ const MARKET_ITEMS=[
   {n:'1 Кристалл (код от админа)',p:'1 000 🪙'},{n:'5 Кристаллов (код от админа)',p:'4 500 🪙'},{n:'10 Кристаллов (код от админа)',p:'15 ⭐️'},{n:'50 Кристаллов (код от админа)',p:'65 ⭐️'},
   {n:'«Подкинуть мину» врагу',p:'1 200 🪙'},{n:'«Сканер сапёра»',p:'2 000 🪙'},{n:'«Второй шанс» (Щит)',p:'2 500 🪙'},{n:'«Украсть попытку»',p:'3 500 🪙'}
 ];
-function startBGM(){
-  if(bgmOn||!snd)return;
+const TRACKS=[
+  {n:'🎉 Весёлая',spd:210,lead:[523.25,659.25,783.99,1046.5,783.99,659.25,587.33,698.46,880.00,1046.5,880.00,698.46,523.25,659.25,783.99,659.25],bass:[130.81,0,196.00,0,146.83,0,220.00,0]},
+  {n:'🔥 Драйв',spd:165,lead:[440.00,440.00,523.25,659.25,587.33,523.25,493.88,392.00,440.00,523.25,659.25,783.99,659.25,587.33,523.25,493.88],bass:[110.00,110.00,164.81,110.00,98.00,98.00,146.83,98.00]},
+  {n:'🌙 Чилл',spd:420,lead:[392.00,493.88,587.33,739.99,659.25,587.33,493.88,440.00],bass:[98.00,0,146.83,0,110.00,0,164.81,0]},
+  {n:'📂 Свой MP3',mp3:true}
+];
+let trIdx=0,bgmIv=null,bgmStep=0;
+
+function playMusic(){
+  if(bgmIv){clearInterval(bgmIv);bgmIv=null;}
+  const au=document.getElementById('bgAudio'),tr=TRACKS.at(trIdx);
+  document.getElementById('bgmBtn').innerText=tr.n;
+  if(!snd){au.pause();return;}
+  if(tr.mp3){au.volume=0.45;au.play().catch(()=>toast('📂 Загрузи свой MP3 в Профиле!'));return;}
+  au.pause();
   try{
     if(!ctx)ctx=new(window.AudioContext||window.webkitAudioContext)();
     if(ctx.state==='suspended')ctx.resume();
-    bgmOn=true;
-    const notes=[146.83,174.61,220.00,261.63,293.66,261.63,220.00,174.61];
-    setInterval(()=>{
+    bgmIv=setInterval(()=>{
       if(!snd||!ctx)return;
       if(ctx.state==='suspended')ctx.resume();
-      const now=ctx.currentTime,f=notes.at(bgmStep%notes.length);bgmStep++;
-      const o=ctx.createOscillator(),g=ctx.createGain();
-      o.type='sine';o.frequency.setValueAtTime(f,now);
-      g.gain.setValueAtTime(0.001,now);
-      g.gain.linearRampToValueAtTime(0.032,now+0.35);
-      g.gain.exponentialRampToValueAtTime(0.0008,now+1.35);
-      o.connect(g);g.connect(ctx.destination);o.start(now);o.stop(now+1.4);
-    },1100);
+      const now=ctx.currentTime,f=tr.lead.at(bgmStep%tr.lead.length),b=tr.bass.at(bgmStep%tr.bass.length);bgmStep++;
+      if(f>0){const o=ctx.createOscillator(),g=ctx.createGain();o.type='triangle';o.frequency.setValueAtTime(f,now);g.gain.setValueAtTime(0.045,now);g.gain.exponentialRampToValueAtTime(0.001,now+0.18);o.connect(g);g.connect(ctx.destination);o.start(now);o.stop(now+0.19);}
+      if(b>0){const o2=ctx.createOscillator(),g2=ctx.createGain();o2.type='sine';o2.frequency.setValueAtTime(b,now);g2.gain.setValueAtTime(0.07,now);g2.gain.exponentialRampToValueAtTime(0.001,now+0.24);o2.connect(g2);g2.connect(ctx.destination);o2.start(now);o2.stop(now+0.25);}
+    },tr.spd);
   }catch(e){}
 }
-document.addEventListener('pointerdown',startBGM,{once:true});
-
+document.addEventListener('pointerdown',()=>{if(!bgmIv&&document.getElementById('bgAudio').paused)playMusic();},{once:true});
+function nextTrack(){trIdx=(trIdx+1)%TRACKS.length;bgmStep=0;playMusic();toast('Музыка: '+TRACKS.at(trIdx).n);}
+function loadUserMP3(inp){const f=inp.files&&inp.files.item(0);if(!f)return;const au=document.getElementById('bgAudio');au.src=URL.createObjectURL(f);trIdx=3;playMusic();toast('🎵 Твой трек запущен!');}
+function toggleSnd(){snd=!snd;document.getElementById('sndBtn').innerText=snd?'🔊':'🔇';playMusic();}
 function tone(t){
   if(!snd)return;
   try{
@@ -314,20 +350,26 @@ function tone(t){
     else if(t==='bomb'){const o=ctx.createOscillator(),g=ctx.createGain();o.type='sawtooth';o.frequency.setValueAtTime(130,n);o.frequency.exponentialRampToValueAtTime(28,n+0.5);g.gain.setValueAtTime(0.35,n);g.gain.exponentialRampToValueAtTime(0.001,n+0.5);o.connect(g);g.connect(ctx.destination);o.start(n);o.stop(n+0.5);}
   }catch(e){}
 }
-function toggleSnd(){snd=!snd;document.getElementById('sndBtn').innerText=snd?'🔊':'🔇';if(snd)startBGM();}
 function toast(m){const e=document.getElementById('toast');e.innerText=m;e.classList.add('show');setTimeout(()=>e.classList.remove('show'),2000);}
 
+function setTheme(t){
+  document.body.className=t==='snow'?'th-snow':(t==='magma'?'th-magma':'');
+  ptColor=t==='snow'?'147,197,253':(t==='magma'?'248,113,113':'251,191,36');
+  localStorage.setItem(THK,t);
+}
 function setNick(n){if(!n)return;tag=n.trim();localStorage.setItem(NK,tag);document.getElementById('pName').innerText='✏️ '+tag;const ni=document.getElementById('nickIn');if(ni)ni.value=tag;}
 function askNick(){const v=prompt('Введи свой ник или @username из чата:',tag==='Гость'?'':tag);if(v&&v.trim()){setNick(v);toast('✅ Ник сохранён!');}}
 function saveNickInput(){const v=document.getElementById('nickIn').value;if(v&&v.trim()){setNick(v);toast('✅ Ник сохранён!');}}
 function initUser(){const saved=localStorage.getItem(NK);if(saved)setNick(saved);if(window.Telegram?.WebApp){window.Telegram.WebApp.expand();const u=window.Telegram.WebApp.initDataUnsafe?.user;if(u&&!saved)setNick(u.username?'@'+u.username:u.first_name);}}
 
 const getBal=()=>parseFloat(localStorage.getItem(BK)||'0');
-function setBal(v){const x=Math.round(v*10)/10;localStorage.setItem(BK,x);document.getElementById('balVal').innerText=x;if(x>=50)ach('ach4');}
+function setBal(v){const x=Math.round(v*10)/10;localStorage.setItem(BK,x);syncCloud(BK,x);document.getElementById('balVal').innerText=x;if(x>=50)ach('ach4');}
 function log(m){const l=JSON.parse(localStorage.getItem(LK)||'[]');l.unshift(`[${new Date().toTimeString().slice(0,5)}] ${m}`);localStorage.setItem(LK,JSON.stringify(l.slice(0,12)));renderProf();}
 const getSt=()=>JSON.parse(localStorage.getItem(SK)||'{"g":0,"b":0,"j":0,"a":[]}');
 function ach(id){const s=getSt();if(!s.a.includes(id)){s.a.push(id);localStorage.setItem(SK,JSON.stringify(s));renderProf();}}
 
+function updLuck(){const ok=Date.now()-parseInt(localStorage.getItem(LCK)||'0',10)>=CD;document.getElementById('luckBtn').disabled=!ok;document.getElementById('luckBtn').innerText=ok?'Крутить':'Завтра';document.getElementById('luckDesc').innerText=ok?'Выиграй +1 до +5 ❇️!':'Уже крутил сегодня';}
+function spinDailyLuck(){if(Date.now()-parseInt(localStorage.getItem(LCK)||'0',10)<CD)return;const now=Date.now();localStorage.setItem(LCK,now);syncCloud(LCK,now);updLuck();const prizes=,w=prizes.at(Math.floor(Math.random()*prizes.length));setBal(getBal()+w);tone('win');log(`🎡 Колесо дня: +${w}❇️`);toast(`🎉 Выпало +${w} ❇️!`);}
 const D_REW=['+1❇️','+2❇️','🛡Щит','+3❇️','🔥x1.5','+5❇️','👑VIP'];
 function updChest(){
   const c=JSON.parse(localStorage.getItem(CK)||'{"l":0,"s":1}'),ok=Date.now()-c.l>=CD;
@@ -337,25 +379,24 @@ function updChest(){
 }
 function openChest(){
   const c=JSON.parse(localStorage.getItem(CK)||'{"l":0,"s":1}');if(Date.now()-c.l<CD)return;
-  const d=c.s;localStorage.setItem(CK,JSON.stringify({l:Date.now(),s:d>=7?1:d+1}));updChest();tone('win');
+  const d=c.s,st=JSON.stringify({l:Date.now(),s:d>=7?1:d+1});
+  localStorage.setItem(CK,st);syncCloud(CK,st);updChest();tone('win');
   if(d===1||d===2||d===4||d===6){const v=d===1?1:(d===2?2:(d===4?3:5));setBal(getBal()+v);log(`🎁 Сундук Д${d}: +${v}❇️`);toast(`+${v} ❇️ в кошелёк!`);}
   else if(d===3){log('🎁 Сундук Д3: Щит');makeRec('Сундук (День 3): Бафф «Щит сапёра»',0,'Ежедневка');}
-  else if(d===5){localStorage.removeItem(K);log('🎁 Сундук Д5: Хайролл');toast('🔥 Запущен ХАЙРОЛЛ!');start('high');}
+  else if(d===5){localStorage.removeItem(K);syncCloud(K,null);log('🎁 Сундук Д5: Хайролл');toast('🔥 Запущен ХАЙРОЛЛ!');start('high');}
   else if(d===7){log('🎁 Сундук Д7: VIP 3д');makeRec('Сундук (День 7): VIP-карта на 3 дня',0,'Ежедневка');}
 }
 const getMiniCD=()=>JSON.parse(localStorage.getItem(MK)||'{"rocket":0,"cups":0,"coin":0}');
-function setMiniCD(game){const m=getMiniCD();m[game]=Date.now();localStorage.setItem(MK,JSON.stringify(m));updMiniUI();}
+function setMiniCD(game){const m=getMiniCD();m[game]=Date.now();const s=JSON.stringify(m);localStorage.setItem(MK,s);syncCloud(MK,s);updMiniUI();}
 function isMiniLocked(game){return (Date.now()-(getMiniCD()[game]||0))<CD;}
 
 function updMiniUI(){
   const rLock=isMiniLocked('rocket');
   if(!rFly){document.getElementById('rocketBtn').disabled=rLock;document.getElementById('rocketBtn').innerText=rLock?'⏳ Сыграно (Жди 24ч)':`🚀 Запустить за ${bet} ❇️`;}
   document.getElementById('cdRocketBox').style.display=rLock?'block':'none';
-
   const cLock=isMiniLocked('cups');
   document.querySelectorAll('.cup').forEach(el=>cLock?el.classList.add('locked'):el.classList.remove('locked'));
   document.getElementById('cdCupsBox').style.display=cLock?'block':'none';
-
   const mLock=isMiniLocked('coin');
   document.getElementById('coinBtns').style.display=mLock?'none':'flex';
   document.getElementById('cdCoinBox').style.display=mLock?'block':'none';
@@ -366,7 +407,6 @@ function setBet(v,btn){
   btn.style.background='#f59e0b';btn.style.color='#000';
   if(!rFly&&!isMiniLocked('rocket'))document.getElementById('rocketBtn').innerText=`🚀 Запустить за ${bet} ❇️`;
 }
-
 let rFly=false,rVal=1.00,rCrash=1.00,rIv=null,rBet=2;
 function handleRocket(){
   if(isMiniLocked('rocket')&&!rFly)return;
@@ -390,7 +430,6 @@ function handleRocket(){
     inf.innerText=`🎉 Успел на x${rVal.toFixed(2)}! Выигрыш +${win} ❇️`;log(`🚀 Ракета (x${rVal.toFixed(2)}): +${win}❇️`);setMiniCD('rocket');
   }
 }
-
 let cupLock=false;
 function pickCup(idx){
   if(cupLock||isMiniLocked('cups'))return;
@@ -402,7 +441,7 @@ function pickCup(idx){
   else{tone('bomb');document.getElementById('cupInfo').innerText='💥 Пусто! Повезёт завтра';}
   setTimeout(()=>{cups.forEach(c=>c.innerText='🥤');cupLock=false;setMiniCD('cups');},1100);
 }
-function initSafe(){let sf=JSON.parse(localStorage.getItem(SFK)||'null');if(!sf||(sf.done&&Date.now()-sf.fin>=CD)){sf={code:Math.floor(Math.random()*1000),tries:5,done:false,fin:0};localStorage.setItem(SFK,JSON.stringify(sf));}updSafeUI(sf);}
+function initSafe(){let sf=JSON.parse(localStorage.getItem(SFK)||'null');if(!sf||(sf.done&&Date.now()-sf.fin>=CD)){sf={code:Math.floor(Math.random()*1000),tries:5,done:false,fin:0};const s=JSON.stringify(sf);localStorage.setItem(SFK,s);syncCloud(SFK,s);}updSafeUI(sf);}
 function updSafeUI(sf){document.getElementById('safeTriesBadge').innerText=`Попыток: ${sf.tries}`;document.getElementById('safeControls').style.display=sf.done?'none':'flex';document.getElementById('safeTimer').style.display=sf.done?'block':'none';}
 function guessSafe(){
   let sf=JSON.parse(localStorage.getItem(SFK));if(sf.done)return;
@@ -411,7 +450,7 @@ function guessSafe(){
   if(val===sf.code){sf.done=true;sf.fin=Date.now();setBal(getBal()+10);tone('win');document.getElementById('safeHint').innerHTML=`🎉 <b>ВЗЛОМАНО!</b> Код ${String(sf.code).padStart(3,'0')}! +10 ❇️`;log('🔐 Сейф: +10 ❇️');}
   else if(sf.tries<=0){sf.done=true;sf.fin=Date.now();tone('bomb');document.getElementById('safeHint').innerHTML=`💥 Код был: <b>${String(sf.code).padStart(3,'0')}</b>`;}
   else{tone('tick');document.getElementById('safeHint').innerText=val<sf.code?`⬆️ БОЛЬШЕ чем ${val}`:`⬇️ МЕНЬШЕ чем ${val}`;}
-  localStorage.setItem(SFK,JSON.stringify(sf));updSafeUI(sf);
+  const s=JSON.stringify(sf);localStorage.setItem(SFK,s);syncCloud(SFK,s);updSafeUI(sf);
 }
 function flipCoin(side){
   if(isMiniLocked('coin'))return;
@@ -439,7 +478,6 @@ function spinWheel(type){
     {l:'🔍 Бафф «Сканер сапёра»',w:12,c:0},{l:'🔥 Карточка ХАЙРОЛЛ',w:10,c:0},{l:'❇️ +30 Кристаллов',w:6,c:30},
     {l:'🖤 Чёрная карточка',w:3.5,c:0},{l:'❇️ +40 Кристаллов',w:1.8,c:40},{l:'❇️ +50 Кристаллов',w:0.7,c:50}
   ];
-
   let r=Math.random()*P.reduce((a,b)=>a+b.w,0),win=P.at(0);
   for(const p of P){if(r<p.w){win=p;break;}r-=p.w;}
   let s=0,d=45;
@@ -477,7 +515,6 @@ function buildCustomPromo(){
   navigator.clipboard?.writeText(code);
   toast('📋 Промокод создан и скопирован!');
 }
-
 function applyPromo(){
   const inp=document.getElementById('promoIn'),c=inp.value.trim().toUpperCase();if(!c)return;
   if(c==='MAKS2026'){inp.value='';document.getElementById('admModal').classList.add('open');return;}
@@ -501,7 +538,7 @@ function applyPromo(){
     toast('🎰 Начислено 30 ❇️ на прокрут Рулетки!');
   }else{
     const tm=payload==='MH'?'high':(payload==='MB'?'black':'normal');
-    if(tint)clearInterval(tint);localStorage.removeItem(K);tone('win');
+    if(tint)clearInterval(tint);localStorage.removeItem(K);syncCloud(K,null);tone('win');
     log(`🎟 Промокод (${prefix}): Карта [${tm.toUpperCase()}]`);toast('✅ Карта активирована!');start(tm);
   }
 }
@@ -541,7 +578,7 @@ function openC(i){
 function finUI(fin){
   document.getElementById('status').innerHTML=`Зачислено: <b>+${score} ❇️</b>. Кинь скрин в чат!`;document.getElementById('tBox').style.display='block';
   if(tint)clearInterval(tint);
-  const tk=()=>{const df=(fin+CD)-Date.now();if(df<=0){clearInterval(tint);localStorage.removeItem(K);start('normal');return;}document.getElementById('cd').innerText=fmt(df);};
+  const tk=()=>{const df=(fin+CD)-Date.now();if(df<=0){clearInterval(tint);localStorage.removeItem(K);syncCloud(K,null);start('normal');return;}document.getElementById('cd').innerText=fmt(df);};
   tk();tint=setInterval(tk,1000);
 }
 
@@ -570,21 +607,44 @@ function renderProf(){
 
 function switchTab(id,b){document.querySelectorAll('.tab').forEach(e=>e.classList.remove('active'));document.querySelectorAll('.nav-btn').forEach(e=>e.classList.remove('active'));document.getElementById('tab-'+id).classList.add('active');b.classList.add('active');if(id==='profile')renderProf();}
 function fmt(ms){const h=Math.floor(ms/3600000),m=Math.floor((ms%3600000)/60000),s=Math.floor((ms%60000)/1000);return `${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;}
-function save(fin,meta){localStorage.setItem(K,JSON.stringify({board,opened,tries,score,over,fin,meta,mode,bHit}));}
-
-function init(){
-  initUser();
-  document.getElementById('shopList').innerHTML=SHOP_ITEMS.map(x=>`<div class="box row-sb"><b style="font-size:12px">${x.n}</b><button class="btn-out" onclick="buy('${x.n}',${x.p})">${x.p} ❇️</button></div>`).join('');
-  document.getElementById('marketList').innerHTML=MARKET_ITEMS.map(x=>`<div class="box row-sb"><b style="font-size:12px">${x.n}</b><button class="btn-out" onclick="navigator.clipboard?.writeText('Админ, куплю: ${x.n} (${x.p})');toast('📋 Скопировано!')">${x.p}</button></div>`).join('');
-  setBal(getBal());updChest();initSafe();updMiniUI();renderProf();
-  const raw=localStorage.getItem(K);if(!raw)return start('normal');
+function save(fin,meta){
+  const data=JSON.stringify({board,opened,tries,score,over,fin,meta,mode,bHit});
+  localStorage.setItem(K,data);
+  syncCloud(K,data);
+}
+function applyBoardState(raw){
+  if(!raw)return start('normal');
   try{
     const st=JSON.parse(raw);board=st.board;opened=st.opened;tries=st.tries;score=st.score;over=st.over;mode=st.mode||'normal';bHit=st.bHit||0;
     document.getElementById('score').innerText=score;document.getElementById('tries').innerText=tries;document.getElementById('rMeta').innerText=st.meta||'';
-    if(over&&st.fin){if(Date.now()-st.fin>=CD){localStorage.removeItem(K);return start('normal');}render();finUI(st.fin);}else render();
+    if(over&&st.fin){
+      if(Date.now()-st.fin>=CD){localStorage.removeItem(K);syncCloud(K,null);return start('normal');}
+      localStorage.setItem(K,raw);render();finUI(st.fin);
+    }else render();
   }catch(e){start('normal');}
 }
+function init(){
+  initUser();setTheme(localStorage.getItem(THK)||'gold');
+  document.getElementById('shopList').innerHTML=SHOP_ITEMS.map(x=>`<div class="box row-sb"><b style="font-size:12px">${x.n}</b><button class="btn-out" onclick="buy('${x.n}',${x.p})">${x.p} ❇️</button></div>`).join('');
+  document.getElementById('marketList').innerHTML=MARKET_ITEMS.map(x=>`<div class="box row-sb"><b style="font-size:12px">${x.n}</b><button class="btn-out" onclick="navigator.clipboard?.writeText('Админ, куплю: ${x.n} (${x.p})');toast('📋 Скопировано!')">${x.p}</button></div>`).join('');
+  setBal(getBal());updChest();updLuck();initSafe();updMiniUI();renderProf();
+  const localRaw=localStorage.getItem(K);
+  if(localRaw)applyBoardState(localRaw);
 
+  const cs=window.Telegram?.WebApp?.CloudStorage;
+  if(cs){
+    cs.getItems([K,BK,CK,MK,SFK,LCK],(err,vals)=>{
+      if(err||!vals)return !localRaw&&start('normal');
+      if(vals[BK]&&parseFloat(vals[BK])>getBal())setBal(parseFloat(vals[BK]));
+      if(vals[CK]){localStorage.setItem(CK,vals[CK]);updChest();}
+      if(vals[MK]){localStorage.setItem(MK,vals[MK]);updMiniUI();}
+      if(vals[SFK]){localStorage.setItem(SFK,vals[SFK]);initSafe();}
+      if(vals[LCK]){localStorage.setItem(LCK,vals[LCK]);updLuck();}
+      if(vals[K])applyBoardState(vals[K]);
+      else if(!localRaw)start('normal');
+    });
+  }else if(!localRaw)start('normal');
+}
 setInterval(()=>{
   const end=new Date('2026-12-10T23:59:59').getTime()-Date.now();
   if(end>0)document.getElementById('eventCd').innerText=`${Math.floor(end/86400000)} дн. ${Math.floor((end%86400000)/3600000)} ч. ${Math.floor((end%3600000)/60000)} мин.`;
@@ -595,7 +655,6 @@ setInterval(()=>{
   if(isMiniLocked('cups'))document.getElementById('cdCups').innerText=fmt((m.cups+CD)-Date.now());else if(document.getElementById('cdCupsBox').style.display==='block')updMiniUI();
   if(isMiniLocked('coin'))document.getElementById('cdCoin').innerText=fmt((m.coin+CD)-Date.now());else if(document.getElementById('cdCoinBox').style.display==='block')updMiniUI();
 },1000);
-
 init();
 </script>
 </body>
