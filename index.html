@@ -16,7 +16,8 @@ body.th-neon{background:radial-gradient(ellipse at top,#2e1065 0%,#090514 55%,#0
 body.th-neon .box,body.th-neon .grid{border-color:rgba(192,132,252,0.5);box-shadow:0 0 18px rgba(168,85,247,0.18)}
 body.th-emerald{background:radial-gradient(ellipse at top,#064e3b 0%,#041f18 55%,#020d0a 100%)}
 body.th-emerald .box,body.th-emerald .grid{border-color:rgba(52,211,153,0.45)}
-#bgCanvas{position:fixed;inset:0;pointer-events:none;z-index:-1}.header{text-align:center;margin-bottom:8px;width:100%;max-width:360px}
+#bgCanvas{position:fixed;inset:0;pointer-events:none;z-index:-1}
+.header{text-align:center;margin-bottom:8px;width:100%;max-width:360px}
 .header h1{font-size:19px;text-transform:uppercase;letter-spacing:1.2px;background:linear-gradient(90deg,#fde047,#f59e0b,#fef08a);-webkit-background-clip:text;-webkit-text-fill-color:transparent;filter:drop-shadow(0 2px 8px rgba(245,158,11,0.35))}
 .badges{display:flex;gap:5px;justify-content:center;align-items:center;margin-top:5px;flex-wrap:wrap}
 .badge{padding:3px 9px;background:rgba(255,255,255,0.06);border:1px solid rgba(251,191,36,0.35);border-radius:16px;font-size:11px;color:#fde68a;font-weight:600;cursor:pointer;backdrop-filter:blur(6px)}
@@ -210,7 +211,10 @@ body.th-emerald .box,body.th-emerald .grid{border-color:rgba(52,211,153,0.45)}
     <div class="slot" id="slotElite" style="border-color:#ca8a04">👑 50–80 ❇️, Звёзды и VIP 👑</div>
     <button class="btn btn-elite" id="btnElite" onclick="spinWheel('elite')">Крутить Элитную за 100 ❇️</button>
   </div>
-  <div clas<div class="tab" id="tab-market">
+  <div class="sec">🛒 Магазин (Списание с кошелька + Чек)</div>
+  <div id="shopList" style="width:100%"></div>
+</div>
+<div class="tab" id="tab-market">
   <div class="sec">🕶 Чёрный рынок (За бкоины и Звёзды)</div>
   <div id="marketList" style="width:100%"></div>
 </div>
@@ -234,9 +238,6 @@ body.th-emerald .box,body.th-emerald .grid{border-color:rgba(52,211,153,0.45)}
       <button class="btn-out" id="q3Btn" onclick="doQuest('q3',1,'theme')">+1 ❇️</button>
     </div>
   </div>
-s="sec">🛒 Магазин (Списание с кошелька + Чек)</div>
-  <div id="shopList" style="width:100%"></div>
-</div>
   <div class="box">
     <b style="font-size:11px;color:#fde68a">🎨 Оформление (5 тем) и 🎵 Своя музыка:</b>
     <div class="row-sb" style="margin-top:6px">
@@ -327,7 +328,26 @@ let trIdx=0,bgmIv=null,bgmStep=0;
 function playMusic(){
   if(bgmIv){clearInterval(bgmIv);bgmIv=null;}
   const au=document.getElementById('bgAudio'),tr=TRACKS.at(trIdx);
-  document.getElementById('bgmBtn').innerText=tr.n;
+  document.gefunction tone(t){
+  if(!snd)return;
+  try{
+    if(!ctx)ctx=new(window.AudioContext||window.webkitAudioContext)();
+    if(ctx.state==='suspended')ctx.resume();
+    const n=ctx.currentTime;
+    if(t==='tick'){const o=ctx.createOscillator(),g=ctx.createGain();o.type='triangle';o.frequency.setValueAtTime(600,n);o.frequency.exponentialRampToValueAtTime(200,n+0.04);g.gain.setValueAtTime(0.15,n);g.gain.exponentialRampToValueAtTime(0.001,n+0.04);o.connect(g);g.connect(ctx.destination);o.start(n);o.stop(n+0.04);}
+    else if(t==='win'){[523.25,659.25,783.99,1046.5].forEach((f,i)=>{const o=ctx.createOscillator(),g=ctx.createGain();o.type='sine';o.frequency.setValueAtTime(f,n+i*0.07);g.gain.setValueAtTime(0.18,n+i*0.07);g.gain.exponentialRampToValueAtTime(0.001,n+i*0.07+0.35);o.connect(g);g.connect(ctx.destination);o.start(n+i*0.07);o.stop(n+i*0.07+0.35);});}
+    else if(t==='bomb'){const o=ctx.createOscillator(),g=ctx.createGain();o.type='sawtooth';o.frequency.setValueAtTime(130,n);o.frequency.exponentialRampToValueAtTime(28,n+0.5);g.gain.setValueAtTime(0.35,n);g.gain.exponentialRampToValueAtTime(0.001,n+0.5);o.connect(g);g.connect(ctx.destination);o.start(n);o.stop(n+0.5);}
+  }catch(e){}
+}
+function toast(m){const e=document.getElementById('toast');e.innerText=m;e.classList.add('show');setTimeout(()=>e.classList.remove('show'),2000);}
+
+function setTheme(t){
+  document.body.className=t==='gold'?'':'th-'+t;
+  const cols={gold:'251,191,36',snow:'147,197,253',magma:'248,113,113',neon:'192,132,252',emerald:'52,211,153'};
+  ptColor=cols[t]||'251,191,36';
+  localStorage.setItem(THK,t);
+}
+tElementById('bgmBtn').innerText=tr.n;
   if(!snd){au.pause();return;}
   if(tr.mp3){au.volume=0.45;au.play().catch(()=>toast('📂 Загрузи свой MP3 в Профиле!'));return;}
   au.pause();
