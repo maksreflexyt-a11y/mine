@@ -747,5 +747,44 @@ init();
   };
 })();
 </script>
+<script>
+(function(){
+  const miniTab=document.getElementById('tab-mini');
+  if(!miniTab)return;
+  const boxes=miniTab.querySelectorAll(':scope > .box');
+  if(boxes.length<2)return;
+
+  // Упаковываем Краш-Ракету и Взлом Сейфа во всплывающие окошки (как Ловец Кристаллов)
+  const games=[
+    {box:boxes[0],id:'rocketPop',title:'🚀 Краш-Ракета',sub:'Умножай ставку до взрыва (1 раз в 24ч)',color:'#ef4444',btnText:'Играть',btnCls:'btn'},
+    {box:boxes[1],id:'safePop',title:'🔐 Взлом Сейфа',sub:'Код от 1 до 100 за 5 попыток • Приз: +5 ❇️',color:'#38bdf8',btnText:'Взломать',btnCls:'btn'}
+  ];
+
+  games.forEach(g=>{
+    const modal=document.createElement('div');
+    modal.className='modal';
+    modal.id=g.id;
+    g.box.style.margin='0';
+    g.box.style.border='none';
+    g.box.style.boxShadow='none';
+    g.box.style.background='transparent';
+    g.box.style.padding='0';
+    modal.innerHTML=`<div class="receipt" style="border-color:${g.color};padding:14px"><div class="row-sb" style="margin-bottom:8px"><h3 style="color:#fde047;font-size:15px">${g.title}</h3><button class="btn-out" style="border-color:#78716c;color:#d6d3d1" onclick="closeMiniPop('${g.id}')">✖</button></div><div class="pop-slot"></div></div>`;
+    modal.querySelector('.pop-slot').appendChild(g.box);
+    document.body.appendChild(modal);
+
+    const card=document.createElement('div');
+    card.className='box';
+    card.style.cssText=`border-color:${g.color};background:linear-gradient(135deg,rgba(255,255,255,0.05),rgba(24,20,15,0.88))`;
+    card.innerHTML=`<div class="row-sb"><div><h3 style="font-size:14px;color:#fde68a">${g.title}</h3><p style="font-size:11px;color:#d6d3d1;margin-top:2px">${g.sub}</p></div><button class="${g.btnCls}" onclick="document.getElementById('${g.id}').classList.add('open')">${g.btnText}</button></div>`;
+    miniTab.insertBefore(card,miniTab.lastElementChild);
+  });
+
+  window.closeMiniPop=function(id){
+    if(id==='rocketPop'&&typeof rFly!=='undefined'&&rFly){toast('⚠️ Сначала забери выигрыш!');return;}
+    document.getElementById(id).classList.remove('open');
+  };
+})();
+</script>
 </body>
 </html>
