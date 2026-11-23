@@ -114,7 +114,7 @@ body.th-emerald .box,body.th-emerald .grid{border-color:rgba(52,211,153,0.45)}
     <div class="badge" id="pName" onclick="askNick()">✏️ Игрок: Гость</div>
     <div class="badge badge-bal">Кошелёк: <span id="balVal">0</span> ❇️</div>
     <div class="badge badge-mode" id="mBadge">Обычная (x1)</div>
-    <button class="snd-btn" id="bgmBtn" onclick="nextTrack()" title="Сменить музыку">🎵 Весёлая</button>
+    <button class="snd-btn" id="bgmBtn" onclick="nextTrack()" title="Сменить музыку">🎵 Аркада</button>
     <button class="snd-btn" id="sndBtn" onclick="toggleSnd()">🔊</button>
   </div>
 </div>
@@ -127,7 +127,10 @@ body.th-emerald .box,body.th-emerald .grid{border-color:rgba(52,211,153,0.45)}
     </div>
     <div class="days-row" id="daysRow"></div>
   </div>
-  <div class="stats"><span style="color:#34d399">Раунд: +<span id="score">0</span> ❇️</span><span style="color:#fbbf24">Попыток: <span id="tries">3</span></span></div>
+  <div class="stats">
+    <span style="color:#34d399">Раунд: +<span id="score">0</span> ❇️</span>
+    <span style="color:#fbbf24">Попыток: <span id="tries">3</span></span>
+  </div>
   <div class="grid" id="grid"></div>
   <div style="text-align:center;margin-top:8px">
     <div id="status" style="font-size:13px">⏳ Проверка таймера...</div>
@@ -137,29 +140,120 @@ body.th-emerald .box,body.th-emerald .grid{border-color:rgba(52,211,153,0.45)}
   <div id="rMeta" style="font-size:10px;color:#78716c;margin-top:6px"></div>
 </div>
 <div class="tab" id="tab-mini">
-  <div class="box">
+  <div class="box" style="border-color:#ef4444;background:linear-gradient(135deg,rgba(127,29,29,0.35),rgba(24,20,15,0.9))">
     <div class="row-sb">
-      <span style="font-size:12px;color:#fde68a">Ставка в Ракете (1 раз в 24ч):</span>
+      <div>
+        <h3 style="font-size:15px;color:#fca5a5">🚀 Краш-Ракета</h3>
+        <p id="cardRocketSt" style="font-size:11px;color:#d6d3d1;margin-top:3px">Умножай ставку до взрыва (1 раз в 24ч)</p>
+      </div>
+      <button class="btn" onclick="openGameModal('rocketModal')">Играть</button>
+    </div>
+  </div>
+
+  <div class="box" style="border-color:#38bdf8;background:linear-gradient(135deg,rgba(12,74,110,0.35),rgba(24,20,15,0.9))">
+    <div class="row-sb">
+      <div>
+        <h3 style="font-size:15px;color:#7dd3fc">🔐 Взлом Сейфа</h3>
+        <p id="cardSafeSt" style="font-size:11px;color:#d6d3d1;margin-top:3px">Код 000–500 за 5 попыток • Приз: <b style="color:#4ade80">+7 ❇️</b></p>
+      </div>
+      <button class="btn" style="background:linear-gradient(135deg,#0284c7,#0369a1)" onclick="openGameModal('safeModal')">Взломать</button>
+    </div>
+  </div>
+</div>
+<!-- Часть 12: Модальное окно Краш-Ракеты -->
+<div class="modal" id="rocketModal">
+  <div class="receipt" style="border-color:#ef4444">
+    <div class="row-sb" style="margin-bottom:8px">
+      <h3 style="color:#fca5a5;font-size:15px">🚀 Краш-Ракета</h3>
+      <button class="btn-out" style="border-color:#78716c;color:#d6d3d1" onclick="closeGameModal('rocketModal')">✖</button>
+    </div>
+    <div class="row-sb" style="background:rgba(0,0,0,0.35);padding:6px 8px;border-radius:8px;margin-bottom:10px">
+      <span style="font-size:11px;color:#fde68a">Ставка:</span>
       <div style="display:flex;gap:4px">
         <button class="btn-out" onclick="setBet(2,this)" style="background:#f59e0b;color:#000">2 ❇️</button>
         <button class="btn-out" onclick="setBet(5,this)">5 ❇️</button>
         <button class="btn-out" onclick="setBet(10,this)">10 ❇️</button>
       </div>
     </div>
-  </div>
-
-  <div class="box" style="border-color:#ef4444">
-    <div class="row-sb"><h3 style="font-size:14px;color:#fca5a5">🚀 Ракета (Раз в 24ч)</h3><span id="rocketMult" style="font-size:16px;font-weight:900;color:#fbbf24">x1.00</span></div>
-    <p id="rocketInfo" style="font-size:11px;color:#a8a29e;margin:4px 0 8px">Запусти ракету и нажми «Забрать» до взрыва!</p>
-    <button class="btn" id="rocketBtn" disabled style="width:100%" onclick="handleRocket()">⏳ Загрузка...</button>
+    <div id="rocketMult" style="font-size:34px;font-weight:900;color:#fbbf24;margin:8px 0">x1.00</div>
+    <p id="rocketInfo" style="font-size:12px;color:#d6d3d1;margin-bottom:10px">Запусти ракету и нажми «Забрать» до взрыва!</p>
+    <button class="btn" id="rocketBtn" disabled style="width:100%;padding:10px;font-size:13px" onclick="handleRocket()">⏳ Загрузка...</button>
     <div class="mini-cd" id="cdRocketBox">Доступно через: <span id="cdRocket">24:00:00</span></div>
   </div>
-  <div class="box" style="border-color:#38bdf8">
-    <div class="row-sb"><h3 style="font-size:14px;color:#7dd3fc">🔐 Взлом Сейфа (Раз в 24ч)</h3><span id="safeTriesBadge" class="badge">Попыток: 5</span></div>
-    <p style="font-size:11px;color:#a8a29e;margin:4px 0 6px">Код от <b>000</b> до <b>500</b> — награда <b style="color:#4ade80">+10 ❇️</b>!</p>
-    <div id="safeHint" style="text-align:center;font-size:12px;font-weight:bold;color:#fde047;margin-bottom:6px">Введи число 000–500</div>
+</div>
+
+<!-- Часть 13: Модальное окно Взлома Сейфа -->
+<div class="modal" id="safeModal">
+  <div class="receipt" style="border-color:#38bdf8">
+    <div class="row-sb" style="margin-bottom:8px">
+      <h3 style="color:#7dd3fc;font-size:15px">🔐 Взлом Сейфа</h3>
+      <button class="btn-out" style="border-color:#78716c;color:#d6d3d1" onclick="closeGameModal('safeModal')">✖</button>
+    </div>
+    <div class="row-sb" style="margin-bottom:6px">
+      <span style="font-size:11px;color:#a8a29e">Код <b>000–500</b> • Приз <b style="color:#4ade80">+7 ❇️</b></span>
+      <span id="safeTriesBadge" class="badge">Попыток: 5</span>
+    </div>
+    <div id="safeHint" style="background:rgba(0,0,0,0.4);padding:8px;border-radius:8px;font-size:13px;font-weight:bold;color:#fde047;margin:8px 0">Введи число 000–500</div>
     <div class="inp-row" style="max-width:100%;display:none" id="safeControls">
-      <input class="inp" id="safeIn" type="number" placeholder="000–500" style="text-align:center;font-size:14px;font-weight:bold">
+      <input class="inp" id="safeIn" type="number" placeholder="000–500" style="text-align:center;font-size:15px;font-weight:bold">
+      <button class="btn" onclick="guessSafe()">Взломать</button>
+    </div>
+    <div class="mini-cd" id="safeTimer">Следующий сейф через: <span id="safeCd">24:00:00</span></div>
+  </div>
+</div>
+
+<!-- Часть 14: Вкладка Магазина и рулеток -->
+<div class="tab" id="tab-shop">
+  <div class="box" style="border-color:#3b82f6;text-align:center">
+    <h3 style="font-size:14px;color:#93c5fd">🎰 Обычная Рулетка (30 ❇️)</h3>
+    <p style="font-size:10px;color:#a8a29e">Падают: Кристаллы (15–50 ❇️), Карточки и Баффы</p>
+    <div class="slot" id="slotStd" style="border-color:#1d4ed8">❓ От 15 до 50 ❇️ + Карточки ❓</div>
+    <button class="btn btn-std" id="btnStd" onclick="spinWheel('std')">Крутить за 30 ❇️</button>
+  </div>
+  <div class="box" style="border-color:#eab308;text-align:center;background:linear-gradient(145deg,rgba(66,44,6,0.65),rgba(24,20,15,0.9))">
+    <h3 style="font-size:14px;color:#fde047">👑 Элитная Рулетка (100 ❇️)</h3>
+    <p style="font-size:10px;color:#fde68a">Падают: 50–80 ❇️ • 15 / 25 / 50 / 100 ⭐️ • Префикс • Модерка • VIP</p>
+    <div class="slot" id="slotElite" style="border-color:#ca8a04">👑 50–80 ❇️, Звёзды и VIP 👑</div>
+    <button class="btn btn-elite" id="btnElite" onclick="spinWheel('elite')">Крутить Элитную за 100 ❇️</button>
+  </div>
+  <div class="sec">🛒 Магазин (Списание с кошелька + Чек)</div>
+  <div id="shopList" style="width:100%"></div>
+</div>
+
+<!-- Часть 15: Чёрный рынок и профиль -->
+<div class="tab" id="tab-market">
+  <div class="sec">🕶 Чёрный рынок (За бкоины и Звёзды)</div>
+  <div id="marketList" style="width:100%"></div>
+</div>
+
+<div class="tab" id="tab-profile">
+  <div class="box">
+    <b style="font-size:12px;color:#fde68a">👤 Твой ник в чате (для Чеков):</b>
+    <div class="inp-row" style="max-width:100%;margin-top:5px">
+      <input class="inp" id="nickIn" placeholder="Введи @username или имя...">
+      <button class="btn" onclick="saveNickInput()">Сохранить</button>
+    </div>
+  </div>
+  <div class="box" style="border-color:#10b981">
+    <div class="row-sb">
+      <div><b style="font-size:12px;color:#6ee7b7">🎡 Колесо дня (Бесплатно)</b><p id="luckDesc" style="font-size:11px;color:#d6d3d1">Проверка...</p></div>
+      <button class="btn btn-green" id="luckBtn" disabled onclick="spinDailyLuck()">Жди...</button>
+    </div>
+  </div>
+</div>
+<div class="modal" id="safeModal">
+  <div class="receipt" style="border-color:#38bdf8">
+    <div class="row-sb" style="margin-bottom:8px">
+      <h3 style="color:#7dd3fc;font-size:15px">🔐 Взлом Сейфа</h3>
+      <button class="btn-out" style="border-color:#78716c;color:#d6d3d1" onclick="closeGameModal('safeModal')">✖</button>
+    </div>
+    <div class="row-sb" style="margin-bottom:6px">
+      <span style="font-size:11px;color:#a8a29e">Код <b>000–500</b> • Приз <b style="color:#4ade80">+7 ❇️</b></span>
+      <span id="safeTriesBadge" class="badge">Попыток: 5</span>
+    </div>
+    <div id="safeHint" style="background:rgba(0,0,0,0.4);padding:8px;border-radius:8px;font-size:13px;font-weight:bold;color:#fde047;margin:8px 0">Введи число 000–500</div>
+    <div class="inp-row" style="max-width:100%;display:none" id="safeControls">
+      <input class="inp" id="safeIn" type="number" placeholder="000–500" style="text-align:center;font-size:15px;font-weight:bold">
       <button class="btn" onclick="guessSafe()">Взломать</button>
     </div>
     <div class="mini-cd" id="safeTimer">Следующий сейф через: <span id="safeCd">24:00:00</span></div>
@@ -172,22 +266,20 @@ body.th-emerald .box,body.th-emerald .grid{border-color:rgba(52,211,153,0.45)}
     <div class="slot" id="slotStd" style="border-color:#1d4ed8">❓ От 15 до 50 ❇️ + Карточки ❓</div>
     <button class="btn btn-std" id="btnStd" onclick="spinWheel('std')">Крутить за 30 ❇️</button>
   </div>
-
   <div class="box" style="border-color:#eab308;text-align:center;background:linear-gradient(145deg,rgba(66,44,6,0.65),rgba(24,20,15,0.9))">
     <h3 style="font-size:14px;color:#fde047">👑 Элитная Рулетка (100 ❇️)</h3>
     <p style="font-size:10px;color:#fde68a">Падают: 50–80 ❇️ • 15 / 25 / 50 / 100 ⭐️ • Префикс • Модерка • VIP</p>
     <div class="slot" id="slotElite" style="border-color:#ca8a04">👑 50–80 ❇️, Звёзды и VIP 👑</div>
     <button class="btn btn-elite" id="btnElite" onclick="spinWheel('elite')">Крутить Элитную за 100 ❇️</button>
   </div>
-
   <div class="sec">🛒 Магазин (Списание с кошелька + Чек)</div>
   <div id="shopList" style="width:100%"></div>
 </div>
-
 <div class="tab" id="tab-market">
   <div class="sec">🕶 Чёрный рынок (За бкоины и Звёзды)</div>
   <div id="marketList" style="width:100%"></div>
 </div>
+
 <div class="tab" id="tab-profile">
   <div class="box">
     <b style="font-size:12px;color:#fde68a">👤 Твой ник в чате (для Чеков):</b>
@@ -196,14 +288,12 @@ body.th-emerald .box,body.th-emerald .grid{border-color:rgba(52,211,153,0.45)}
       <button class="btn" onclick="saveNickInput()">Сохранить</button>
     </div>
   </div>
-
   <div class="box" style="border-color:#10b981">
     <div class="row-sb">
       <div><b style="font-size:12px;color:#6ee7b7">🎡 Колесо дня (Бесплатно)</b><p id="luckDesc" style="font-size:11px;color:#d6d3d1">Проверка...</p></div>
       <button class="btn btn-green" id="luckBtn" disabled onclick="spinDailyLuck()">Жди...</button>
     </div>
   </div>
-
   <div class="box">
     <b style="font-size:11px;color:#fde68a">🎨 Оформление (5 тем) и 🎵 Своя музыка:</b>
     <div class="row-sb" style="margin-top:6px">
@@ -215,10 +305,7 @@ body.th-emerald .box,body.th-emerald .grid{border-color:rgba(52,211,153,0.45)}
       <button class="btn-out" style="flex:1" onclick="setTheme('neon')">🌌 Неон</button>
       <button class="btn-out" style="flex:1" onclick="setTheme('emerald')">🌿 Изумруд</button>
     </div>
-    <label class="btn-out" style="display:block;text-align:center;margin-top:6px;cursor:pointer">
-      📂 Включить свой MP3 с телефона
-      <input type="file" accept="audio/*" style="display:none" onchange="loadUserMP3(this)">
-    </label>
+    <label class="btn-out" style="display:block;text-align:center;margin-top:6px;cursor:pointer">📂 Включить свой MP3 с телефона<input type="file" accept="audio/*" style="display:none" onchange="loadUserMP3(this)"></label>
   </div>
   <div class="box" style="text-align:center;border-color:#f59e0b;font-size:12px">⏳ До финала (10 дек): <b id="eventCd">...</b></div>
   <div class="stat-grid">
@@ -233,10 +320,8 @@ body.th-emerald .box,body.th-emerald .grid{border-color:rgba(52,211,153,0.45)}
     <div class="ach" id="ach3"><b>💎 Охотник</b>Найти Джекпот</div>
     <div class="ach" id="ach4"><b>💰 Магнат</b>Накопить 50+ ❇️</div>
   </div>
-  <div class="sec">🧾 Мои чеки</div>
-  <div id="recHist" style="width:100%"></div>
-  <div class="sec">📜 История</div>
-  <div class="log-box" id="opLog">Пусто</div>
+  <div class="sec">🧾 Мои чеки</div><div id="recHist" style="width:100%"></div>
+  <div class="sec">📜 История</div><div class="log-box" id="opLog">Пусто</div>
 </div>
 <div class="tab" id="tab-dev">
   <div class="box" style="text-align:center;padding:30px 16px;border-color:#f59e0b;margin-top:20px">
@@ -258,17 +343,13 @@ body.th-emerald .box,body.th-emerald .grid{border-color:rgba(52,211,153,0.45)}
 <script>
 let ptColor='251,191,36';
 (function(){
-  const c=document.getElementById('bgCanvas'),x=c.getContext('2d');
-  let w,h,pts=[];
+  const c=document.getElementById('bgCanvas'),x=c.getContext('2d');let w,h,pts=[];
   function res(){w=c.width=window.innerWidth;h=c.height=window.innerHeight;}
   window.addEventListener('resize',res);res();
   for(let i=0;i<28;i++)pts.push({x:Math.random()*w,y:Math.random()*h,r:Math.random()*2+0.8,vy:-(Math.random()*0.35+0.1),a:Math.random()*0.6+0.2});
   function draw(){
     x.clearRect(0,0,w,h);
-    pts.forEach(p=>{
-      p.y+=p.vy;if(p.y<0){p.y=h;p.x=Math.random()*w;}
-      x.beginPath();x.arc(p.x,p.y,p.r,0,Math.PI*2);x.fillStyle=`rgba(${ptColor},${p.a})`;x.fill();
-    });
+    pts.forEach(p=>{p.y+=p.vy;if(p.y<0){p.y=h;p.x=Math.random()*w;}x.beginPath();x.arc(p.x,p.y,p.r,0,Math.PI*2);x.fillStyle=`rgba(${ptColor},${p.a})`;x.fill();});
     requestAnimationFrame(draw);
   }
   draw();
@@ -276,18 +357,16 @@ let ptColor='251,191,36';
 
 const CD=86400000,K='mp_lock_board',BK='mp_lock_bal',UK='mp_lock_used',RK='m_rec',SK='m_stat',LK='m_log',CK='mp_lock_chest',SFK='mp_lock_safe',NK='m_nick',MK='mp_lock_mini',LCK='mp_lock_luck',THK='m_theme';
 let snd=true,ctx=null,tag='Гость',lastRec='',bet=2,synced=false;
+
 function syncCloud(k,v){
-  try{
-    const cs=window.Telegram?.WebApp?.CloudStorage;
-    if(cs){if(v===null)cs.removeItem(k);else cs.setItem(k,String(v));}
-  }catch(e){}
+  try{const cs=window.Telegram?.WebApp?.CloudStorage;if(cs){if(v===null)cs.removeItem(k);else cs.setItem(k,String(v));}}catch(e){}
 }
 const SHOP_ITEMS=[
-  {n:'Снятие лимитов (12ч)',p:5},{n:'Вечный Префикс',p:10},{n:'Аватарка группы (2д)',p:20},
-  {n:'Модератор (5 дней)',p:30},{n:'Своё правило чата (24ч)',p:50},{n:'Временный Админ (3д)',p:70},
-  {n:'50 Звёзд Telegram ⭐️',p:130},{n:'100 Звёзд Telegram ⭐️',p:180},{n:'150 Звёзд Telegram ⭐️',p:230},
-  {n:'250 Звёзд ⭐️ или NFT',p:280},{n:'TG Premium (3 мес)',p:350},{n:'Редкий NFT / Prem 6м',p:420},
-  {n:'👑 АДМИНКА НАВСЕГДА + TG Prem 12 мес',p:500}
+  {n:'Снятие лимитов (12ч)',p:8},{n:'Вечный Префикс',p:15},{n:'Аватарка группы (2д)',p:30},
+  {n:'Модератор (5 дней)',p:45},{n:'Своё правило чата (24ч)',p:70},{n:'Временный Админ (3д)',p:100},
+  {n:'50 Звёзд Telegram ⭐️',p:160},{n:'100 Звёзд Telegram ⭐️',p:220},{n:'150 Звёзд Telegram ⭐️',p:280},
+  {n:'250 Звёзд ⭐️ или NFT',p:350},{n:'TG Premium (3 мес)',p:420},{n:'Редкий NFT / Prem 6м',p:500},
+  {n:'👑 АДМИНКА НАВСЕГДА + TG Prem 12 мес',p:650}
 ];
 const MARKET_ITEMS=[
   {n:'Карта «Хайролл» (x1.5)',p:'1 500 🪙'},{n:'VIP-Пропуск (7 дней)',p:'6 500 🪙'},{n:'«Чёрная карта» (1 бомба)',p:'5 000 🪙'},
@@ -295,9 +374,9 @@ const MARKET_ITEMS=[
   {n:'«Подкинуть мину» врагу',p:'1 200 🪙'},{n:'«Сканер сапёра»',p:'2 000 🪙'},{n:'«Второй шанс» (Щит)',p:'2 500 🪙'},{n:'«Украсть попытку»',p:'3 500 🪙'}
 ];
 const TRACKS=[
-  {n:'🎉 Весёлая',spd:210,lead:[523.25,659.25,783.99,1046.5,783.99,659.25,587.33,698.46,880.00,1046.5,880.00,698.46,523.25,659.25,783.99,659.25],bass:[130.81,0,196.00,0,146.83,0,220.00,0]},
-  {n:'🔥 Драйв',spd:165,lead:[440.00,440.00,523.25,659.25,587.33,523.25,493.88,392.00,440.00,523.25,659.25,783.99,659.25,587.33,523.25,493.88],bass:[110.00,110.00,164.81,110.00,98.00,98.00,146.83,98.00]},
-  {n:'🌙 Чилл',spd:420,lead:[392.00,493.88,587.33,739.99,659.25,587.33,493.88,440.00],bass:[98.00,0,146.83,0,110.00,0,164.81,0]},
+  {n:'🎉 Аркада',spd:190,lead:[523.25,659.25,783.99,1046.5,783.99,659.25,587.33,698.46,880.00,1046.5,880.00,698.46,523.25,659.25,783.99,659.25,493.88,587.33,783.99,987.77,783.99,587.33,523.25,659.25,783.99,1046.5,1174.66,1046.5,783.99,659.25,587.33,523.25],bass:[130.81,130.81,196.00,130.81,146.83,146.83,220.00,146.83,130.81,130.81,196.00,130.81,123.47,123.47,196.00,123.47,130.81,130.81,196.00,130.81,146.83,146.83,220.00,146.83,196.00,196.00,246.94,196.00,130.81,196.00,130.81,0]},
+  {n:'🔥 Кибер-бит',spd:160,lead:[440.00,440.00,523.25,659.25,587.33,523.25,493.88,392.00,440.00,523.25,659.25,783.99,659.25,587.33,523.25,493.88,349.23,440.00,523.25,698.46,659.25,587.33,523.25,440.00,392.00,493.88,587.33,783.99,659.25,587.33,493.88,440.00],bass:[110.00,110.00,164.81,110.00,98.00,98.00,146.83,98.00,110.00,110.00,164.81,110.00,87.31,87.31,130.81,87.31,87.31,87.31,130.81,87.31,98.00,98.00,146.83,98.00,110.00,164.81,110.00,164.81,110.00,164.81,110.00,0]},
+  {n:'🌙 Космос',spd:360,lead:[392.00,493.88,587.33,739.99,659.25,587.33,493.88,440.00,329.63,392.00,493.88,659.25,587.33,493.88,440.00,392.00,349.23,440.00,523.25,659.25,587.33,523.25,440.00,392.00,493.88,587.33,739.99,880.00,739.99,587.33,493.88,392.00],bass:[98.00,0,146.83,0,110.00,0,164.81,0,82.41,0,123.47,0,98.00,0,146.83,0,87.31,0,130.81,0,98.00,0,146.83,0,123.47,0,185.00,0,98.00,0,146.83,0]},
   {n:'📂 Свой MP3',mp3:true}
 ];
 let trIdx=0,bgmIv=null,bgmStep=0;
@@ -315,9 +394,10 @@ function playMusic(){
     bgmIv=setInterval(()=>{
       if(!snd||!ctx)return;
       if(ctx.state==='suspended')ctx.resume();
-      const now=ctx.currentTime,f=tr.lead.at(bgmStep%tr.lead.length),b=tr.bass.at(bgmStep%tr.bass.length);bgmStep++;
-      if(f>0){const o=ctx.createOscillator(),g=ctx.createGain();o.type='triangle';o.frequency.setValueAtTime(f,now);g.gain.setValueAtTime(0.045,now);g.gain.exponentialRampToValueAtTime(0.001,now+0.18);o.connect(g);g.connect(ctx.destination);o.start(now);o.stop(now+0.19);}
-      if(b>0){const o2=ctx.createOscillator(),g2=ctx.createGain();o2.type='sine';o2.frequency.setValueAtTime(b,now);g2.gain.setValueAtTime(0.07,now);g2.gain.exponentialRampToValueAtTime(0.001,now+0.24);o2.connect(g2);g2.connect(ctx.destination);o2.start(now);o2.stop(now+0.25);}
+      const now=ctx.currentTime,idx=bgmStep%tr.lead.length,f=tr.lead.at(idx),b=tr.bass.at(idx);bgmStep++;
+      if(f>0){const o=ctx.createOscillator(),g=ctx.createGain();o.type='triangle';o.frequency.setValueAtTime(f,now);g.gain.setValueAtTime(0.045,now);g.gain.exponentialRampToValueAtTime(0.001,now+0.22);o.connect(g);g.connect(ctx.destination);o.start(now);o.stop(now+0.23);}
+      if(b>0){const o2=ctx.createOscillator(),g2=ctx.createGain();o2.type='sine';o2.frequency.setValueAtTime(b,now);g2.gain.setValueAtTime(0.075,now);g2.gain.exponentialRampToValueAtTime(0.001,now+0.26);o2.connect(g2);g2.connect(ctx.destination);o2.start(now);o2.stop(now+0.27);}
+      if(idx%4===0){const ok=ctx.createOscillator(),gk=ctx.createGain();ok.type='sine';ok.frequency.setValueAtTime(110,now);ok.frequency.exponentialRampToValueAtTime(35,now+0.09);gk.gain.setValueAtTime(0.09,now);gk.gain.exponentialRampToValueAtTime(0.001,now+0.09);ok.connect(gk);gk.connect(ctx.destination);ok.start(now);ok.stop(now+0.1);}
     },tr.spd);
   }catch(e){}
 }
@@ -387,6 +467,9 @@ function openChest(){
   else if(d===5){localStorage.removeItem(K);syncCloud(K,null);log('🎁 Сундук Д5: Хайролл');toast('🔥 Запущен ХАЙРОЛЛ!');start('high');}
   else if(d===7){log('🎁 Сундук Д7: VIP 3д');makeRec('Сундук (День 7): VIP-карта на 3 дня',0,'Ежедневка');}
 }
+function openGameModal(id){document.getElementById(id).classList.add('open');}
+function closeGameModal(id){if(id==='rocketModal'&&rFly){toast('⚠️ Сначала забери выигрыш!');return;}document.getElementById(id).classList.remove('open');}
+
 const getMiniCD=()=>JSON.parse(localStorage.getItem(MK)||'{"rocket":0}');
 function setMiniCD(game){const m=getMiniCD();m[game]=Date.now();const s=JSON.stringify(m);localStorage.setItem(MK,s);syncCloud(MK,s);updMiniUI();}
 function isMiniLocked(game){return !synced||(Date.now()-(getMiniCD()[game]||0))<CD;}
@@ -396,6 +479,7 @@ function updMiniUI(){
   const rLock=isMiniLocked('rocket');
   if(!rFly){document.getElementById('rocketBtn').disabled=rLock;document.getElementById('rocketBtn').innerText=rLock?'⏳ Сыграно (Жди 24ч)':`🚀 Запустить за ${bet} ❇️`;}
   document.getElementById('cdRocketBox').style.display=rLock?'block':'none';
+  const cEl=document.getElementById('cardRocketSt');if(cEl)cEl.innerText=rLock?'⏳ Сыграно • Жди 24ч':'✅ Доступно • Умножай ставку до взрыва!';
 }
 
 function setBet(v,btn){
@@ -435,13 +519,18 @@ function initSafe(){
   }
   updSafeUI(sf);
 }
-function updSafeUI(sf){document.getElementById('safeTriesBadge').innerText=`Попыток: ${sf.tries}`;document.getElementById('safeControls').style.display=sf.done?'none':'flex';document.getElementById('safeTimer').style.display=sf.done?'block':'none';}
+function updSafeUI(sf){
+  document.getElementById('safeTriesBadge').innerText=`Попыток: ${sf.tries}`;
+  document.getElementById('safeControls').style.display=sf.done?'none':'flex';
+  document.getElementById('safeTimer').style.display=sf.done?'block':'none';
+  const cEl=document.getElementById('cardSafeSt');if(cEl)cEl.innerHTML=sf.done?'⏳ Взломано/закрыто • Жди 24ч':'✅ Доступно • Приз: <b style="color:#4ade80">+7 ❇️</b>';
+}
 function guessSafe(){
   if(!synced)return;
   let sf=JSON.parse(localStorage.getItem(SFK));if(sf.done)return;
   const val=parseInt(document.getElementById('safeIn').value,10);if(isNaN(val)||val<0||val>500){toast('Введи число 000–500');return;}
   document.getElementById('safeIn').value='';sf.tries--;
-  if(val===sf.code){sf.done=true;sf.fin=Date.now();setBal(getBal()+10);tone('win');document.getElementById('safeHint').innerHTML=`🎉 <b>ВЗЛОМАНО!</b> Код ${String(sf.code).padStart(3,'0')}! +10 ❇️`;log('🔐 Сейф: +10 ❇️');}
+  if(val===sf.code){sf.done=true;sf.fin=Date.now();setBal(getBal()+7);tone('win');document.getElementById('safeHint').innerHTML=`🎉 <b>ВЗЛОМАНО!</b> Код ${String(sf.code).padStart(3,'0')}! +7 ❇️`;log('🔐 Сейф: +7 ❇️');}
   else if(sf.tries<=0){sf.done=true;sf.fin=Date.now();tone('bomb');document.getElementById('safeHint').innerHTML=`💥 Код был: <b>${String(sf.code).padStart(3,'0')}</b>`;}
   else{tone('tick');document.getElementById('safeHint').innerText=val<sf.code?`⬆️ БОЛЬШЕ чем ${val}`:`⬇️ МЕНЬШЕ чем ${val}`;}
   const s=JSON.stringify(sf);localStorage.setItem(SFK,s);syncCloud(SFK,s);updSafeUI(sf);
