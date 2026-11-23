@@ -872,138 +872,153 @@ init();
   },1000);
 })();
 </script>
-  <div class="modal" id="csModal">
-  <div class="receipt" style="border-color:#a855f7;padding:14px">
+  <style>
+@keyframes caseShake{0%,100%{transform:rotate(0) scale(1)}20%{transform:rotate(-8deg) scale(1.08)}40%{transform:rotate(8deg) scale(1.12)}60%{transform:rotate(-10deg) scale(1.15)}80%{transform:rotate(10deg) scale(1.18)}}
+@keyframes winPop{0%{transform:scale(0.85)}50%{transform:scale(1.14)}100%{transform:scale(1.06)}}
+.cs-box-anim{font-size:56px;display:inline-block;animation:caseShake 0.8s ease-in-out;filter:drop-shadow(0 0 18px rgba(250,204,21,0.85))}
+.cs-win-card{animation:winPop 0.5s ease-out forwards;box-shadow:0 0 20px rgba(250,204,21,0.8)!important;border:1px solid #fde047!important;z-index:4}
+</style>
+
+<div class="modal" id="csModal">
+  <div class="receipt" style="border-color:#eab308;padding:13px;background:radial-gradient(circle at top,#241b12,#110e0a)">
     <div class="row-sb" style="margin-bottom:8px">
-      <h3 style="color:#e9d5ff;font-size:15px">📦 Кейсы CS:GO</h3>
+      <h3 style="color:#fde047;font-size:15px">📦 Кейсы Удачи</h3>
       <button class="btn-out" style="border-color:#78716c;color:#d6d3d1" onclick="closeCsCase()">✖</button>
     </div>
-    <div class="row-sb" style="margin-bottom:8px">
-      <button class="btn-out cs-tab" id="csTab1" onclick="selCsCase(0)" style="flex:1;background:#a855f7;color:#fff;border-color:#a855f7">🥉 Бронзовый (15 ❇️)</button>
-      <button class="btn-out cs-tab" id="csTab2" onclick="selCsCase(1)" style="flex:1">💎 Элитный (60 ❇️)</button>
+    <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:5px;margin-bottom:8px">
+      <button class="btn-out cs-tab" id="csTab0" onclick="selCsCase(0)" style="background:#3b82f6;color:#fff;border-color:#3b82f6">⚪ Обычный (25 ❇️)</button>
+      <button class="btn-out cs-tab" id="csTab1" onclick="selCsCase(1)">🔵 Редкий (50 ❇️)</button>
+      <button class="btn-out cs-tab" id="csTab2" onclick="selCsCase(2)">🟣 Эпик (100 ❇️)</button>
+      <button class="btn-out cs-tab" id="csTab3" onclick="selCsCase(3)">🟡 Легенда (200 ❇️)</button>
     </div>
-    <p id="csPoolInfo" style="font-size:10px;color:#d6d3d1;margin-bottom:8px">Внутри: 5–25 ❇️, Снятие лимитов, Закреп и Вечный Префикс</p>
-    <div style="position:relative;width:100%;height:78px;background:#09070d;border:2px solid #7e22ce;border-radius:10px;overflow:hidden;margin-bottom:10px">
-      <div style="position:absolute;top:0;bottom:0;left:50%;width:2px;background:#ef4444;box-shadow:0 0 8px #ef4444;z-index:5"></div>
+    <p id="csPoolInfo" style="font-size:10px;color:#fde68a;margin-bottom:8px;min-height:24px"></p>
+    <div id="csStage" style="position:relative;width:100%;height:90px;background:#090705;border:2px solid #ca8a04;border-radius:12px;overflow:hidden;margin-bottom:10px;box-shadow:inset 0 0 22px rgba(0,0,0,0.9)">
+      <div style="position:absolute;inset:0;background:linear-gradient(90deg,rgba(9,7,5,0.92) 0%,transparent 22%,transparent 78%,rgba(9,7,5,0.92) 100%);pointer-events:none;z-index:4"></div>
+      <div style="position:absolute;top:0;bottom:0;left:50%;width:2px;background:#ef4444;box-shadow:0 0 10px #ef4444;z-index:6"></div>
+      <div id="csBoxIntro" style="display:none;position:absolute;inset:0;align-items:center;justify-content:center;background:rgba(9,7,5,0.86);z-index:7"><span class="cs-box-anim" id="csBoxIcon">📦</span></div>
       <div id="csTrack" style="display:flex;align-items:center;height:100%;will-change:transform"></div>
     </div>
-    <button class="btn" id="csOpenBtn" style="width:100%;padding:10px;font-size:13px;background:linear-gradient(135deg,#9333ea,#6b21a8)" onclick="openCsCase()">🔑 Открыть за 15 ❇️</button>
+    <button class="btn" id="csOpenBtn" style="width:100%;padding:10px;font-size:13px" onclick="openCsCase()">🔑 Открыть за 25 ❇️</button>
   </div>
 </div>
-
 <script>
 (function(){
   const CASES=[
-    {
-      name:'Бронзовый кейс',cost:15,
-      info:'Внутри: 5–25 ❇️, Снятие лимитов, Закреп и Вечный Префикс',
-      items:[
-        {n:'5 ❇️',c:5,w:32,col:'#64748b',ico:'❇️'},
-        {n:'10 ❇️',c:10,w:26,col:'#3b82f6',ico:'❇️'},
-        {n:'18 ❇️',c:18,w:16,col:'#8b5cf6',ico:'❇️'},
-        {n:'Снятие лимитов (12ч)',c:0,w:12,col:'#8b5cf6',ico:'⚡'},
-        {n:'25 ❇️',c:25,w:7,col:'#ec4899',ico:'💎'},
-        {n:'Закреп поста (24ч)',c:0,w:5,col:'#ec4899',ico:'📌'},
-        {n:'Вечный Префикс',c:0,w:2,col:'#f59e0b',ico:'🏷'}
-      ]
-    },
-    {
-      name:'Элитный кейс',cost:60,
-      info:'Внутри: 30–90 ❇️, 25–100 ⭐️, Админ (3д) и NFT Подарок 🎁',
-      items:[
-        {n:'30 ❇️',c:30,w:34,col:'#3b82f6',ico:'❇️'},
-        {n:'45 ❇️',c:45,w:24,col:'#3b82f6',ico:'❇️'},
-        {n:'70 ❇️',c:70,w:15,col:'#8b5cf6',ico:'💎'},
-        {n:'25 Звёзд ⭐️',c:0,w:11,col:'#8b5cf6',ico:'⭐️'},
-        {n:'90 ❇️',c:90,w:7,col:'#ec4899',ico:'💎'},
-        {n:'50 Звёзд ⭐️',c:0,w:4.5,col:'#ec4899',ico:'🌟'},
-        {n:'Временный Админ (3д)',c:0,w:2,col:'#ef4444',ico:'🛡'},
-        {n:'100 Звёзд ⭐️',c:0,w:1,col:'#ef4444',ico:'💫'},
-        {n:'Telegram Gift / NFT 🎁',c:0,w:1.5,col:'#f59e0b',ico:'🎁'}
-      ]
-    }
+    {name:'Обычный кейс',cost:25,box:'📦',col:'#3b82f6',info:'Падают: 10–35 ❇️ (35 ❇️ редко!), Щит и Сканер сапёра',items:[
+      {n:'10 ❇️',c:10,w:42,col:'#64748b',bg:'rgba(100,116,139,0.2)',ico:'❇️'},
+      {n:'15 ❇️',c:15,w:28,col:'#3b82f6',bg:'rgba(59,130,246,0.22)',ico:'❇️'},
+      {n:'🛡 Бафф «Щит сапёра»',c:0,w:14,col:'#3b82f6',bg:'rgba(59,130,246,0.26)',ico:'🛡'},
+      {n:'🔍 Бафф «Сканер сапёра»',c:0,w:9,col:'#a855f7',bg:'rgba(168,85,247,0.26)',ico:'🔍'},
+      {n:'22 ❇️',c:22,w:5,col:'#a855f7',bg:'rgba(168,85,247,0.28)',ico:'💎'},
+      {n:'35 ❇️',c:35,w:2,col:'#fbbf24',bg:'rgba(251,191,36,0.34)',ico:'💎'}
+    ]},
+    {name:'Редкий кейс',cost:50,box:'🧰',col:'#0ea5e9',info:'Падают: 20–75 ❇️ (75 ❇️ редко!), ХАЙРОЛЛ и VIP (3 дня)',items:[
+      {n:'20 ❇️',c:20,w:42,col:'#3b82f6',bg:'rgba(59,130,246,0.2)',ico:'❇️'},
+      {n:'32 ❇️',c:32,w:27,col:'#3b82f6',bg:'rgba(59,130,246,0.25)',ico:'❇️'},
+      {n:'🛡 Бафф «Щит сапёра»',c:0,w:14,col:'#a855f7',bg:'rgba(168,85,247,0.24)',ico:'🛡'},
+      {n:'🔥 Карточка ХАЙРОЛЛ',c:0,w:9,col:'#ec4899',bg:'rgba(236,72,153,0.26)',ico:'🔥'},
+      {n:'48 ❇️',c:48,w:4.5,col:'#ec4899',bg:'rgba(236,72,153,0.3)',ico:'💎'},
+      {n:'75 ❇️',c:75,w:2,col:'#fbbf24',bg:'rgba(251,191,36,0.34)',ico:'💎'},
+      {n:'👑 VIP-карта (3 дня)',c:0,w:1.5,col:'#fbbf24',bg:'rgba(251,191,36,0.38)',ico:'👑'}
+    ]},
+    {name:'Эпик кейс',cost:100,box:'🔮',col:'#a855f7',info:'Падают: 40–150 ❇️ (150 ❇️ редко!), Чёрная карта и VIP (7д)',items:[
+      {n:'40 ❇️',c:40,w:43,col:'#3b82f6',bg:'rgba(59,130,246,0.22)',ico:'❇️'},
+      {n:'65 ❇️',c:65,w:26,col:'#a855f7',bg:'rgba(168,85,247,0.24)',ico:'💎'},
+      {n:'🔥 Карточка ХАЙРОЛЛ',c:0,w:14,col:'#a855f7',bg:'rgba(168,85,247,0.28)',ico:'🔥'},
+      {n:'🖤 Чёрная карточка',c:0,w:9.5,col:'#ec4899',bg:'rgba(236,72,153,0.3)',ico:'🖤'},
+      {n:'95 ❇️',c:95,w:4,col:'#ec4899',bg:'rgba(236,72,153,0.34)',ico:'💎'},
+      {n:'150 ❇️',c:150,w:2,col:'#fbbf24',bg:'rgba(251,191,36,0.36)',ico:'💰'},
+      {n:'👑 VIP-карта (7 дней)',c:0,w:1.5,col:'#fbbf24',bg:'rgba(251,191,36,0.4)',ico:'👑'}
+    ]},
+    {name:'Легендарный кейс',cost:200,box:'👑',col:'#eab308',info:'Падают: 80–320 ❇️ (320 ❇️ редко!), Чёрная карта и VIP (14/30д)',items:[
+      {n:'80 ❇️',c:80,w:44,col:'#a855f7',bg:'rgba(168,85,247,0.24)',ico:'💎'},
+      {n:'130 ❇️',c:130,w:26,col:'#a855f7',bg:'rgba(168,85,247,0.28)',ico:'💎'},
+      {n:'🖤 Чёрная карточка',c:0,w:15,col:'#ec4899',bg:'rgba(236,72,153,0.28)',ico:'🖤'},
+      {n:'190 ❇️',c:190,w:8,col:'#ec4899',bg:'rgba(236,72,153,0.32)',ico:'💰'},
+      {n:'👑 VIP-карта (14 дней)',c:0,w:3.5,col:'#fbbf24',bg:'rgba(251,191,36,0.36)',ico:'👑'},
+      {n:'320 ❇️',c:320,w:2,col:'#fbbf24',bg:'rgba(251,191,36,0.4)',ico:'🏆'},
+      {n:'👑 VIP-карта (30 дней)',c:0,w:1.5,col:'#ef4444',bg:'rgba(239,68,68,0.38)',ico:'👑'}
+    ]}
   ];
   let curCase=0,csSpin=false;
-
   const miniTab=document.getElementById('tab-mini');
   if(miniTab){
-    const card=document.createElement('div');
-    card.className='box';
-    card.style.cssText='border-color:#a855f7;background:linear-gradient(135deg,rgba(88,28,135,0.35),rgba(24,20,15,0.88))';
-    card.innerHTML=`<div class="row-sb"><div><h3 style="font-size:14px;color:#e9d5ff">📦 Кейсы CS:GO</h3><p style="font-size:11px;color:#d6d3d1;margin-top:2px">Рулетка с лентой • Префиксы, Звёзды и NFT</p></div><button class="btn" style="background:linear-gradient(135deg,#9333ea,#6b21a8)" onclick="openCsModal()">Открыть</button></div>`;
+    const card=document.createElement('div');card.className='box';
+    card.style.cssText='border-color:#eab308;background:linear-gradient(135deg,rgba(161,98,7,0.35),rgba(24,20,15,0.9))';
+    card.innerHTML=`<div class="row-sb"><div><h3 style="font-size:14px;color:#fde047">📦 Кейсы Удачи (4 вида)</h3><p style="font-size:11px;color:#d6d3d1;margin-top:2px">Кристаллы, Карточки, Баффы и VIP-карты</p></div><button class="btn" onclick="openCsModal()">Открыть</button></div>`;
     miniTab.appendChild(card);
   }
-
   function renderStrip(pool){
-    const tr=document.getElementById('csTrack');
-    tr.style.transition='none';
-    tr.style.transform='translateX(0px)';
-    tr.innerHTML=pool.map(it=>`<div style="min-width:86px;height:66px;margin:0 3px;background:#181424;border-bottom:3px solid ${it.col};border-radius:8px;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:4px;text-align:center"><span style="font-size:20px">${it.ico}</span><b style="font-size:9px;color:#f8fafc;margin-top:3px;line-height:1.1">${it.n}</b></div>`).join('');
+    const tr=document.getElementById('csTrack');tr.style.transition='none';tr.style.transform='translateX(0px)';
+    tr.innerHTML=pool.map((it,idx)=>`<div id="csItem_${idx}" style="min-width:86px;height:72px;margin:0 3px;background:linear-gradient(180deg,#1c1712,${it.bg});border-bottom:3px solid ${it.col};border-radius:9px;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:4px;text-align:center;box-shadow:inset 0 1px 0 rgba(255,255,255,0.12)"><span style="font-size:21px">${it.ico}</span><b style="font-size:9px;color:#f8fafc;margin-top:4px;line-height:1.1">${it.n}</b></div>`).join('');
   }
-
+  function burstParticles(){
+    const st=document.getElementById('csStage');
+    for(let i=0;i<16;i++){
+      const p=document.createElement('div');p.innerText=['✨','❇️','⭐','💫'][i%4];
+      p.style.cssText='position:absolute;left:50%;top:50%;font-size:14px;pointer-events:none;z-index:8;transition:all 0.8s ease-out';
+      st.appendChild(p);const ang=(Math.PI*2/16)*i,dist=45+Math.random()*50;
+      requestAnimationFrame(()=>{p.style.transform=`translate(${Math.cos(ang)*dist}px,${Math.sin(ang)*dist}px) scale(0.3)`;p.style.opacity='0';});
+      setTimeout(()=>p.remove(),850);
+    }
+  }
   window.selCsCase=function(idx){
-    if(csSpin)return;
-    curCase=idx;const cs=CASES[idx];
-    document.getElementById('csTab1').style.background=idx===0?'#a855f7':'rgba(245,158,11,0.12)';
-    document.getElementById('csTab1').style.color=idx===0?'#fff':'#fcd34d';
-    document.getElementById('csTab2').style.background=idx===1?'#a855f7':'rgba(245,158,11,0.12)';
-    document.getElementById('csTab2').style.color=idx===1?'#fff':'#fcd34d';
-    document.getElementById('csPoolInfo').innerText=cs.info;
-    document.getElementById('csOpenBtn').innerText=`🔑 Открыть за ${cs.cost} ❇️`;
-    const preview=[];for(let i=0;i<12;i++)preview.push(cs.items[i%cs.items.length]);
-    renderStrip(preview);
+    if(csSpin)return;curCase=idx;const cs=CASES[idx];
+    for(let i=0;i<4;i++){const b=document.getElementById('csTab'+i);if(!b)continue;b.style.background=(i===idx)?cs.col:'rgba(245,158,11,0.12)';b.style.borderColor=(i===idx)?cs.col:'#f59e0b';b.style.color=(i===idx)?'#fff':'#fcd34d';}
+    document.getElementById('csPoolInfo').innerText=cs.info;document.getElementById('csOpenBtn').innerText=`🔑 Открыть за ${cs.cost} ❇️`;
+    const preview=[];for(let i=0;i<12;i++)preview.push(cs.items[i%cs.items.length]);renderStrip(preview);
   };
-
   window.openCsModal=function(){selCsCase(curCase);document.getElementById('csModal').classList.add('open');};
-  window.closeCsCase=function(){if(csSpin){toast('⏳ Дождись остановки ленты!');return;}document.getElementById('csModal').classList.remove('open');};
-
+  window.closeCsCase=function(){if(csSpin){toast('⏳ Дождись открытия кейса!');return;}document.getElementById('csModal').classList.remove('open');};
   window.openCsCase=function(){
-    if(csSpin)return;
-    const cs=CASES[curCase];
+    if(csSpin)return;const cs=CASES[curCase];
     if(getBal()<cs.cost){toast(`❌ Нужно ${cs.cost} ❇️`);return;}
-    setBal(getBal()-cs.cost);
-    csSpin=true;
-    const btn=document.getElementById('csOpenBtn');
-    btn.disabled=true;btn.innerText='🎰 Крутим кейс...';
-
-    // Выбор приза по весам
+    setBal(getBal()-cs.cost);csSpin=true;const btn=document.getElementById('csOpenBtn');btn.disabled=true;btn.innerText='🔓 Вскрываем кейс...';
+    const intro=document.getElementById('csBoxIntro');document.getElementById('csBoxIcon').innerText=cs.box;intro.style.display='flex';
+    tone('tick');setTimeout(()=>tone('tick'),250);setTimeout(()=>tone('tick'),500);
     let r=Math.random()*cs.items.reduce((a,b)=>a+b.w,0),win=cs.items[0];
     for(const it of cs.items){if(r<it.w){win=it;break;}r-=it.w;}
-
-    // Генерируем ленту из 45 карточек, победная на 38-й позиции
-    const winIdx=38,strip=[];
-    for(let i=0;i<45;i++)strip.push(i===winIdx?win:cs.items[Math.floor(Math.random()*cs.items.length)]);
-    renderStrip(strip);
-
-    const tr=document.getElementById('csTrack');
-    const boxW=tr.parentElement.offsetWidth||280;
-    const itemW=92; // 86px + 6px margin
-    const jitter=Math.floor(Math.random()*36)-18;
-    const targetX=(winIdx*itemW)+(itemW/2)-(boxW/2)+jitter;
-
-    let ticks=0;
-    const tIv=setInterval(()=>{if(ticks<22){tone('tick');ticks++;}else clearInterval(tIv);},170);
-
-    requestAnimationFrame(()=>{
-      requestAnimationFrame(()=>{
-        tr.style.transition='transform 4.2s cubic-bezier(0.12, 0.85, 0.22, 1)';
-        tr.style.transform=`translateX(-${targetX}px)`;
-      });
-    });
-
+    const winIdx=38,strip=[];for(let i=0;i<45;i++)strip.push(i===winIdx?win:cs.items[Math.floor(Math.random()*cs.items.length)]);renderStrip(strip);
     setTimeout(()=>{
-      csSpin=false;btn.disabled=false;btn.innerText=`🔑 Открыть за ${cs.cost} ❇️`;
-      tone('win');
-      if(win.c>0){
-        setBal(getBal()+win.c);
-        log(`📦 ${cs.name}: +${win.c}❇️`);
-        toast(`🎉 Выпало: ${win.n}!`);
-      }else{
-        log(`📦 ${cs.name}: ${win.n}`);
-        makeRec(`${cs.name}: ${win.n}`,cs.cost,`Кейс CS:GO (${cs.cost} ❇️)`);
-      }
-    },4350);
+      intro.style.display='none';btn.innerText='🎰 Лента крутится...';
+      const tr=document.getElementById('csTrack'),boxW=tr.parentElement.offsetWidth||280,targetX=(winIdx*92)+46-(boxW/2)+(Math.floor(Math.random()*28)-14);
+      let ticks=0;const tIv=setInterval(()=>{if(ticks<22){tone('tick');ticks++;}else clearInterval(tIv);},170);
+      requestAnimationFrame(()=>{requestAnimationFrame(()=>{tr.style.transition='transform 4.2s cubic-bezier(0.1, 0.88, 0.2, 1)';tr.style.transform=`translateX(-${targetX}px)`;});});
+      setTimeout(()=>{
+        csSpin=false;btn.disabled=false;btn.innerText=`🔑 Открыть за ${cs.cost} ❇️`;
+        const winCard=document.getElementById('csItem_'+winIdx);if(winCard)winCard.classList.add('cs-win-card');
+        burstParticles();tone('win');
+        if(win.c>0){setBal(getBal()+win.c);log(`📦 ${cs.name}: +${win.c}❇️`);toast(`🎉 Выпало: ${win.n}!`);}
+        else{log(`📦 ${cs.name}: ${win.n}`);makeRec(`${cs.name}: ${win.n}`,cs.cost,`Кейс (${cs.cost} ❇️)`);}
+      },4350);
+    },800);
   };
+
+  let hasShield=false;
+  const origStart=window.start;
+  window.start=function(m='normal'){
+    hasShield=false;origStart(m);
+    const idx1=board.findIndex(x=>x.t==='c'&&x.v===1);
+    if(idx1!==-1){board[idx1]=(Math.random()<0.6)?{t:'sh',i:'🛡',v:0,l:'+1 ХОД'}:{t:'sc',i:'🔍',v:0,l:'+1 ХОД'};save(null,document.getElementById('rMeta').innerText);render();}
+  };
+  const origOpenC=window.openC;
+  window.openC=function(i){
+    if(!synced||over||opened.includes(i))return;
+    const it=board[i];
+    if(it&&it.t==='sh'){opened.push(i);hasShield=true;tone('win');toast('🛡 Щит: +1 попытка и защита от 1 бомбы!');log('🛡 Щит на поле (+1 ход)');save(null,document.getElementById('rMeta').innerText);render();return;}
+    if(it&&it.t==='sc'){opened.push(i);tone('win');const sIdx=board.findIndex((x,idx)=>!opened.includes(idx)&&x.t!=='b');toast(sIdx!==-1?`🔍 Сканер (+1 ход): клетка №${sIdx+1} БЕЗОПАСНА!`:'🔍 Сканер (+1 ход)!');log('🔍 Сканер на поле (+1 ход)');save(null,document.getElementById('rMeta').innerText);render();return;}
+    if(it&&it.t==='b'&&hasShield){hasShield=false;board[i]={t:'c',i:'🛡',v:0,l:'СПАС!'};toast('🛡 ЩИТ СРАБОТАЛ! Бомба обезврежена!');log('🛡 Щит спас от бомбы!');}
+    origOpenC(i);
+  };
+
+  const gameTab=document.getElementById('tab-game'),gridEl=document.getElementById('grid');
+  if(gameTab&&gridEl&&!document.getElementById('boostBtn')){
+    const bBtn=document.createElement('button');bBtn.id='boostBtn';bBtn.className='btn-out';
+    bBtn.style.cssText='margin-bottom:8px;width:100%;max-width:320px;padding:6px;border-color:#78716c;color:#a8a29e;opacity:0.75';
+    bBtn.innerText='🚧 Буст x2 на раунд • Скоро';
+    bBtn.onclick=()=>toast('🚧 Буст x2 скоро появится в игре!');
+    gameTab.insertBefore(bBtn,gridEl);
+  }
 })();
 </script>
 </body>
