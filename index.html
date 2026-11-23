@@ -785,6 +785,92 @@ init();
     document.getElementById(id).classList.remove('open');
   };
 })();
+</script> 
+  <script>
+(function(){
+  // 1. Обновлённый Магазин: Звёзды (25-350), NFT (500), Prem 3м (600), Prem 6м (750), Админка+Prem 12м (1000)
+  SHOP_ITEMS.length=0;
+  SHOP_ITEMS.push(
+    {n:'Снятие лимитов в чате (12ч)',p:10},
+    {n:'Закреп твоего поста в чате (24ч)',p:20},
+    {n:'Вечный Префикс в чате',p:30},
+    {n:'Свой стикер/эмодзи в пак чата',p:45},
+    {n:'Аватарка группы на 3 дня',p:65},
+    {n:'Модератор чата (5 дней)',p:90},
+    {n:'Своё правило чата (24ч)',p:110},
+    {n:'25 Звёзд Telegram ⭐️',p:140},
+    {n:'Временный Админ (3 дня)',p:170},
+    {n:'50 Звёзд Telegram ⭐️',p:210},
+    {n:'100 Звёзд Telegram ⭐️',p:270},
+    {n:'250 Звёзд Telegram ⭐️',p:350},
+    {n:'350 Звёзд Telegram ⭐️',p:430},
+    {n:'Telegram Gift / NFT Подарок 🎁',p:500},
+    {n:'TG Premium (3 месяца)',p:600},
+    {n:'TG Premium (6 месяцев)',p:750},
+    {n:'👑 АДМИНКА НАВСЕГДА + TG Prem 12 мес',p:1000}
+  );
+  const sh=document.getElementById('shopList');
+  if(sh)sh.innerHTML=SHOP_ITEMS.map(x=>`<div class="box row-sb"><b style="font-size:12px">${x.n}</b><button class="btn-out" onclick="buy('${x.n}',${x.p})">${x.p} ❇️</button></div>`).join('');
+
+  // 2. Убираем Колесо дня и ставим Задания по +1 ❇️ в Профиль
+  const QK='mp_lock_q_v2';
+  const luckBtn=document.getElementById('luckBtn');
+  if(luckBtn){
+    const luckBox=luckBtn.closest('.box');
+    if(luckBox){
+      luckBox.style.borderColor='#38bdf8';
+      luckBox.innerHTML=`
+        <b style="font-size:12px;color:#7dd3fc;display:block;margin-bottom:6px">📋 Задания (по +1 ❇️ за каждое)</b>
+        <div class="row-sb" style="margin-bottom:5px">
+          <div><b style="font-size:11px">📢 Подписка на наш ТГК</b><p style="font-size:10px;color:#a8a29e">Зайди в канал и забери награду</p></div>
+          <button class="btn-out" id="qv1" onclick="runQ('qv1','https://t.me')">+1 ❇️</button>
+        </div>
+        <div class="row-sb" style="margin-bottom:5px">
+          <div><b style="font-size:11px">💬 Актив в чате (5 сообщ.)</b><p style="font-size:10px;color:#a8a29e">Напиши пару сообщений в группе</p></div>
+          <button class="btn-out" id="qv2" onclick="runQ('qv2','chat')">+1 ❇️</button>
+        </div>
+        <div class="row-sb">
+          <div><b style="font-size:11px">🎨 Примерить новый фон</b><p style="font-size:10px;color:#a8a29e">Выбери любую тему оформления ниже</p></div>
+          <button class="btn-out" id="qv3" onclick="runQ('qv3','theme')">+1 ❇️</button>
+        </div>`;
+    }
+  }
+  function paintQ(){
+    const q=JSON.parse(localStorage.getItem(QK)||'{}');
+    ['qv1','qv2','qv3'].forEach(id=>{const b=document.getElementById(id);if(b&&q[id]){b.innerText='✅';b.disabled=true;b.style.borderColor='#10b981';b.style.color='#6ee7b7';}});
+  }
+  window.runQ=function(id,act){
+    const q=JSON.parse(localStorage.getItem(QK)||'{}');if(q[id])return;
+    if(act==='theme'&&(localStorage.getItem(THK)||'gold')==='gold'){toast('🎨 Сначала выбери любой фон ниже!');return;}
+    if(act.startsWith('http')){if(window.Telegram?.WebApp)window.Telegram.WebApp.openTelegramLink(act);else window.open(act,'_blank');}
+    q[id]=true;const s=JSON.stringify(q);localStorage.setItem(QK,s);syncCloud(QK,s);
+    setBal(getBal()+1);tone('win');log('📋 Задание выполнено: +1 ❇️');toast('🎉 Задание выполнено: +1 ❇️!');paintQ();
+  };
+  try{const cs=window.Telegram?.WebApp?.CloudStorage;if(cs)cs.getItem(QK,(e,v)=>{if(!e&&v){localStorage.setItem(QK,v);paintQ();}});}catch(e){}
+  paintQ();
+
+  // 3. Балансировка: Ракета (раз в 12ч) и Сейф (приз +4 ❇️)
+  const RCD12=43200000;
+  window.isMiniLocked=function(g){return !synced||(Date.now()-(getMiniCD()[g]||0))<RCD12;};
+  window.updMiniUI=function(){
+    if(!synced)return;
+    const rLock=isMiniLocked('rocket');
+    if(!rFly){document.getElementById('rocketBtn').disabled=rLock;document.getElementById('rocketBtn').innerText=rLock?'⏳ Сыграно (Жди 12ч)':`🚀 Запустить за ${bet} ❇️`;}
+    document.getElementById('cdRocketBox').style.display=rLock?'block':'none';
+  };
+  const origGuess=window.guessSafe;
+  window.guessSafe=function(){
+    const bBefore=getBal();
+    origGuess();
+    if(getBal()-bBefore>=5){
+      setBal(bBefore+4);
+      document.getElementById('safeHint').innerHTML=document.getElementById('safeHint').innerHTML.replace('+5 ❇️','+4 ❇️');
+    }
+  };
+  setInterval(()=>{
+    if(synced&&isMiniLocked('rocket'))document.getElementById('cdRocket').innerText=fmt((getMiniCD().rocket+RCD12)-Date.now());
+  },1000);
+})();
 </script>
 </body>
 </html>
