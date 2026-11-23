@@ -656,32 +656,32 @@ setInterval(()=>{
 
 init();
 </script>
-</body> <div class="modal" id="catchModal">
+<div class="modal" id="catchModal">
   <div class="receipt" style="border-color:#10b981;padding:12px">
     <div class="row-sb" style="margin-bottom:6px">
       <h3 style="color:#6ee7b7;font-size:15px">❇️ Ловец Кристаллов</h3>
       <button class="btn-out" style="border-color:#78716c;color:#d6d3d1" onclick="closeCatch()">✖</button>
     </div>
     <div class="row-sb" style="font-size:12px;font-weight:bold;margin-bottom:6px">
-      <span style="color:#fde047">⏱ Время: <span id="catchTime">20</span>с</span>
+      <span style="color:#fde047">⏱ Время: <span id="catchTime">15</span>с</span>
       <span style="color:#4ade80">Собрано: +<span id="catchScore">0</span> ❇️</span>
     </div>
     <div id="catchZone" style="position:relative;width:100%;height:260px;background:rgba(0,0,0,0.55);border:1px solid #047857;border-radius:10px;overflow:hidden;touch-action:none"></div>
-    <p id="catchInfo" style="font-size:11px;color:#d6d3d1;margin-top:6px">Жми по падающим ❇️ (+0.2) и 💎 (+1), избегай 💣 (-1)!</p>
+    <p id="catchInfo" style="font-size:11px;color:#d6d3d1;margin-top:6px">Лови ❇️ (+0.05) и 💎 (+0.3), бойся 💣 (-0.5)!</p>
   </div>
 </div>
 
 <script>
 (function(){
   const CK_CATCH='mp_lock_catch',CD_CATCH=21600000;
-  let cRun=false,cSc=0,cTm=20,cSp=null,cTk=null;
+  let cRun=false,cSc=0,cTm=15,cSp=null,cTk=null;
 
   const miniTab=document.getElementById('tab-mini');
   if(miniTab){
     const card=document.createElement('div');
     card.className='box';
     card.style.cssText='border-color:#10b981;background:linear-gradient(135deg,rgba(6,78,59,0.35),rgba(24,20,15,0.85))';
-    card.innerHTML=`<div class="row-sb"><div><h3 style="font-size:14px;color:#6ee7b7">❇️ Ловец Кристаллов</h3><p id="catchCardDesc" style="font-size:11px;color:#d6d3d1;margin-top:2px">Лови падающие ❇️ за 20 сек (раз в 6ч)</p></div><button class="btn btn-green" id="catchStartBtn" onclick="startCatchGame()">Играть</button></div>`;
+    card.innerHTML=`<div class="row-sb"><div><h3 style="font-size:14px;color:#6ee7b7">❇️ Ловец Кристаллов</h3><p id="catchCardDesc" style="font-size:11px;color:#d6d3d1;margin-top:2px">Лови падающие ❇️ за 15 сек (раз в 6ч)</p></div><button class="btn btn-green" id="catchStartBtn" onclick="startCatchGame()">Играть</button></div>`;
     miniTab.appendChild(card);
   }
 
@@ -695,7 +695,7 @@ init();
     if(!btn)return;
     const last=parseInt(localStorage.getItem(CK_CATCH)||'0',10),diff=(last+CD_CATCH)-Date.now();
     if(diff>0){btn.disabled=true;btn.innerText='Жди';desc.innerText='Доступно через: '+fmt(diff);}
-    else{btn.disabled=false;btn.innerText='Играть';desc.innerText='✅ Доступно! Лови ❇️ и 💎 за 20 сек';}
+    else{btn.disabled=false;btn.innerText='Играть';desc.innerText='✅ Доступно! Лови ❇️ и 💎 за 15 сек';}
   }
   setInterval(updCatchBtn,1000);updCatchBtn();
 
@@ -703,38 +703,39 @@ init();
     const last=parseInt(localStorage.getItem(CK_CATCH)||'0',10);
     if(Date.now()-last<CD_CATCH)return;
     const now=Date.now();localStorage.setItem(CK_CATCH,now);syncCloud(CK_CATCH,now);updCatchBtn();
-    cRun=true;cSc=0;cTm=20;
+    cRun=true;cSc=0;cTm=15;
     document.getElementById('catchScore').innerText='0';
-    document.getElementById('catchTime').innerText='20';
+    document.getElementById('catchTime').innerText='15';
     document.getElementById('catchZone').innerHTML='';
     document.getElementById('catchModal').classList.add('open');
 
     cSp=setInterval(()=>{
       if(!cRun)return;
       const z=document.getElementById('catchZone'),el=document.createElement('div');
-      const r=Math.random(),type=r<0.22?'b':(r<0.32?'j':'c');
+      const r=Math.random(),type=r<0.32?'b':(r<0.39?'j':'c');
       el.innerText=type==='b'?'💣':(type==='j'?'💎':'❇️');
-      el.style.cssText=`position:absolute;top:-32px;left:${Math.floor(Math.random()*82)+4}%;font-size:26px;cursor:pointer;padding:6px;transition:top 2.3s linear`;
+      el.style.cssText=`position:absolute;top:-32px;left:${Math.floor(Math.random()*82)+4}%;font-size:26px;cursor:pointer;padding:6px;transition:top 1.9s linear`;
       z.appendChild(el);
       requestAnimationFrame(()=>{el.style.top='270px';});
       const hit=(e)=>{
         e.preventDefault();if(!cRun||el.dataset.hit)return;el.dataset.hit='1';
-        if(type==='b'){tone('bomb');cSc=Math.max(0,+(cSc-1).toFixed(1));el.innerText='💥';}
-        else if(type==='j'){tone('win');cSc=+(cSc+1).toFixed(1);el.innerText='✨';}
-        else{tone('tick');cSc=+(cSc+0.2).toFixed(1);el.innerText='✨';}
+        if(type==='b'){tone('bomb');cSc=Math.max(0,+(cSc-0.5).toFixed(2));el.innerText='💥';}
+        else if(type==='j'){tone('win');cSc=+(cSc+0.3).toFixed(2);el.innerText='✨';}
+        else{tone('tick');cSc=+(cSc+0.05).toFixed(2);el.innerText='✨';}
         document.getElementById('catchScore').innerText=cSc;
         setTimeout(()=>el.remove(),180);
       };
       el.addEventListener('pointerdown',hit);
-      setTimeout(()=>{if(el.parentNode)el.remove();},2400);
-    },420);
+      setTimeout(()=>{if(el.parentNode)el.remove();},2000);
+    },450);
 
     cTk=setInterval(()=>{
       cTm--;document.getElementById('catchTime').innerText=cTm;
       if(cTm<=0){
         cRun=false;clearInterval(cSp);clearInterval(cTk);
-        document.getElementById('catchZone').innerHTML=`<div style="padding-top:95px;text-align:center"><b style="font-size:18px;color:#4ade80">🎉 Итог: +${cSc} ❇️</b><p style="font-size:12px;color:#d6d3d1;margin-top:6px">Зачислено в кошелёк!</p></div>`;
-        if(cSc>0){setBal(getBal()+cSc);tone('win');log(`❇️ Ловец кристаллов: +${cSc}❇️`);}
+        const finalWin=Math.round(cSc*10)/10;
+        document.getElementById('catchZone').innerHTML=`<div style="padding-top:95px;text-align:center"><b style="font-size:18px;color:#4ade80">🎉 Итог: +${finalWin} ❇️</b><p style="font-size:12px;color:#d6d3d1;margin-top:6px">Зачислено в кошелёк!</p></div>`;
+        if(finalWin>0){setBal(getBal()+finalWin);tone('win');log(`❇️ Ловец кристаллов: +${finalWin}❇️`);}
       }
     },1000);
   };
@@ -745,5 +746,5 @@ init();
   };
 })();
 </script>
-
+</body>
 </html>
