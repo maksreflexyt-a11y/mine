@@ -872,5 +872,139 @@ init();
   },1000);
 })();
 </script>
+  <div class="modal" id="csModal">
+  <div class="receipt" style="border-color:#a855f7;padding:14px">
+    <div class="row-sb" style="margin-bottom:8px">
+      <h3 style="color:#e9d5ff;font-size:15px">📦 Кейсы CS:GO</h3>
+      <button class="btn-out" style="border-color:#78716c;color:#d6d3d1" onclick="closeCsCase()">✖</button>
+    </div>
+    <div class="row-sb" style="margin-bottom:8px">
+      <button class="btn-out cs-tab" id="csTab1" onclick="selCsCase(0)" style="flex:1;background:#a855f7;color:#fff;border-color:#a855f7">🥉 Бронзовый (15 ❇️)</button>
+      <button class="btn-out cs-tab" id="csTab2" onclick="selCsCase(1)" style="flex:1">💎 Элитный (60 ❇️)</button>
+    </div>
+    <p id="csPoolInfo" style="font-size:10px;color:#d6d3d1;margin-bottom:8px">Внутри: 5–25 ❇️, Снятие лимитов, Закреп и Вечный Префикс</p>
+    <div style="position:relative;width:100%;height:78px;background:#09070d;border:2px solid #7e22ce;border-radius:10px;overflow:hidden;margin-bottom:10px">
+      <div style="position:absolute;top:0;bottom:0;left:50%;width:2px;background:#ef4444;box-shadow:0 0 8px #ef4444;z-index:5"></div>
+      <div id="csTrack" style="display:flex;align-items:center;height:100%;will-change:transform"></div>
+    </div>
+    <button class="btn" id="csOpenBtn" style="width:100%;padding:10px;font-size:13px;background:linear-gradient(135deg,#9333ea,#6b21a8)" onclick="openCsCase()">🔑 Открыть за 15 ❇️</button>
+  </div>
+</div>
+
+<script>
+(function(){
+  const CASES=[
+    {
+      name:'Бронзовый кейс',cost:15,
+      info:'Внутри: 5–25 ❇️, Снятие лимитов, Закреп и Вечный Префикс',
+      items:[
+        {n:'5 ❇️',c:5,w:32,col:'#64748b',ico:'❇️'},
+        {n:'10 ❇️',c:10,w:26,col:'#3b82f6',ico:'❇️'},
+        {n:'18 ❇️',c:18,w:16,col:'#8b5cf6',ico:'❇️'},
+        {n:'Снятие лимитов (12ч)',c:0,w:12,col:'#8b5cf6',ico:'⚡'},
+        {n:'25 ❇️',c:25,w:7,col:'#ec4899',ico:'💎'},
+        {n:'Закреп поста (24ч)',c:0,w:5,col:'#ec4899',ico:'📌'},
+        {n:'Вечный Префикс',c:0,w:2,col:'#f59e0b',ico:'🏷'}
+      ]
+    },
+    {
+      name:'Элитный кейс',cost:60,
+      info:'Внутри: 30–90 ❇️, 25–100 ⭐️, Админ (3д) и NFT Подарок 🎁',
+      items:[
+        {n:'30 ❇️',c:30,w:34,col:'#3b82f6',ico:'❇️'},
+        {n:'45 ❇️',c:45,w:24,col:'#3b82f6',ico:'❇️'},
+        {n:'70 ❇️',c:70,w:15,col:'#8b5cf6',ico:'💎'},
+        {n:'25 Звёзд ⭐️',c:0,w:11,col:'#8b5cf6',ico:'⭐️'},
+        {n:'90 ❇️',c:90,w:7,col:'#ec4899',ico:'💎'},
+        {n:'50 Звёзд ⭐️',c:0,w:4.5,col:'#ec4899',ico:'🌟'},
+        {n:'Временный Админ (3д)',c:0,w:2,col:'#ef4444',ico:'🛡'},
+        {n:'100 Звёзд ⭐️',c:0,w:1,col:'#ef4444',ico:'💫'},
+        {n:'Telegram Gift / NFT 🎁',c:0,w:1.5,col:'#f59e0b',ico:'🎁'}
+      ]
+    }
+  ];
+  let curCase=0,csSpin=false;
+
+  const miniTab=document.getElementById('tab-mini');
+  if(miniTab){
+    const card=document.createElement('div');
+    card.className='box';
+    card.style.cssText='border-color:#a855f7;background:linear-gradient(135deg,rgba(88,28,135,0.35),rgba(24,20,15,0.88))';
+    card.innerHTML=`<div class="row-sb"><div><h3 style="font-size:14px;color:#e9d5ff">📦 Кейсы CS:GO</h3><p style="font-size:11px;color:#d6d3d1;margin-top:2px">Рулетка с лентой • Префиксы, Звёзды и NFT</p></div><button class="btn" style="background:linear-gradient(135deg,#9333ea,#6b21a8)" onclick="openCsModal()">Открыть</button></div>`;
+    miniTab.appendChild(card);
+  }
+
+  function renderStrip(pool){
+    const tr=document.getElementById('csTrack');
+    tr.style.transition='none';
+    tr.style.transform='translateX(0px)';
+    tr.innerHTML=pool.map(it=>`<div style="min-width:86px;height:66px;margin:0 3px;background:#181424;border-bottom:3px solid ${it.col};border-radius:8px;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:4px;text-align:center"><span style="font-size:20px">${it.ico}</span><b style="font-size:9px;color:#f8fafc;margin-top:3px;line-height:1.1">${it.n}</b></div>`).join('');
+  }
+
+  window.selCsCase=function(idx){
+    if(csSpin)return;
+    curCase=idx;const cs=CASES[idx];
+    document.getElementById('csTab1').style.background=idx===0?'#a855f7':'rgba(245,158,11,0.12)';
+    document.getElementById('csTab1').style.color=idx===0?'#fff':'#fcd34d';
+    document.getElementById('csTab2').style.background=idx===1?'#a855f7':'rgba(245,158,11,0.12)';
+    document.getElementById('csTab2').style.color=idx===1?'#fff':'#fcd34d';
+    document.getElementById('csPoolInfo').innerText=cs.info;
+    document.getElementById('csOpenBtn').innerText=`🔑 Открыть за ${cs.cost} ❇️`;
+    const preview=[];for(let i=0;i<12;i++)preview.push(cs.items[i%cs.items.length]);
+    renderStrip(preview);
+  };
+
+  window.openCsModal=function(){selCsCase(curCase);document.getElementById('csModal').classList.add('open');};
+  window.closeCsCase=function(){if(csSpin){toast('⏳ Дождись остановки ленты!');return;}document.getElementById('csModal').classList.remove('open');};
+
+  window.openCsCase=function(){
+    if(csSpin)return;
+    const cs=CASES[curCase];
+    if(getBal()<cs.cost){toast(`❌ Нужно ${cs.cost} ❇️`);return;}
+    setBal(getBal()-cs.cost);
+    csSpin=true;
+    const btn=document.getElementById('csOpenBtn');
+    btn.disabled=true;btn.innerText='🎰 Крутим кейс...';
+
+    // Выбор приза по весам
+    let r=Math.random()*cs.items.reduce((a,b)=>a+b.w,0),win=cs.items[0];
+    for(const it of cs.items){if(r<it.w){win=it;break;}r-=it.w;}
+
+    // Генерируем ленту из 45 карточек, победная на 38-й позиции
+    const winIdx=38,strip=[];
+    for(let i=0;i<45;i++)strip.push(i===winIdx?win:cs.items[Math.floor(Math.random()*cs.items.length)]);
+    renderStrip(strip);
+
+    const tr=document.getElementById('csTrack');
+    const boxW=tr.parentElement.offsetWidth||280;
+    const itemW=92; // 86px + 6px margin
+    const jitter=Math.floor(Math.random()*36)-18;
+    const targetX=(winIdx*itemW)+(itemW/2)-(boxW/2)+jitter;
+
+    let ticks=0;
+    const tIv=setInterval(()=>{if(ticks<22){tone('tick');ticks++;}else clearInterval(tIv);},170);
+
+    requestAnimationFrame(()=>{
+      requestAnimationFrame(()=>{
+        tr.style.transition='transform 4.2s cubic-bezier(0.12, 0.85, 0.22, 1)';
+        tr.style.transform=`translateX(-${targetX}px)`;
+      });
+    });
+
+    setTimeout(()=>{
+      csSpin=false;btn.disabled=false;btn.innerText=`🔑 Открыть за ${cs.cost} ❇️`;
+      tone('win');
+      if(win.c>0){
+        setBal(getBal()+win.c);
+        log(`📦 ${cs.name}: +${win.c}❇️`);
+        toast(`🎉 Выпало: ${win.n}!`);
+      }else{
+        log(`📦 ${cs.name}: ${win.n}`);
+        makeRec(`${cs.name}: ${win.n}`,cs.cost,`Кейс CS:GO (${cs.cost} ❇️)`);
+      }
+    },4350);
+  };
+})();
+</script>
 </body>
 </html>
