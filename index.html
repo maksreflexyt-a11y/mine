@@ -140,59 +140,26 @@ body.th-emerald .box,body.th-emerald .grid{border-color:rgba(52,211,153,0.45)}
   <div id="rMeta" style="font-size:10px;color:#78716c;margin-top:6px"></div>
 </div>
 <div class="tab" id="tab-mini">
-  <div class="box" style="border-color:#ef4444;background:linear-gradient(135deg,rgba(127,29,29,0.35),rgba(24,20,15,0.9))">
-    <div class="row-sb">
-      <div>
-        <h3 style="font-size:15px;color:#fca5a5">🚀 Краш-Ракета</h3>
-        <p id="cardRocketSt" style="font-size:11px;color:#d6d3d1;margin-top:3px">Умножай ставку до взрыва (раз в 6ч)</p>
-      </div>
-      <button class="btn" onclick="openGameModal('rocketModal')">Играть</button>
-    </div>
-  </div>
-
-  <div class="box" style="border-color:#38bdf8;background:linear-gradient(135deg,rgba(12,74,110,0.35),rgba(24,20,15,0.9))">
-    <div class="row-sb">
-      <div>
-        <h3 style="font-size:15px;color:#7dd3fc">🔐 Взлом Сейфа</h3>
-        <p id="cardSafeSt" style="font-size:11px;color:#d6d3d1;margin-top:3px">Код 000–500 за 5 попыток • Приз: <b style="color:#4ade80">+7 ❇️</b></p>
-      </div>
-      <button class="btn" style="background:linear-gradient(135deg,#0284c7,#0369a1)" onclick="openGameModal('safeModal')">Взломать</button>
-    </div>
-  </div>
-</div>
-<div class="modal" id="rocketModal">
-  <div class="receipt" style="border-color:#ef4444">
-    <div class="row-sb" style="margin-bottom:8px">
-      <h3 style="color:#fca5a5;font-size:15px">🚀 Краш-Ракета</h3>
-      <button class="btn-out" style="border-color:#78716c;color:#d6d3d1" onclick="closeGameModal('rocketModal')">✖</button>
-    </div>
-    <div class="row-sb" style="background:rgba(0,0,0,0.35);padding:6px 8px;border-radius:8px;margin-bottom:10px">
-      <span style="font-size:11px;color:#fde68a">Ставка:</span>
+  <div class="box" style="border-color:#ef4444;background:linear-gradient(135deg,rgba(127,29,29,0.3),rgba(24,20,15,0.85))">
+    <div class="row-sb" style="margin-bottom:6px">
+      <h3 style="font-size:14px;color:#fca5a5">🚀 Краш-Ракета</h3>
       <div style="display:flex;gap:4px">
         <button class="btn-out" onclick="setBet(2,this)" style="background:#f59e0b;color:#000">2 ❇️</button>
         <button class="btn-out" onclick="setBet(5,this)">5 ❇️</button>
         <button class="btn-out" onclick="setBet(10,this)">10 ❇️</button>
       </div>
     </div>
-    <div id="rocketMult" style="font-size:34px;font-weight:900;color:#fbbf24;margin:8px 0">x1.00</div>
-    <p id="rocketInfo" style="font-size:12px;color:#d6d3d1;margin-bottom:10px">Запусти ракету и нажми «Забрать» до взрыва!</p>
-    <button class="btn" id="rocketBtn" disabled style="width:100%;padding:10px;font-size:13px" onclick="handleRocket()">⏳ Загрузка...</button>
-    <div class="mini-cd" id="cdRocketBox">Доступно через: <span id="cdRocket">06:00:00</span></div>
+    <div id="rocketMult" style="font-size:30px;font-weight:900;text-align:center;color:#fbbf24;margin:4px 0">x1.00</div>
+    <p id="rocketInfo" style="font-size:11px;text-align:center;color:#d6d3d1;margin-bottom:8px">Запусти ракету и забери кристаллы до взрыва (1 раз в 24ч)!</p>
+    <button class="btn" id="rocketBtn" disabled style="width:100%;padding:9px" onclick="handleRocket()">⏳ Загрузка...</button>
+    <div class="mini-cd" id="cdRocketBox">Доступно через: <span id="cdRocket">24:00:00</span></div>
   </div>
-</div>
-<div class="modal" id="safeModal">
-  <div class="receipt" style="border-color:#38bdf8">
-    <div class="row-sb" style="margin-bottom:8px">
-      <h3 style="color:#7dd3fc;font-size:15px">🔐 Взлом Сейфа</h3>
-      <button class="btn-out" style="border-color:#78716c;color:#d6d3d1" onclick="closeGameModal('safeModal')">✖</button>
-    </div>
-    <div class="row-sb" style="margin-bottom:6px">
-      <span style="font-size:11px;color:#a8a29e">Код <b>000–500</b> • Приз <b style="color:#4ade80">+7 ❇️</b></span>
-      <span id="safeTriesBadge" class="badge">Попыток: 5</span>
-    </div>
-    <div id="safeHint" style="background:rgba(0,0,0,0.4);padding:8px;border-radius:8px;font-size:13px;font-weight:bold;color:#fde047;margin:8px 0">Введи число 000–500</div>
+  <div class="box" style="border-color:#38bdf8;background:linear-gradient(135deg,rgba(12,74,110,0.3),rgba(24,20,15,0.85))">
+    <div class="row-sb" style="margin-bottom:6px"><h3 style="font-size:14px;color:#7dd3fc">🔐 Взлом Сейфа</h3><span id="safeTriesBadge" class="badge">Попыток: 5</span></div>
+    <p style="font-size:11px;color:#d6d3d1;margin-bottom:6px">Угадай код от <b>000 до 500</b> за 5 попыток! Приз: <b style="color:#4ade80">+10 ❇️</b> (1 раз в 24ч)</p>
+    <div id="safeHint" style="background:rgba(0,0,0,0.4);padding:7px;border-radius:8px;text-align:center;font-size:12px;font-weight:bold;color:#fde047;margin-bottom:6px">Введи число 000–500</div>
     <div class="inp-row" style="max-width:100%;display:none" id="safeControls">
-      <input class="inp" id="safeIn" type="number" placeholder="000–500" style="text-align:center;font-size:15px;font-weight:bold">
+      <input class="inp" id="safeIn" type="number" placeholder="000–500" style="text-align:center;font-size:14px;font-weight:bold">
       <button class="btn" onclick="guessSafe()">Взломать</button>
     </div>
     <div class="mini-cd" id="safeTimer">Следующий сейф через: <span id="safeCd">24:00:00</span></div>
@@ -227,15 +194,10 @@ body.th-emerald .box,body.th-emerald .grid{border-color:rgba(52,211,153,0.45)}
       <button class="btn" onclick="saveNickInput()">Сохранить</button>
     </div>
   </div>
-  <div class="sec">📋 Задания (Разовые награды)</div>
-  <div class="box" style="border-color:#38bdf8">
-    <div class="row-sb" style="margin-bottom:6px">
-      <div><b style="font-size:12px;color:#7dd3fc">📢 Подписка на наш ТГК</b><p style="font-size:10px;color:#d6d3d1">Перейди в канал и забери бонус</p></div>
-      <button class="btn-out" id="q1Btn" onclick="doQuest('q1',2,'https://t.me')">+2 ❇️</button>
-    </div>
+  <div class="box" style="border-color:#10b981">
     <div class="row-sb">
-      <div><b style="font-size:12px;color:#7dd3fc">🎨 Примерить новый фон</b><p style="font-size:10px;color:#d6d3d1">Выбери любую тему оформления ниже</p></div>
-      <button class="btn-out" id="q3Btn" onclick="doQuest('q3',1,'theme')">+1 ❇️</button>
+      <div><b style="font-size:12px;color:#6ee7b7">🎡 Колесо дня (Бесплатно)</b><p id="luckDesc" style="font-size:11px;color:#d6d3d1">Проверка...</p></div>
+      <button class="btn btn-green" id="luckBtn" disabled onclick="spinDailyLuck()">Жди...</button>
     </div>
   </div>
   <div class="box">
@@ -299,18 +261,21 @@ let ptColor='251,191,36';
   draw();
 })();
 
-const CD=86400000,RCD=21600000,K='mp_lock_board',BK='mp_lock_bal',UK='mp_lock_used',RK='m_rec',SK='m_stat',LK='m_log',CK='mp_lock_chest',SFK='mp_lock_safe',NK='m_nick',MK='mp_lock_mini',QK='mp_lock_quests',THK='m_theme';
+const CD=86400000,K='mp_lock_board',BK='mp_lock_bal',UK='mp_lock_used',RK='m_rec',SK='m_stat',LK='m_log',CK='mp_lock_chest',SFK='mp_lock_safe',NK='m_nick',MK='mp_lock_mini',LCK='mp_lock_luck',THK='m_theme';
 let snd=true,ctx=null,tag='Гость',lastRec='',bet=2,synced=false;
-
 function syncCloud(k,v){
-  try{const cs=window.Telegram?.WebApp?.CloudStorage;if(cs){if(v===null)cs.removeItem(k);else cs.setItem(k,String(v));}}catch(e){}
+  try{
+    const cs=window.Telegram?.WebApp?.CloudStorage;
+    if(cs){if(v===null)cs.removeItem(k);else cs.setItem(k,String(v));}
+  }catch(e){}
 }
+
 const SHOP_ITEMS=[
-  {n:'Снятие лимитов (12ч)',p:8},{n:'Вечный Префикс',p:15},{n:'Аватарка группы (2д)',p:30},
-  {n:'Модератор (5 дней)',p:45},{n:'Своё правило чата (24ч)',p:70},{n:'Временный Админ (3д)',p:100},
-  {n:'50 Звёзд Telegram ⭐️',p:160},{n:'100 Звёзд Telegram ⭐️',p:220},{n:'150 Звёзд Telegram ⭐️',p:280},
-  {n:'250 Звёзд ⭐️ или NFT',p:350},{n:'TG Premium (3 мес)',p:420},{n:'Редкий NFT / Prem 6м',p:500},
-  {n:'👑 АДМИНКА НАВСЕГДА + TG Prem 12 мес',p:650}
+  {n:'Снятие лимитов (12ч)',p:5},{n:'Вечный Префикс',p:10},{n:'Аватарка группы (2д)',p:20},
+  {n:'Модератор (5 дней)',p:30},{n:'Своё правило чата (24ч)',p:50},{n:'Временный Админ (3д)',p:70},
+  {n:'50 Звёзд Telegram ⭐️',p:130},{n:'100 Звёзд Telegram ⭐️',p:180},{n:'150 Звёзд Telegram ⭐️',p:230},
+  {n:'250 Звёзд ⭐️ или NFT',p:280},{n:'TG Premium (3 мес)',p:350},{n:'Редкий NFT / Prem 6м',p:420},
+  {n:'👑 АДМИНКА НАВСЕГДА + TG Prem 12 мес',p:500}
 ];
 const MARKET_ITEMS=[
   {n:'Карта «Хайролл» (x1.5)',p:'1 500 🪙'},{n:'VIP-Пропуск (7 дней)',p:'6 500 🪙'},{n:'«Чёрная карта» (1 бомба)',p:'5 000 🪙'},
@@ -328,26 +293,7 @@ let trIdx=0,bgmIv=null,bgmStep=0;
 function playMusic(){
   if(bgmIv){clearInterval(bgmIv);bgmIv=null;}
   const au=document.getElementById('bgAudio'),tr=TRACKS.at(trIdx);
-  document.gefunction tone(t){
-  if(!snd)return;
-  try{
-    if(!ctx)ctx=new(window.AudioContext||window.webkitAudioContext)();
-    if(ctx.state==='suspended')ctx.resume();
-    const n=ctx.currentTime;
-    if(t==='tick'){const o=ctx.createOscillator(),g=ctx.createGain();o.type='triangle';o.frequency.setValueAtTime(600,n);o.frequency.exponentialRampToValueAtTime(200,n+0.04);g.gain.setValueAtTime(0.15,n);g.gain.exponentialRampToValueAtTime(0.001,n+0.04);o.connect(g);g.connect(ctx.destination);o.start(n);o.stop(n+0.04);}
-    else if(t==='win'){[523.25,659.25,783.99,1046.5].forEach((f,i)=>{const o=ctx.createOscillator(),g=ctx.createGain();o.type='sine';o.frequency.setValueAtTime(f,n+i*0.07);g.gain.setValueAtTime(0.18,n+i*0.07);g.gain.exponentialRampToValueAtTime(0.001,n+i*0.07+0.35);o.connect(g);g.connect(ctx.destination);o.start(n+i*0.07);o.stop(n+i*0.07+0.35);});}
-    else if(t==='bomb'){const o=ctx.createOscillator(),g=ctx.createGain();o.type='sawtooth';o.frequency.setValueAtTime(130,n);o.frequency.exponentialRampToValueAtTime(28,n+0.5);g.gain.setValueAtTime(0.35,n);g.gain.exponentialRampToValueAtTime(0.001,n+0.5);o.connect(g);g.connect(ctx.destination);o.start(n);o.stop(n+0.5);}
-  }catch(e){}
-}
-function toast(m){const e=document.getElementById('toast');e.innerText=m;e.classList.add('show');setTimeout(()=>e.classList.remove('show'),2000);}
-
-function setTheme(t){
-  document.body.className=t==='gold'?'':'th-'+t;
-  const cols={gold:'251,191,36',snow:'147,197,253',magma:'248,113,113',neon:'192,132,252',emerald:'52,211,153'};
-  ptColor=cols[t]||'251,191,36';
-  localStorage.setItem(THK,t);
-}
-tElementById('bgmBtn').innerText=tr.n;
+  document.getElementById('bgmBtn').innerText=tr.n;
   if(!snd){au.pause();return;}
   if(tr.mp3){au.volume=0.45;au.play().catch(()=>toast('📂 Загрузи свой MP3 в Профиле!'));return;}
   au.pause();
@@ -397,17 +343,19 @@ function setBal(v){const x=Math.round(v*10)/10;localStorage.setItem(BK,x);syncCl
 function log(m){const l=JSON.parse(localStorage.getItem(LK)||'[]');l.unshift(`[${new Date().toTimeString().slice(0,5)}] ${m}`);localStorage.setItem(LK,JSON.stringify(l.slice(0,12)));renderProf();}
 const getSt=()=>JSON.parse(localStorage.getItem(SK)||'{"g":0,"b":0,"j":0,"a":[]}');
 function ach(id){const s=getSt();if(!s.a.includes(id)){s.a.push(id);localStorage.setItem(SK,JSON.stringify(s));renderProf();}}
-
-function updQuests(){
-  const q=JSON.parse(localStorage.getItem(QK)||'{}');
-  ['q1','q3'].forEach(id=>{const b=document.getElementById(id+'Btn');if(b&&q[id]){b.innerText='✅ Готово';b.disabled=true;b.style.borderColor='#10b981';b.style.color='#6ee7b7';}});
+function updLuck(){
+  if(!synced)return;
+  const ok=Date.now()-parseInt(localStorage.getItem(LCK)||'0',10)>=CD;
+  document.getElementById('luckBtn').disabled=!ok;
+  document.getElementById('luckBtn').innerText=ok?'Крутить':'Завтра';
+  document.getElementById('luckDesc').innerText=ok?'Выиграй +1 до +5 ❇️!':'Уже крутил сегодня (жди 24ч)';
 }
-function doQuest(id,rew,act){
-  const q=JSON.parse(localStorage.getItem(QK)||'{}');if(q[id])return;
-  if(act==='theme'&&(localStorage.getItem(THK)||'gold')==='gold'){toast('🎨 Сначала выбери любую тему ниже!');return;}
-  if(act.startsWith('http')){if(window.Telegram?.WebApp)window.Telegram.WebApp.openTelegramLink(act);else window.open(act,'_blank');}
-  q[id]=true;const s=JSON.stringify(q);localStorage.setItem(QK,s);syncCloud(QK,s);
-  setBal(getBal()+rew);tone('win');log(`📋 Задание: +${rew}❇️`);toast(`🎉 Задание выполнено: +${rew} ❇️!`);updQuests();
+function spinDailyLuck(){
+  if(!synced||Date.now()-parseInt(localStorage.getItem(LCK)||'0',10)<CD)return;
+  const now=Date.now();localStorage.setItem(LCK,now);syncCloud(LCK,now);updLuck();
+  const r=Math.random()*100;
+  const w=r<45?1:(r<75?2:(r<90?3:(r<97?4:5)));
+  setBal(getBal()+w);tone('win');log(`🎡 Колесо дня: +${w}❇️`);toast(`🎉 Выпало +${w} ❇️!`);
 }
 const D_REW=['+1❇️','+2❇️','🛡Щит','+3❇️','🔥x1.5','+5❇️','👑VIP'];
 function updChest(){
@@ -427,19 +375,15 @@ function openChest(){
   else if(d===5){localStorage.removeItem(K);syncCloud(K,null);log('🎁 Сундук Д5: Хайролл');toast('🔥 Запущен ХАЙРОЛЛ!');start('high');}
   else if(d===7){log('🎁 Сундук Д7: VIP 3д');makeRec('Сундук (День 7): VIP-карта на 3 дня',0,'Ежедневка');}
 }
-function openGameModal(id){document.getElementById(id).classList.add('open');}
-function closeGameModal(id){if(id==='rocketModal'&&rFly){toast('⚠️ Сначала забери выигрыш!');return;}document.getElementById(id).classList.remove('open');}
-
 const getMiniCD=()=>JSON.parse(localStorage.getItem(MK)||'{"rocket":0}');
 function setMiniCD(game){const m=getMiniCD();m[game]=Date.now();const s=JSON.stringify(m);localStorage.setItem(MK,s);syncCloud(MK,s);updMiniUI();}
-function isMiniLocked(game){return !synced||(Date.now()-(getMiniCD()[game]||0))<RCD;}
+function isMiniLocked(game){return !synced||(Date.now()-(getMiniCD()[game]||0))<CD;}
 
 function updMiniUI(){
   if(!synced)return;
   const rLock=isMiniLocked('rocket');
-  if(!rFly){document.getElementById('rocketBtn').disabled=rLock;document.getElementById('rocketBtn').innerText=rLock?'⏳ Сыграно (Жди 6ч)':`🚀 Запустить за ${bet} ❇️`;}
+  if(!rFly){document.getElementById('rocketBtn').disabled=rLock;document.getElementById('rocketBtn').innerText=rLock?'⏳ Сыграно (Жди 24ч)':`🚀 Запустить за ${bet} ❇️`;}
   document.getElementById('cdRocketBox').style.display=rLock?'block':'none';
-  const cEl=document.getElementById('cardRocketSt');if(cEl)cEl.innerText=rLock?'⏳ Сыграно • Жди 6ч':'✅ Доступно • Умножай ставку до взрыва!';
 }
 
 function setBet(v,btn){
@@ -483,14 +427,13 @@ function updSafeUI(sf){
   document.getElementById('safeTriesBadge').innerText=`Попыток: ${sf.tries}`;
   document.getElementById('safeControls').style.display=sf.done?'none':'flex';
   document.getElementById('safeTimer').style.display=sf.done?'block':'none';
-  const cEl=document.getElementById('cardSafeSt');if(cEl)cEl.innerHTML=sf.done?'⏳ Взломано/закрыто • Жди 24ч':'✅ Доступно • Приз: <b style="color:#4ade80">+7 ❇️</b>';
 }
 function guessSafe(){
   if(!synced)return;
   let sf=JSON.parse(localStorage.getItem(SFK));if(sf.done)return;
   const val=parseInt(document.getElementById('safeIn').value,10);if(isNaN(val)||val<0||val>500){toast('Введи число 000–500');return;}
   document.getElementById('safeIn').value='';sf.tries--;
-  if(val===sf.code){sf.done=true;sf.fin=Date.now();setBal(getBal()+7);tone('win');document.getElementById('safeHint').innerHTML=`🎉 <b>ВЗЛОМАНО!</b> Код ${String(sf.code).padStart(3,'0')}! +7 ❇️`;log('🔐 Сейф: +7 ❇️');}
+  if(val===sf.code){sf.done=true;sf.fin=Date.now();setBal(getBal()+10);tone('win');document.getElementById('safeHint').innerHTML=`🎉 <b>ВЗЛОМАНО!</b> Код ${String(sf.code).padStart(3,'0')}! +10 ❇️`;log('🔐 Сейф: +10 ❇️');}
   else if(sf.tries<=0){sf.done=true;sf.fin=Date.now();tone('bomb');document.getElementById('safeHint').innerHTML=`💥 Код был: <b>${String(sf.code).padStart(3,'0')}</b>`;}
   else{tone('tick');document.getElementById('safeHint').innerText=val<sf.code?`⬆️ БОЛЬШЕ чем ${val}`:`⬇️ МЕНЬШЕ чем ${val}`;}
   const s=JSON.stringify(sf);localStorage.setItem(SFK,s);syncCloud(SFK,s);updSafeUI(sf);
@@ -612,7 +555,7 @@ function openC(i){
   localStorage.setItem(SK,JSON.stringify(st));
   document.getElementById('tries').innerText=tries;document.getElementById('score').innerText=score;
   let fin=null;
-  if(tries===0){over=true;fin=Date.now();const s2=getSt();s2.g++;localStorage.setItem(SK,JSON.stringify(s2));ach('ach1');if(bHit===0){ach('ach2');score+=1;toast('🍀 Чистый сапёр: +1 ❇️ бонус!');}if(score>0)setBal(getBal()+score);log(`💣 Игра: +${score}❇️`);finUI(fin);}
+  if(tries===0){over=true;fin=Date.now();const s2=getSt();s2.g++;localStorage.setItem(SK,JSON.stringify(s2));ach('ach1');if(bHit===0)ach('ach2');if(score>0)setBal(getBal()+score);log(`💣 Игра: +${score}❇️`);finUI(fin);}
   save(fin,document.getElementById('rMeta').innerText);render();
 }
 function finUI(fin){
@@ -628,9 +571,9 @@ function buy(name,price){
 }
 function makeRec(name,price,src){
   const id=Math.floor(100000+Math.random()*900000),tm=`${new Date().toLocaleDateString()} ${new Date().toTimeString().slice(0,5)}`;
-  const cl=src?`Источник: ${src}`:`Списано: ${price} ❇️ | Остаток: ${getBal()} ❇️`;
-  lastRec=`════════════════════\n👑 МИННОЕ ПОЛЕ 2.0 • GOLD\n✅ ОФИЦИАЛЬНЫЙ ЧЕК #${id}\n════════════════════\n👤 Игрок: ${tag}\n🎁 Награда: ${name}\n💳 ${cl}\n🕒 Дата: ${tm}\n════════════════════\n📩 Перешли этот чек админу в чат!`;
-  document.getElementById('recText').innerHTML=`<div style="text-align:center;color:#fde047;font-weight:900;border-bottom:1px dashed #78716c;padding-bottom:6px;margin-bottom:6px">👑 МИННОЕ ПОЛЕ 2.0 • GOLD<br><span style="color:#4ade80;font-size:11px">✅ ОФИЦИАЛЬНЫЙ ЧЕК #${id}</span></div>👤 Игрок: <b>${tag}</b><br>🎁 Награда: <b style="color:#fde047">${name}</b><br>💳 ${cl}<br>🕒 Время: ${tm}<div style="text-align:center;font-size:10px;color:#a8a29e;margin-top:6px;border-top:1px dashed #78716c;padding-top:4px">Скопируй чек и отправь админу в чат</div>`;
+  const cl=src?`Источник: ${src}`:`Списано: ${price} ❇️ (Остаток: ${getBal()} ❇️)`;
+  lastRec=`🧾 ЧЕК #${id}\n👤 Игрок: ${tag}\n🎁 Награда: ${name}\n${cl}\n🕒 ${tm}`;
+  document.getElementById('recText').innerHTML=`<b>Чек #${id}</b><br>Игрок: <b>${tag}</b><br>Награда: <b>${name}</b><br>${cl}<br>Время: ${tm}`;
   document.getElementById('recModal').classList.add('open');
   const h=JSON.parse(localStorage.getItem(RK)||'[]');h.unshift({id,name,tm});localStorage.setItem(RK,JSON.stringify(h.slice(0,15)));renderProf();
 }
@@ -647,11 +590,14 @@ function renderProf(){
 
 function switchTab(id,b){document.querySelectorAll('.tab').forEach(e=>e.classList.remove('active'));document.querySelectorAll('.nav-btn').forEach(e=>e.classList.remove('active'));document.getElementById('tab-'+id).classList.add('active');b.classList.add('active');if(id==='profile')renderProf();}
 function fmt(ms){const h=Math.floor(ms/3600000),m=Math.floor((ms%3600000)/60000),s=Math.floor((ms%60000)/1000);return `${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;}
-function save(fin,meta){const data=JSON.stringify({board,opened,tries,score,over,fin,meta,mode,bHit});localStorage.setItem(K,data);syncCloud(K,data);}
-function pickFresherBoard(a,b){if(!a)return b;if(!b)return a;try{const pa=JSON.parse(a),pb=JSON.parse(b);if(pa.over&&pb.over)return (pa.fin||0)>=(pb.fin||0)?a:b;if(pa.over)return a;if(pb.over)return b;return (pa.opened?.length||0)>=(pb.opened?.length||0)?a:b;}catch(e){return a||b;}}
+function save(fin,meta){
+  const data=JSON.stringify({board,opened,tries,score,over,fin,meta,mode,bHit});
+  localStorage.setItem(K,data);
+  syncCloud(K,data);
+}
 function finishSync(rawBoard){
   synced=true;
-  updChest();updQuests();initSafe();updMiniUI();
+  updChest();updLuck();initSafe();updMiniUI();
   if(!rawBoard)return start('normal');
   try{
     const st=JSON.parse(rawBoard);board=st.board;opened=st.opened;tries=st.tries;score=st.score;over=st.over;mode=st.mode||'normal';bHit=st.bHit||0;
@@ -665,30 +611,39 @@ function finishSync(rawBoard){
     }
   }catch(e){start('normal');}
 }
-
+function pickFresherBoard(a,b){
+  if(!a)return b;if(!b)return a;
+  try{
+    const pa=JSON.parse(a),pb=JSON.parse(b);
+    if(pa.over&&pb.over)return (pa.fin||0)>=(pb.fin||0)?a:b;
+    if(pa.over)return a;if(pb.over)return b;
+    return (pa.opened?.length||0)>=(pb.opened?.length||0)?a:b;
+  }catch(e){return a||b;}
+}
 function init(){
   initUser();setTheme(localStorage.getItem(THK)||'gold');drawLockedGrid();
   document.getElementById('shopList').innerHTML=SHOP_ITEMS.map(x=>`<div class="box row-sb"><b style="font-size:12px">${x.n}</b><button class="btn-out" onclick="buy('${x.n}',${x.p})">${x.p} ❇️</button></div>`).join('');
   document.getElementById('marketList').innerHTML=MARKET_ITEMS.map(x=>`<div class="box row-sb"><b style="font-size:12px">${x.n}</b><button class="btn-out" onclick="navigator.clipboard?.writeText('Админ, куплю: ${x.n} (${x.p})');toast('📋 Скопировано!')">${x.p}</button></div>`).join('');
-  setBal(getBal());renderProf();updQuests();
-  const localRaw=localStorage.getItem(K),cs=window.Telegram?.WebApp?.CloudStorage;
+  setBal(getBal());renderProf();
+
+  const localRaw=localStorage.getItem(K);
+  const cs=window.Telegram?.WebApp?.CloudStorage;
   if(cs){
     let done=false;
     const tOut=setTimeout(()=>{if(!done){done=true;finishSync(localRaw);}},2500);
-    cs.getItems([K,BK,CK,MK,SFK,QK],(err,vals)=>{
+    cs.getItems([K,BK,CK,MK,SFK,LCK],(err,vals)=>{
       if(done)return;done=true;clearTimeout(tOut);
       if(!err&&vals){
         if(vals[BK]&&parseFloat(vals[BK])>getBal())setBal(parseFloat(vals[BK]));
         if(vals[CK])localStorage.setItem(CK,vals[CK]);
         if(vals[MK])localStorage.setItem(MK,vals[MK]);
         if(vals[SFK])localStorage.setItem(SFK,vals[SFK]);
-        if(vals[QK])localStorage.setItem(QK,vals[QK]);
+        if(vals[LCK]&&parseInt(vals[LCK],10)>parseInt(localStorage.getItem(LCK)||'0',10))localStorage.setItem(LCK,vals[LCK]);
         finishSync(pickFresherBoard(localRaw,vals[K]));
       }else finishSync(localRaw);
     });
   }else finishSync(localRaw);
 }
-
 setInterval(()=>{
   const end=new Date('2026-12-10T23:59:59').getTime()-Date.now();
   if(end>0)document.getElementById('eventCd').innerText=`${Math.floor(end/86400000)} дн. ${Math.floor((end%86400000)/3600000)} ч. ${Math.floor((end%3600000)/60000)} мин.`;
@@ -696,7 +651,7 @@ setInterval(()=>{
   const sf=JSON.parse(localStorage.getItem(SFK)||'null');
   if(sf&&sf.done){const df=(sf.fin+CD)-Date.now();if(df<=0)initSafe();else document.getElementById('safeCd').innerText=fmt(df);}
   const m=getMiniCD();
-  if(isMiniLocked('rocket'))document.getElementById('cdRocket').innerText=fmt((m.rocket+RCD)-Date.now());else if(!rFly&&document.getElementById('rocketBtn').disabled)updMiniUI();
+  if(isMiniLocked('rocket'))document.getElementById('cdRocket').innerText=fmt((m.rocket+CD)-Date.now());else if(!rFly&&document.getElementById('rocketBtn').disabled)updMiniUI();
 },1000);
 
 init();
