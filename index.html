@@ -417,8 +417,8 @@ function handleRocket(){
 function initSafe(){
   if(!synced)return;
   let sf=JSON.parse(localStorage.getItem(SFK)||'null');
-  if(!sf||(sf.done&&Date.now()-sf.fin>=CD)||sf.code>500){
-    sf={code:Math.floor(Math.random()*501),tries:5,done:false,fin:0};
+  if(!sf||(sf.done&&Date.now()-sf.fin>=CD)||sf.code>100||sf.code<1){
+    sf={code:Math.floor(Math.random()*100)+1,tries:5,done:false,fin:0};
     const s=JSON.stringify(sf);localStorage.setItem(SFK,s);syncCloud(SFK,s);
   }
   updSafeUI(sf);
@@ -431,13 +431,14 @@ function updSafeUI(sf){
 function guessSafe(){
   if(!synced)return;
   let sf=JSON.parse(localStorage.getItem(SFK));if(sf.done)return;
-  const val=parseInt(document.getElementById('safeIn').value,10);if(isNaN(val)||val<0||val>500){toast('Введи число 000–500');return;}
+  const val=parseInt(document.getElementById('safeIn').value,10);if(isNaN(val)||val<1||val>100){toast('Введи число от 1 до 100');return;}
   document.getElementById('safeIn').value='';sf.tries--;
-  if(val===sf.code){sf.done=true;sf.fin=Date.now();setBal(getBal()+10);tone('win');document.getElementById('safeHint').innerHTML=`🎉 <b>ВЗЛОМАНО!</b> Код ${String(sf.code).padStart(3,'0')}! +10 ❇️`;log('🔐 Сейф: +10 ❇️');}
-  else if(sf.tries<=0){sf.done=true;sf.fin=Date.now();tone('bomb');document.getElementById('safeHint').innerHTML=`💥 Код был: <b>${String(sf.code).padStart(3,'0')}</b>`;}
+  if(val===sf.code){sf.done=true;sf.fin=Date.now();setBal(getBal()+5);tone('win');document.getElementById('safeHint').innerHTML=`🎉 <b>ВЗЛОМАНО!</b> Код ${sf.code}! +5 ❇️`;log('🔐 Сейф: +5 ❇️');}
+  else if(sf.tries<=0){sf.done=true;sf.fin=Date.now();tone('bomb');document.getElementById('safeHint').innerHTML=`💥 Код был: <b>${sf.code}</b>`;}
   else{tone('tick');document.getElementById('safeHint').innerText=val<sf.code?`⬆️ БОЛЬШЕ чем ${val}`:`⬇️ МЕНЬШЕ чем ${val}`;}
   const s=JSON.stringify(sf);localStorage.setItem(SFK,s);syncCloud(SFK,s);updSafeUI(sf);
 }
+
 function spinWheel(type){
   const isElite=(type==='elite'),cost=isElite?100:30;
   if(getBal()<cost){toast(`❌ Нужно ${cost} ❇️`);return;}
