@@ -1083,6 +1083,380 @@ init();
   };
 })();
 </script>
+  <script>
+(function(){
+  function getRank(b){if(b>=500)return '👑 Легенда Gold';if(b>=200)return '💎 Охотник за NFT';if(b>=50)return '💣 Опытный Сапёр';return '🌱 Новичок';}
+
+  // 1. Стартовое меню (Лобби) 1-го сезона от разработчика @maksyuga
+  const splash=document.createElement('div');
+  splash.id='welcomeSplash';
+  splash.style.cssText='position:fixed;inset:0;background:radial-gradient(circle at top,#292011 0%,#0c0a07 78%);z-index:200;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:20px;text-align:center;transition:opacity 0.35s';
+  splash.innerHTML=`
+    <div style="font-size:62px;margin-bottom:8px;filter:drop-shadow(0 0 22px rgba(250,204,21,0.65))">💣</div>
+    <div style="padding:4px 14px;background:rgba(245,158,11,0.18);border:1px solid #f59e0b;border-radius:20px;font-size:11px;font-weight:bold;color:#fde047;letter-spacing:1px;margin-bottom:8px">🏆 1-Й СЕЗОН • GOLD EDITION</div>
+    <h1 style="font-size:25px;text-transform:uppercase;letter-spacing:1.5px;background:linear-gradient(90deg,#fde047,#f59e0b,#fef08a);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:12px">Минное Поле 2.0</h1>
+    <div style="background:rgba(24,20,15,0.88);border:1px solid #574122;border-radius:14px;padding:14px;max-width:310px;width:100%;margin-bottom:18px;box-shadow:0 8px 25px rgba(0,0,0,0.6)">
+      <p style="font-size:13px;color:#f8fafc;line-height:1.45;margin-bottom:10px">Добро пожаловать! Открывай клетки, крути кейсы, гоняй за кристаллами и забирай призы.</p>
+      <div style="font-size:11px;color:#d6d3d1;background:rgba(0,0,0,0.35);padding:7px;border-radius:8px;margin-bottom:6px">Твой ранг: <b id="spRank" style="color:#6ee7b7">${getRank(typeof getBal==='function'?getBal():0)}</b></div>
+      <p style="font-size:11px;color:#a8a29e">👨‍💻 Разработчик: <b style="color:#fbbf24">@maksyuga</b></p>
+    </div>
+    <button class="btn" style="width:100%;max-width:260px;padding:14px;font-size:16px;border-radius:14px;box-shadow:0 4px 20px rgba(245,158,11,0.5)" onclick="enterGameLobby()">🚀 ИГРАТЬ</button>
+  `;
+  document.body.appendChild(splash);
+  window.enterGameLobby=function(){tone('win');splash.style.opacity='0';setTimeout(()=>splash.remove(),350);};
+
+  // 2. Фикс надписи Ракеты на 12 часов
+  const rPop=document.getElementById('rocketPop');
+  if(rPop)rPop.innerHTML=rPop.innerHTML.replace(/1 раз в 24ч/g,'1 раз в 12ч').replace(/24:00:00/g,'12:00:00');
+  document.querySelectorAll('#tab-mini .box').forEach(b=>{if(b.innerText.includes('Краш-Ракета'))b.innerHTML=b.innerHTML.replace(/24ч/g,'12ч');});
+
+  // 3. Живой Рюкзак Баффов и Карт прямо в шапке
+  const INV_K='mp_inv_v1';
+  window.getInv=function(){return JSON.parse(localStorage.getItem(INV_K)||'{"sh":0,"sc":0,"high":0,"black":0}');};
+  window.saveInv=function(v){const s=JSON.stringify(v);localStorage.setItem(INV_K,s);syncCloud(INV_K,s);renderInvBar();};
+  try{const cs=window.Telegram?.WebApp?.CloudStorage;if(cs)cs.getItem(INV_K,(e,v)=>{if(!e&&v){localStorage.setItem(INV_K,v);renderInvBar();}});}catch(e){}
+
+  const headerEl=document.querySelector('.header');
+  if(headerEl&&!document.getElementById('invBar')){
+    const bar=document.createElement('div');bar.id='invBar';
+    bar.style.cssText='display:flex;gap:4px;justify-content:center;flex-wrap:wrap;margin-top:5px';
+    headerEl.appendChild(bar);
+  }
+  window.renderInvBar=function(){
+    const bar=document.getElementById('invBar');if(!bar)return;const inv=getInv();
+    bar.innerHTML=`
+      <span class="badge" onclick="useInv('sh')" style="border-color:#38bdf8;color:#7dd3fc">🛡 Щит: ${inv.sh}</span>
+      <span class="badge" onclick="useInv('sc')" style="border-color:#c084fc;color:#e9d5ff">🔍 Сканер: ${inv.sc}</span>
+      <span class="badge" onclick="useInv('high')" style="border-color:#fb923c;color:#fed7aa">🔥 Хайролл: ${inv.high}</span>
+      <span class="badge" onclick="useInv('black')" style="border-color:#f43f5e;color:#fda4af">🖤 Чёрная: ${inv.black}</span>`;
+  };
+  renderInvBar();
+  // 4. Активация баффов и карт прямо из Рюкзака в шапке
+  window.useInv=function(type){
+    const inv=getInv();
+    if((inv[type]||0)<=0){toast('🎒 Пусто! Купи в Магазе или выбей в Сундуке/Кейсе');return;}
+    if(type==='sh'){
+      if(over){toast('⏳ Дождись нового раунда!');return;}
+      inv.sh--;saveInv(inv);window._activeShield=true;tone('win');
+      toast('🛡 Щит активирован на этот раунд (спасёт от 1 бомбы)!');
+      log('🛡 Активирован Щит из рюкзака');
+    }else if(type==='sc'){
+      if(over){toast('⏳ Дождись нового раунда!');return;}
+      const safeIdx=board.findIndex((x,idx)=>!opened.includes(idx)&&x.t!=='b');
+      if(safeIdx===-1){toast('Нет закрытых безопасных клеток!');return;}
+      inv.sc--;saveInv(inv);tone('win');
+      toast(`🔍 Сканер: клетка №${safeIdx+1} точно БЕЗОПАСНА!`);
+      log(`🔍 Сканер подсветил клетку №${safeIdx+1}`);
+    }else if(type==='high'||type==='black'){
+      inv[type]--;saveInv(inv);tone('win');
+      if(typeof tint!=='undefined'&&tint)clearInterval(tint);
+      localStorage.removeItem(K);syncCloud(K,null);
+      start(type);document.querySelector('.nav-btn').click();
+      toast(`🃏 Карта [${type.toUpperCase()}] запущена!`);
+    }
+  };
+
+  // Срабатывание Щита из Рюкзака при нажатии на бомбу
+  const origOpenForInv=window.openC;
+  window.openC=function(i){
+    if(!synced||over||opened.includes(i))return;
+    const it=board[i];
+    if(it&&it.t==='b'&&window._activeShield){
+      window._activeShield=false;
+      board[i]={t:'c',i:'🛡',v:0,l:'СПАС!'};
+      toast('🛡 ЩИТ ИЗ РЮКЗАКА СПАС ОТ БОМБЫ!');
+      log('🛡 Щит из рюкзака спас от бомбы');
+    }
+    origOpenForInv(i);
+  };
+
+  // Сундук 7 дней: баффы (День 3 и День 5) теперь падают прямо в Рюкзак!
+  const origClaim=window.claimChest;
+  window.claimChest=function(){
+    const st=getCh();const dayIdx=st.c%7;
+    if(dayIdx===2||dayIdx===4){
+      st.c++;st.l=Date.now();const s=JSON.stringify(st);localStorage.setItem(CHK,s);syncCloud(CHK,s);
+      const inv=getInv();if(dayIdx===2)inv.sh++;else inv.sc++;saveInv(inv);
+      tone('win');updChest();
+      toast(dayIdx===2?'🎁 Из сундука получен 🛡 Щит сапёра в Рюкзак!':'🎁 Из сундука получен 🔍 Сканер сапёра в Рюкзак!');
+      log(dayIdx===2?'🎁 Сундук: +1 🛡 Щит в рюкзак':'🎁 Сундук: +1 🔍 Сканер в рюкзак');
+      return;
+    }
+    origClaim();
+  };
+
+  // Магазин: покупка баффов и карт в Рюкзак
+  const shopTab=document.getElementById('tab-shop');
+  if(shopTab){
+    let cBox=document.getElementById('cardsShopBox');
+    if(!cBox){
+      const cSec=document.createElement('div');cSec.className='sec';cSec.innerText='🎒 Карты и Баффы (В Рюкзак)';
+      cBox=document.createElement('div');cBox.id='cardsShopBox';cBox.style.width='100%';
+      const firstSec=shopTab.querySelector('.sec');
+      shopTab.insertBefore(cSec,firstSec);shopTab.insertBefore(cBox,firstSec);
+    }
+    cBox.innerHTML=`
+      <div class="box row-sb"><b style="font-size:12px">🛡 Щит сапёра (В рюкзак)</b><button class="btn-out" onclick="buyToInv('sh',8,'🛡 Щит сапёра')">8 ❇️</button></div>
+      <div class="box row-sb"><b style="font-size:12px">🔍 Сканер сапёра (В рюкзак)</b><button class="btn-out" onclick="buyToInv('sc',6,'🔍 Сканер сапёра')">6 ❇️</button></div>
+      <div class="box row-sb"><b style="font-size:12px">🔥 Карта «Хайролл» (В рюкзак)</b><button class="btn-out" onclick="buyToInv('high',12,'🔥 Карта Хайролл')">12 ❇️</button></div>
+      <div class="box row-sb"><b style="font-size:12px">🖤 «Чёрная карта» (В рюкзак)</b><button class="btn-out" onclick="buyToInv('black',25,'🖤 Чёрная карта')">25 ❇️</button></div>`;
+  }
+  window.buyToInv=function(k,p,label){
+    if(getBal()<p){toast(`❌ Нужно ${p} ❇️`);return;}
+    setBal(getBal()-p);tone('win');
+    const inv=getInv();inv[k]=(inv[k]||0)+1;saveInv(inv);
+    log(`🎒 Куплено в рюкзак: ${label} (-${p}❇️)`);
+    toast('✅ Добавлено в Рюкзак наверху!');
+  };
+  // 5. Ловец Кристаллов 2.0 (Blum-стиль: 30 сек, ❄️ заморозка, 💣 бомбы, 🎟 3 билета в день)
+  const TK_KEY='mp_catch_tickets_v1';
+  window.getTickets=function(){
+    let d=JSON.parse(localStorage.getItem(TK_KEY)||'null');
+    if(!d){d={n:3,t:Date.now()};localStorage.setItem(TK_KEY,JSON.stringify(d));}
+    else if(Date.now()-d.t>=86400000){d={n:3,t:Date.now()};localStorage.setItem(TK_KEY,JSON.stringify(d));}
+    return d;
+  };
+  window.saveTickets=function(d){
+    const s=JSON.stringify(d);localStorage.setItem(TK_KEY,s);syncCloud(TK_KEY,s);
+    const b=document.getElementById('tkBadge');if(b)b.innerText=`🎟 Билетов: ${d.n}/3`;
+  };
+  try{const cs=window.Telegram?.WebApp?.CloudStorage;if(cs)cs.getItem(TK_KEY,(e,v)=>{if(!e&&v){localStorage.setItem(TK_KEY,v);getTickets();}});}catch(e){}
+
+  // Обновляем карточку Ловца во вкладке "Игры"
+  document.querySelectorAll('#tab-mini .box').forEach(b=>{
+    if(b.innerText.includes('Ловец Кристаллов')){
+      b.innerHTML=`<div class="row-sb"><div><h3 style="font-size:14px;color:#6ee7b7">❄️ Ловец Кристаллов (Blum)</h3><p style="font-size:11px;color:#d6d3d1;margin-top:2px">30 сек • ❄️ Заморозка и 💣 Бомбы • <b id="tkBadge" style="color:#fde047">🎟 Билетов: ${getTickets().n}/3</b></p></div><button class="btn btn-green" onclick="openBlumCatch()">Играть</button></div>`;
+    }
+  });
+
+  const blumModal=document.createElement('div');
+  blumModal.className='modal';blumModal.id='blumModal';
+  blumModal.innerHTML=`
+    <div class="receipt" style="border-color:#10b981;padding:12px">
+      <div class="row-sb" style="margin-bottom:6px">
+        <h3 style="color:#6ee7b7;font-size:15px">❄️ Ловец Кристаллов</h3>
+        <button class="btn-out" style="border-color:#78716c;color:#d6d3d1" onclick="closeBlum()">✖</button>
+      </div>
+      <div class="row-sb" style="background:rgba(0,0,0,0.4);padding:6px 10px;border-radius:8px;margin-bottom:8px;font-size:12px;font-weight:bold">
+        <span>⏱ <b id="blTime" style="color:#fde047">30</b>с</span>
+        <span id="blFreezeTag" style="color:#38bdf8;display:none">❄️ ЗАМОРОЗКА!</span>
+        <span>Собрано: <b id="blScore" style="color:#4ade80">0.0</b> ❇️</span>
+      </div>
+      <div id="blArena" style="position:relative;width:100%;height:260px;background:radial-gradient(circle at top,#062c22,#050a08);border:2px solid #10b981;border-radius:12px;overflow:hidden;margin-bottom:8px;touch-action:manipulation"></div>
+      <button class="btn btn-green" id="blStartBtn" style="width:100%;padding:10px;font-size:13px" onclick="startBlumRound()">🎟 Потратить 1 билет и начать</button>
+    </div>`;
+  document.body.appendChild(blumModal);
+
+  let blRun=false,blScore=0,blLeft=30,blFrozen=false,blSpawnIv=null,blTimeIv=null;
+  window.openBlumCatch=function(){
+    const tk=getTickets();
+    document.getElementById('blStartBtn').innerText=`🎟 Потратить 1 билет (${tk.n} шт.)`;
+    document.getElementById('blumModal').classList.add('open');
+  };
+  window.closeBlum=function(){if(blRun){toast('⏳ Доиграй 30 секунд до конца!');return;}document.getElementById('blumModal').classList.remove('open');};
+
+  window.startBlumRound=function(){
+    if(blRun)return;
+    const tk=getTickets();
+    if(tk.n<=0){
+      const wait=fmt((tk.t+86400000)-Date.now());
+      toast(`🎟 Билеты кончились! Новые через ${wait} (или выбей 🎟 в Гонке!)`);
+      return;
+    }
+    tk.n--;saveTickets(tk);
+    blRun=true;blScore=0;blLeft=30;blFrozen=false;
+    document.getElementById('blScore').innerText='0.0';
+    document.getElementById('blTime').innerText='30';
+    document.getElementById('blStartBtn').disabled=true;
+    const arena=document.getElementById('blArena');arena.innerHTML='';
+
+    blTimeIv=setInterval(()=>{
+      if(blFrozen)return;
+      blLeft--;document.getElementById('blTime').innerText=blLeft;
+      if(blLeft<=0){
+        clearInterval(blTimeIv);clearInterval(blSpawnIv);blRun=false;arena.innerHTML='';
+        const win=Math.round(blScore*10)/10;
+        if(win>0){setBal(getBal()+win);log(`❄️ Ловец Кристаллов: +${win}❇️`);}
+        toast(`🎉 Раунд окончен! Собрано: +${win} ❇️`);
+        document.getElementById('blStartBtn').disabled=false;
+        document.getElementById('blStartBtn').innerText=`🎟 Играть ещё (${getTickets().n} шт.)`;
+      }
+    },1000);
+
+    blSpawnIv=setInterval(()=>{
+      if(!blRun)return;
+      const r=Math.random();
+      let type='c1',ico='❇️',val=0.1;
+      if(r<0.16){type='bomb';ico='💣';val=-0.5;}
+      else if(r<0.24){type='ice';ico='❄️';val=0;}
+      else if(r<0.34){type='c5';ico='💎';val=0.5;}
+      else if(r<0.58){type='c3';ico='❇️';val=0.3;}
+
+      const el=document.createElement('div');el.innerText=ico;
+      const x=10+Math.floor(Math.random()*((arena.offsetWidth||280)-44));
+      el.style.cssText=`position:absolute;left:${x}px;top:-34px;font-size:${type==='c5'?28:24}px;cursor:pointer;padding:4px;transition:top ${blFrozen?4.5:2.2}s linear`;
+      arena.appendChild(el);
+      requestAnimationFrame(()=>requestAnimationFrame(()=>{el.style.top='270px';}));
+
+      el.onpointerdown=(e)=>{
+        e.preventDefault();if(!blRun||el.dataset.hit)return;el.dataset.hit='1';
+        if(type==='bomb'){
+          blScore=Math.max(0,blScore-0.5);tone('bomb');
+          arena.style.borderColor='#ef4444';setTimeout(()=>arena.style.borderColor='#10b981',250);
+        }else if(type==='ice'){
+          blFrozen=true;tone('win');
+          document.getElementById('blFreezeTag').style.display='inline';
+          arena.style.boxShadow='inset 0 0 25px rgba(56,189,248,0.6)';
+          setTimeout(()=>{blFrozen=false;document.getElementById('blFreezeTag').style.display='none';arena.style.boxShadow='none';},4000);
+        }else{
+          blScore=Math.min(5.0,blScore+val);tone('tick');
+        }
+        document.getElementById('blScore').innerText=blScore.toFixed(1);
+        el.remove();
+      };
+      setTimeout(()=>{if(el.parentNode)el.remove();},blFrozen?4600:2300);
+    },420);
+  };
+  // 6. Новая аркадная игра: "🏎 Гонка за Кристаллами" (3 полосы, барьеры 🚧 и редкие билетики 🎟)
+  const RACE_CD=43200000;
+  const RACE_K='mp_race_cd_v1';
+
+  const miniTab=document.getElementById('tab-mini');
+  if(miniTab){
+    const rCard=document.createElement('div');rCard.className='box';
+    rCard.style.cssText='border-color:#f97316;background:linear-gradient(135deg,rgba(249,115,22,0.25),rgba(24,20,15,0.9))';
+    rCard.innerHTML=`<div class="row-sb"><div><h3 style="font-size:14px;color:#fdba74">🏎 Гонка за Кристаллами</h3><p style="font-size:11px;color:#d6d3d1;margin-top:2px">Уворачивайся от 🚧 • Собирай ❇️ и редкие билеты 🎟 (раз в 12ч)</p></div><button class="btn" style="background:linear-gradient(135deg,#ea580c,#c2410c)" onclick="openRaceModal()">Гонка</button></div>`;
+    miniTab.appendChild(rCard);
+  }
+
+  const raceModal=document.createElement('div');
+  raceModal.className='modal';raceModal.id='raceModal';
+  raceModal.innerHTML=`
+    <div class="receipt" style="border-color:#f97316;padding:12px">
+      <div class="row-sb" style="margin-bottom:6px">
+        <h3 style="color:#fdba74;font-size:15px">🏎 Гонка за Кристаллами</h3>
+        <button class="btn-out" style="border-color:#78716c;color:#d6d3d1" onclick="closeRace()">✖</button>
+      </div>
+      <div class="row-sb" style="background:rgba(0,0,0,0.4);padding:6px 10px;border-radius:8px;margin-bottom:8px;font-size:12px;font-weight:bold">
+        <span>Кристаллы: <b id="rcScore" style="color:#4ade80">0.0</b> ❇️</span>
+        <span>Билеты: <b id="rcTk" style="color:#fde047">+0 🎟</b></span>
+      </div>
+      <div id="rcRoad" style="position:relative;width:100%;height:240px;background:#171717;border:2px solid #f97316;border-radius:12px;overflow:hidden;margin-bottom:8px">
+        <div style="position:absolute;top:0;bottom:0;left:33.3%;width:2px;border-left:2px dashed #404040"></div>
+        <div style="position:absolute;top:0;bottom:0;left:66.6%;width:2px;border-left:2px dashed #404040"></div>
+        <div id="rcCar" style="position:absolute;bottom:14px;left:50%;transform:translateX(-50%);font-size:34px;transition:left 0.12s;z-index:5">🏎️</div>
+      </div>
+      <div class="row-sb" style="margin-bottom:8px">
+        <button class="btn" style="flex:1;padding:12px;font-size:16px" onclick="moveCar(-1)">⬅️ Влево</button>
+        <button class="btn" style="flex:1;padding:12px;font-size:16px" onclick="moveCar(1)">Вправо ➡️</button>
+      </div>
+      <button class="btn" id="rcStartBtn" style="width:100%;padding:10px;background:linear-gradient(135deg,#ea580c,#c2410c)" onclick="startRace()">🏁 Погнали! (1 раз в 12ч)</button>
+    </div>`;
+  document.body.appendChild(raceModal);
+
+  let rcRun=false,rcLane=1,rcScore=0,rcTk=0,rcLoop=null,rcSpawn=null;
+  const laneX=['16.6%','50%','83.3%'];
+  window.moveCar=function(dir){if(!rcRun)return;rcLane=Math.max(0,Math.min(2,rcLane+dir));document.getElementById('rcCar').style.left=laneX[rcLane];tone('tick');};
+  window.openRaceModal=function(){
+    const last=parseInt(localStorage.getItem(RACE_K)||'0',10),left=(last+RACE_CD)-Date.now(),btn=document.getElementById('rcStartBtn');
+    if(left>0){btn.disabled=true;btn.innerText=`⏳ Жди ${fmt(left)}`;}else{btn.disabled=false;btn.innerText='🏁 Погнали! (Бесплатно)';}
+    document.getElementById('raceModal').classList.add('open');
+  };
+  window.closeRace=function(){if(rcRun){toast('🏎 Сначала доедь заезд!');return;}document.getElementById('raceModal').classList.remove('open');};
+  window.startRace=function(){
+    const last=parseInt(localStorage.getItem(RACE_K)||'0',10);if(Date.now()-last<RACE_CD)return;
+    localStorage.setItem(RACE_K,Date.now());syncCloud(RACE_K,Date.now());
+    rcRun=true;rcLane=1;rcScore=0;rcTk=0;
+    document.getElementById('rcCar').style.left=laneX[1];document.getElementById('rcScore').innerText='0.0';document.getElementById('rcTk').innerText='+0 🎟';
+    const btn=document.getElementById('rcStartBtn');btn.disabled=true;btn.innerText='🏎️ В пути...';
+    const road=document.getElementById('rcRoad');road.querySelectorAll('.rc-obj').forEach(o=>o.remove());
+    let ticks=0;
+    rcSpawn=setInterval(()=>{
+      if(!rcRun)return;ticks++;if(ticks>=38){finishRace('🏁 Финиш! Отличный заезд!');return;}
+      const lane=Math.floor(Math.random()*3),r=Math.random();
+      let type='c1',ico='❇️';if(r<0.38){type='obs';ico='🚧';}else if(r<0.46){type='tk';ico='🎟';}else if(r<0.62){type='c3';ico='💎';}
+      const obj=document.createElement('div');obj.className='rc-obj';obj.dataset.lane=lane;obj.dataset.type=type;obj.innerText=ico;obj.dataset.y='-30';
+      obj.style.cssText=`position:absolute;left:${laneX[lane]};top:-30px;transform:translateX(-50%);font-size:26px`;road.appendChild(obj);
+    },520);
+    rcLoop=setInterval(()=>{
+      if(!rcRun)return;
+      road.querySelectorAll('.rc-obj').forEach(obj=>{
+        let y=parseFloat(obj.dataset.y)+7;obj.dataset.y=y;obj.style.top=y+'px';
+        if(y>185&&y<225&&parseInt(obj.dataset.lane,10)===rcLane){
+          const t=obj.dataset.type;obj.remove();
+          if(t==='obs')finishRace('💥 Врезался в барьер!');
+          else if(t==='tk'){rcTk++;tone('win');document.getElementById('rcTk').innerText=`+${rcTk} 🎟`;toast('🎟 Пойман редкий билет в Ловец!');}
+          else{rcScore=Math.min(4.0,rcScore+(t==='c3'?0.3:0.1));tone('tick');document.getElementById('rcScore').innerText=rcScore.toFixed(1);}
+        }else if(y>250)obj.remove();
+      });
+    },45);
+  };
+  function finishRace(msg){
+    clearInterval(rcSpawn);clearInterval(rcLoop);rcRun=false;const win=Math.round(rcScore*10)/10;
+    if(win>0){setBal(getBal()+win);log(`🏎 Гонка: +${win}❇️`);}
+    if(rcTk>0){const tk=getTickets();tk.n+=rcTk;saveTickets(tk);log(`🏎 Билет в гонке: +${rcTk}🎟`);}
+    toast(`${msg} Итог: +${win} ❇️`+(rcTk>0?` и +${rcTk} 🎟!`:''));document.getElementById('rcStartBtn').innerText='⏳ Сыграно (Жди 12ч)';
+  }
+
+  // 7. Общий Лидерборд чата на твоём npoint.io + Звания
+  const LB_URL='https://npoint.io';
+  const badgesEl=document.querySelector('.badges');
+  if(badgesEl&&!document.getElementById('lbTopBtn')){
+    const btn=document.createElement('span');btn.id='lbTopBtn';btn.className='badge';
+    btn.style.cssText='background:rgba(245,158,11,0.22);border-color:#fbbf24;color:#fde047';
+    btn.innerText='🏆 Топ чата';btn.onclick=()=>openLeaderboard();badgesEl.appendChild(btn);
+  }
+  const lbModal=document.createElement('div');lbModal.className='modal';lbModal.id='lbModal';
+  lbModal.innerHTML=`
+    <div class="receipt" style="border-color:#fbbf24;padding:13px;max-height:82vh;display:flex;flex-direction:column">
+      <div class="row-sb" style="margin-bottom:8px">
+        <h3 style="color:#fde047;font-size:15px">🏆 Лидерборд чата • 1 Сезон</h3>
+        <div style="display:flex;gap:5px"><button class="btn-out" onclick="openLeaderboard()">🔄</button><button class="btn-out" style="border-color:#78716c;color:#d6d3d1" onclick="document.getElementById('lbModal').classList.remove('open')">✖</button></div>
+      </div>
+      <div id="lbList" style="overflow-y:auto;text-align:left;font-size:12px;max-height:58vh">Загрузка рейтинга...</div>
+    </div>`;
+  document.body.appendChild(lbModal);
+
+  let lbBusy=false;
+  window.syncLeaderboard=async function(openAfter=false){
+    if(lbBusy)return;lbBusy=true;
+    try{
+      const r=await fetch(LB_URL+'?t='+Date.now());
+      let raw=await r.json();
+      let board=(raw&&typeof raw==='object'&&raw.players)?raw.players:{};
+      const u=window.Telegram?.WebApp?.initDataUnsafe?.user;
+      const uid=u?.id?String(u.id):('guest_'+(localStorage.getItem('mp_gid')||(()=>{const g=Math.floor(Math.random()*99999);localStorage.setItem('mp_gid',g);return g;})()));
+      const uname=u?(u.username?'@'+u.username:(u.first_name||'Игрок')):'Игрок #'+uid.slice(-4);
+      const bal=Math.round((typeof getBal==='function'?getBal():0)*10)/10;
+      board[uid]={name:uname,bal:bal,rank:getRank(bal),ts:Date.now()};
+      await fetch(LB_URL,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({players:board})});
+      if(openAfter)renderLeaderboard(board,uid);
+    }catch(e){
+      if(openAfter)document.getElementById('lbList').innerHTML='<p style="color:#fca5a5;text-align:center">Не удалось загрузить рейтинг. Нажми 🔄</p>';
+    }finally{lbBusy=false;}
+  };
+  function renderLeaderboard(board,myId){
+    const arr=Object.entries(board).map(([id,v])=>({id,...v})).sort((a,b)=>b.bal-a.bal).slice(0,25);
+    const listEl=document.getElementById('lbList');
+    if(!arr.length){listEl.innerHTML='<p style="text-align:center;color:#a8a29e">Пока никого нет. Будь первым!</p>';return;}
+    listEl.innerHTML=arr.map((p,idx)=>{
+      const medal=idx===0?'🥇':(idx===1?'🥈':(idx===2?'🥉':`<b>#${idx+1}</b>`));
+      const isMe=p.id===myId;
+      return `<div class="box row-sb" style="padding:7px 9px;margin-bottom:5px;${isMe?'border-color:#10b981;background:rgba(16,185,129,0.16)':''}"><div><div style="font-size:12px">${medal} <b>${p.name}</b> ${isMe?'<span style="color:#6ee7b7;font-size:10px">(Ты)</span>':''}</div><div style="font-size:10px;color:#a8a29e;margin-top:2px">${p.rank||getRank(p.bal)}</div></div><b style="color:#fde047;font-size:13px">${p.bal} ❇️</b></div>`;
+    }).join('');
+  }
+  window.openLeaderboard=function(){
+    document.getElementById('lbModal').classList.add('open');
+    document.getElementById('lbList').innerHTML='<p style="text-align:center;color:#fde68a">⏳ Синхронизация рейтинга...</p>';
+    syncLeaderboard(true);
+  };
+  const origSetBal=window.setBal;
+  if(typeof origSetBal==='function'){
+    window.setBal=function(v){origSetBal(v);clearTimeout(window._lbTimer);window._lbTimer=setTimeout(()=>syncLeaderboard(false),1500);};
+  }
+  setTimeout(()=>syncLeaderboard(false),2500);
+})();
+</script>
 </body>
 </html>
 
