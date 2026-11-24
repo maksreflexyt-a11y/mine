@@ -1331,6 +1331,287 @@ init();
   }
 })();
 </script>
+  <script>
+(function(){
+  // 1. Возвращаем нижнее меню, если оно скрылось, и чиним вкладки
+  const nav=document.querySelector('.nav');
+  if(nav)nav.style.display='flex';
+
+  // 2. Обновляем Магазин до 1 000 ❇️ + Рюкзак с VIP-картой за 70 ❇️
+  if(typeof SHOP_ITEMS!=='undefined'){
+    SHOP_ITEMS.length=0;
+    SHOP_ITEMS.push(
+      {n:'Снятие лимитов в чате (12ч)',p:10},{n:'Закреп твоего поста в чате (24ч)',p:20},{n:'Вечный Префикс в чате',p:30},
+      {n:'Свой стикер/эмодзи в пак чата',p:45},{n:'Аватарка группы на 3 дня',p:65},{n:'Модератор чата (5 дней)',p:90},
+      {n:'Своё правило чата (24ч)',p:110},{n:'25 Звёзд Telegram ⭐️',p:140},{n:'Временный Админ (3 дня)',p:170},
+      {n:'50 Звёзд Telegram ⭐️',p:210},{n:'100 Звёзд Telegram ⭐️',p:270},{n:'250 Звёзд Telegram ⭐️',p:350},
+      {n:'350 Звёзд Telegram ⭐️',p:430},{n:'Telegram Gift / NFT Подарок 🎁',p:500},{n:'TG Premium (3 месяца)',p:600},
+      {n:'TG Premium (6 месяцев)',p:750},{n:'👑 АДМИНКА НАВСЕГДА + TG Prem 12 мес',p:1000}
+    );
+    const sh=document.getElementById('shopList');
+    if(sh)sh.innerHTML=SHOP_ITEMS.map(x=>`<div class="box row-sb"><b style="font-size:12px">${x.n}</b><button class="btn-out" onclick="buy('${x.n}',${x.p})">${x.p} ❇️</button></div>`).join('');
+  }
+
+  const luckBtn=document.getElementById('luckBtn');if(luckBtn){const b=luckBtn.closest('.box');if(b)b.remove();}
+  const shopTab=document.getElementById('tab-shop');
+  if(shopTab){
+    shopTab.querySelectorAll(':scope > .box').forEach(b=>b.remove());
+    let cSec=document.getElementById('cardsSec'),cBox=document.getElementById('cardsShopBox');
+    if(!cSec){cSec=document.createElement('div');cSec.id='cardsSec';cSec.className='sec';cSec.innerText='🎒 Карты и Баффы (В Рюкзак)';const f=shopTab.querySelector('.sec');shopTab.insertBefore(cSec,f);}
+    if(!cBox){cBox=document.createElement('div');cBox.id='cardsShopBox';cBox.style.width='100%';const f=shopTab.querySelectorAll('.sec');shopTab.insertBefore(cBox,f);}
+    cBox.innerHTML=`
+      <div class="box row-sb"><b style="font-size:12px">🛡 Щит сапёра (В рюкзак)</b><button class="btn-out" onclick="buyToInv('sh',8,'🛡 Щит сапёра')">8 ❇️</button></div>
+      <div class="box row-sb"><b style="font-size:12px">🔍 Сканер сапёра (В рюкзак)</b><button class="btn-out" onclick="buyToInv('sc',6,'🔍 Сканер сапёра')">6 ❇️</button></div>
+      <div class="box row-sb"><b style="font-size:12px">🔥 Карта «Хайролл» (В рюкзак)</b><button class="btn-out" onclick="buyToInv('high',12,'🔥 Карта Хайролл')">12 ❇️</button></div>
+      <div class="box row-sb"><b style="font-size:12px">🖤 «Чёрная карта» (В рюкзак)</b><button class="btn-out" onclick="buyToInv('black',25,'🖤 Чёрная карта')">25 ❇️</button></div>
+      <div class="box row-sb"><b style="font-size:12px">👑 VIP-карта на 3 дня (В рюкзак)</b><button class="btn-out" onclick="buyToInv('vip3',70,'👑 VIP-карта (3 дня)')">70 ❇️</button></div>`;
+  }
+
+  // 3. Стартовый экран 1-го Сезона от @maksyuga + Новогодние треки
+  function getRank(b){if(b>=500)return '👑 Легенда Gold';if(b>=200)return '💎 Охотник за NFT';if(b>=50)return '💣 Опытный Сапёр';return '🌱 Новичок';}
+  if(typeof TRACKS!=='undefined'&&!TRACKS.some(t=>t.n.includes('Jingle'))){
+    TRACKS.unshift(
+      {n:'🎄 Jingle Bells',spd:240,lead:[329.6,329.6,329.6,0,329.6,329.6,329.6,0,329.6,392,261.6,293.7,329.6,0,0,0,349.2,349.2,349.2,349.2,349.2,329.6,329.6,329.6,329.6,293.7,293.7,329.6,293.7,0,392,0],bass:[130.8,196,130.8,196,174.6,130.8,196,130.8,130.8,196,110,174.6,196,146.8,130.8,196,130.8,196,130.8,196,174.6,130.8,196,130.8,130.8,196,110,174.6,196,146.8,130.8,0]},
+      {n:'❄️ В лесу ёлочка',spd:290,lead:[261.6,440,440,392,440,349.2,261.6,261.6,261.6,440,440,466.2,392,523.3,0,0,523.3,293.7,293.7,466.2,466.2,440,392,349.2,261.6,440,440,392,440,349.2,0,0],bass:[174.6,130.8,174.6,130.8,116.5,174.6,130.8,174.6,174.6,130.8,174.6,130.8,116.5,174.6,130.8,174.6,174.6,130.8,174.6,130.8,116.5,174.6,130.8,174.6,174.6,130.8,174.6,130.8,116.5,174.6,130.8,0]},
+      {n:'🔔 Щедрик',spd:200,lead:[440,392,440,349.2,440,392,440,349.2,440,392,440,349.2,440,392,440,349.2,523.3,493.9,523.3,440,523.3,493.9,523.3,440,587.3,587.3,523.3,493.9,440,440,392,349.2],bass:[110,110,98,98,87.3,87.3,82.4,82.4,110,110,98,98,87.3,87.3,82.4,82.4,110,110,98,98,87.3,87.3,82.4,82.4,110,98,87.3,82.4,110,98,87.3,0]}
+    );
+    trIdx=0;
+  }
+
+  if(!document.getElementById('welcomeSplash')){
+    const splash=document.createElement('div');splash.id='welcomeSplash';
+    splash.style.cssText='position:fixed;inset:0;background:radial-gradient(circle at top,#292011 0%,#0c0a07 78%);z-index:200;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:20px;text-align:center;transition:opacity 0.35s';
+    splash.innerHTML=`
+      <div style="font-size:62px;margin-bottom:8px;filter:drop-shadow(0 0 22px rgba(250,204,21,0.65))">💣</div>
+      <div style="padding:4px 14px;background:rgba(245,158,11,0.18);border:1px solid #f59e0b;border-radius:20px;font-size:11px;font-weight:bold;color:#fde047;letter-spacing:1px;margin-bottom:8px">🏆 1-Й СЕЗОН • GOLD EDITION</div>
+      <h1 style="font-size:25px;text-transform:uppercase;letter-spacing:1.5px;background:linear-gradient(90deg,#fde047,#f59e0b,#fef08a);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:12px">Минное Поле 2.0</h1>
+      <div style="background:rgba(24,20,15,0.88);border:1px solid #574122;border-radius:14px;padding:14px;max-width:310px;width:100%;margin-bottom:18px;box-shadow:0 8px 25px rgba(0,0,0,0.6)">
+        <p style="font-size:13px;color:#f8fafc;line-height:1.45;margin-bottom:10px">Добро пожаловать! Открывай клетки, крути кейсы, лови кристаллы и забирай призы.</p>
+        <div style="font-size:11px;color:#d6d3d1;background:rgba(0,0,0,0.35);padding:7px;border-radius:8px;margin-bottom:6px">Твой ранг: <b style="color:#6ee7b7">${getRank(typeof getBal==='function'?getBal():0)}</b></div>
+        <p style="font-size:11px;color:#a8a29e">👨‍💻 Разработчик: <b style="color:#fbbf24">@maksyuga</b></p>
+      </div>
+      <button class="btn" style="width:100%;max-width:260px;padding:14px;font-size:16px;border-radius:14px;box-shadow:0 4px 20px rgba(245,158,11,0.5)" onclick="tone('win');this.parentElement.remove();if(typeof playMusic==='function')playMusic()">🚀 ИГРАТЬ</button>`;
+    document.body.appendChild(splash);
+  }
+  // 4. Рюкзак в шапке + VIP за 70 ❇️
+  const INV_K='mp_inv_v1';
+  window.getInv=function(){return JSON.parse(localStorage.getItem(INV_K)||'{"sh":0,"sc":0,"high":0,"black":0,"vip3":0}');};
+  window.saveInv=function(v){const s=JSON.stringify(v);localStorage.setItem(INV_K,s);syncCloud(INV_K,s);renderInvBar();};
+  const badgesEl=document.querySelector('.badges');
+  if(badgesEl&&!document.getElementById('bagBtn')){
+    const bagBtn=document.createElement('span');bagBtn.id='bagBtn';bagBtn.className='badge';
+    bagBtn.style.cssText='background:rgba(56,189,248,0.18);border-color:#38bdf8;color:#7dd3fc';
+    bagBtn.innerText='🎒 Рюкзак (0)';bagBtn.onclick=()=>openBagModal();badgesEl.appendChild(bagBtn);
+  }
+  if(!document.getElementById('bagModal')){
+    const bm=document.createElement('div');bm.className='modal';bm.id='bagModal';
+    bm.innerHTML=`<div class="receipt" style="border-color:#38bdf8;padding:13px"><div class="row-sb" style="margin-bottom:8px"><h3 style="color:#7dd3fc;font-size:15px">🎒 Твой Рюкзак</h3><button class="btn-out" onclick="document.getElementById('bagModal').classList.remove('open')">✖</button></div><div id="bagList" style="text-align:left"></div></div>`;
+    document.body.appendChild(bm);
+  }
+  window.renderInvBar=function(){
+    const inv=getInv(),tot=(inv.sh||0)+(inv.sc||0)+(inv.high||0)+(inv.black||0)+(inv.vip3||0);
+    const b=document.getElementById('bagBtn');if(b)b.innerText=`🎒 Рюкзак (${tot})`;
+    const items=[{k:'sh',ico:'🛡',n:'Щит сапёра',d:'Спасёт от 1 бомбы'},{k:'sc',ico:'🔍',n:'Сканер сапёра',d:'Покажет безопасную клетку'},{k:'high',ico:'🔥',n:'Карта Хайролл',d:'4 хода и x1.5'},{k:'black',ico:'🖤',n:'Чёрная карта',d:'Всего 1 бомба на поле'},{k:'vip3',ico:'👑',n:'VIP-карта (3 дня)',d:'Бонус x1.5 на 3 дня'}];
+    const bl=document.getElementById('bagList');if(bl)bl.innerHTML=items.map(it=>{const cnt=inv[it.k]||0;return `<div class="box row-sb" style="padding:8px;margin-bottom:6px;opacity:${cnt>0?1:0.55}"><div><b style="font-size:12px">${it.ico} ${it.n} (${cnt} шт.)</b><p style="font-size:10px;color:#a8a29e;margin-top:2px">${it.d}</p></div><button class="btn" ${cnt<=0?'disabled':''} onclick="document.getElementById('bagModal').classList.remove('open');useInv('${it.k}')">Юзать</button></div>`;}).join('');
+  };
+  window.openBagModal=function(){renderInvBar();document.getElementById('bagModal').classList.add('open');};renderInvBar();
+  window.useInv=function(type){
+    const inv=getInv();if((inv[type]||0)<=0){toast('🎒 Пусто!');return;}
+    if(type==='sh'){if(over){toast('⏳ Дождись нового раунда!');return;}inv.sh--;saveInv(inv);window._activeShield=true;tone('win');toast('🛡 Щит активирован!');}
+    else if(type==='sc'){if(over){toast('⏳ Дождись нового раунда!');return;}const sIdx=board.findIndex((x,idx)=>!opened.includes(idx)&&x.t!=='b');if(sIdx===-1)return;inv.sc--;saveInv(inv);tone('win');toast(`🔍 Сканер: клетка №${sIdx+1} БЕЗОПАСНА!`);}
+    else if(type==='high'||type==='black'){inv[type]--;saveInv(inv);tone('win');if(typeof tint!=='undefined'&&tint)clearInterval(tint);localStorage.removeItem(K);syncCloud(K,null);start(type);document.querySelector('.nav-btn').click();}
+    else if(type==='vip3'){inv.vip3--;saveInv(inv);tone('win');const exp=Math.max(getVip(),Date.now())+(3*86400000);localStorage.setItem(VK,exp);syncCloud(VK,exp);updVipUI();toast('👑 VIP активирован на 3 дня!');}
+  };
+  window.buyToInv=function(k,p,label){if(getBal()<p){toast(`❌ Нужно ${p} ❇️`);return;}setBal(getBal()-p);tone('win');const inv=getInv();inv[k]=(inv[k]||0)+1;saveInv(inv);log(`🎒 ${label} (-${p}❇️)`);toast('✅ Добавлено в Рюкзак!');};
+
+  // 5. Игры: Ловец 10 сек (до 2.5 ❇️, 3 билета) + 5 Кейсов Удачи + Топ чата + Фон
+  const miniTab=document.getElementById('tab-mini');
+  const TK_KEY='mp_catch_tickets_v1';
+  window.getTickets=function(){let d=JSON.parse(localStorage.getItem(TK_KEY)||'null');if(!d||Date.now()-d.t>=86400000){d={n:3,t:Date.now()};localStorage.setItem(TK_KEY,JSON.stringify(d));}return d;};
+  window.saveTickets=function(d){localStorage.setItem(TK_KEY,JSON.stringify(d));syncCloud(TK_KEY,JSON.stringify(d));const b=document.getElementById('tkBadge');if(b)b.innerText=`🎟 Билетов: ${d.n}/3`;};
+
+  if(miniTab&&!document.getElementById('tkBadge')){
+    const cCard=document.createElement('div');cCard.className='box';cCard.style.cssText='border-color:#10b981;background:linear-gradient(135deg,rgba(16,185,129,0.2),rgba(24,20,15,0.9))';
+    cCard.innerHTML=`<div class="row-sb"><div><h3 style="font-size:14px;color:#6ee7b7">❄️ Ловец Кристаллов (Blum)</h3><p style="font-size:11px;color:#d6d3d1;margin-top:2px">10 сек • До 2.5 ❇️ • <b id="tkBadge" style="color:#fde047">🎟 Билетов: ${getTickets().n}/3</b></p></div><button class="btn btn-green" onclick="openBlumCatch()">Играть</button></div>`;
+    miniTab.appendChild(cCard);
+
+    const kCard=document.createElement('div');kCard.className='box';kCard.style.cssText='border-color:#eab308;background:linear-gradient(135deg,rgba(161,98,7,0.35),rgba(24,20,15,0.9))';
+    kCard.innerHTML=`<div class="row-sb"><div><h3 style="font-size:14px;color:#fde047">📦 Кейсы Удачи (5 видов)</h3><p style="font-size:11px;color:#d6d3d1;margin-top:2px">Кристаллы, Карточки, VIP и Мифический кейс</p></div><button class="btn" onclick="openCsModal()">Открыть</button></div>`;
+    miniTab.appendChild(kCard);
+  }
+
+  if(!document.getElementById('blumModal')){
+    const bm=document.createElement('div');bm.className='modal';bm.id='blumModal';
+    bm.innerHTML=`<div class="receipt" style="border-color:#10b981;padding:12px"><div class="row-sb" style="margin-bottom:6px"><h3 style="color:#6ee7b7;font-size:15px">❄️ Ловец Кристаллов</h3><button class="btn-out" onclick="closeBlum()">✖</button></div><div class="row-sb" style="background:rgba(0,0,0,0.4);padding:6px 10px;border-radius:8px;margin-bottom:8px;font-size:12px;font-weight:bold"><span>⏱ <b id="blTime" style="color:#fde047">10</b>с</span><span id="blFreezeTag" style="color:#38bdf8;display:none">❄️ ЗАМОРОЗКА!</span><span>Собрано: <b id="blScore" style="color:#4ade80">0.0</b> / 2.5 ❇️</span></div><div id="blArena" style="position:relative;width:100%;height:260px;background:radial-gradient(circle at top,#062c22,#050a08);border:2px solid #10b981;border-radius:12px;overflow:hidden;margin-bottom:8px;touch-action:manipulation"></div><button class="btn btn-green" id="blStartBtn" style="width:100%;padding:10px" onclick="startBlumRound()">🎟 Играть (1 билет)</button></div>`;
+    document.body.appendChild(bm);
+  }
+  let blRun=false,blScore=0,blLeft=10,blFrozen=false,blSpawnIv=null,blTimeIv=null;
+  window.openBlumCatch=function(){document.getElementById('blStartBtn').innerText=`🎟 Потратить 1 билет (${getTickets().n} шт.)`;document.getElementById('blumModal').classList.add('open');};
+  window.closeBlum=function(){if(!blRun)document.getElementById('blumModal').classList.remove('open');};
+  window.startBlumRound=function(){
+    if(blRun)return;const tk=getTickets();if(tk.n<=0){toast('🎟 Билеты кончились! Жди 24ч');return;}tk.n--;saveTickets(tk);
+    blRun=true;blScore=0;blLeft=10;blFrozen=false;document.getElementById('blScore').innerText='0.0';document.getElementById('blTime').innerText='10';document.getElementById('blStartBtn').disabled=true;
+    const arena=document.getElementById('blArena');arena.innerHTML='';
+    blTimeIv=setInterval(()=>{if(blFrozen)return;blLeft--;document.getElementById('blTime').innerText=blLeft;if(blLeft<=0){clearInterval(blTimeIv);clearInterval(blSpawnIv);blRun=false;arena.innerHTML='';const win=Math.round(blScore*10)/10;if(win>0)setBal(getBal()+win);toast(`🎉 Собрано: +${win} ❇️`);document.getElementById('blStartBtn').disabled=false;document.getElementById('blStartBtn').innerText=`🎟 Ещё (${getTickets().n} шт.)`;}},1000);
+    blSpawnIv=setInterval(()=>{if(!blRun)return;const r=Math.random();let type='c1',ico='❇️',val=0.1;if(r<0.25){type='bomb';ico='💣';}else if(r<0.31){type='ice';ico='❄️';}else if(r<0.42){type='c3';ico='💎';val=0.3;}else if(r<0.66){type='c2';ico='❇️';val=0.2;}
+      const el=document.createElement('div');el.innerText=ico;el.style.cssText=`position:absolute;left:${10+Math.floor(Math.random()*230)}px;top:-34px;font-size:24px;cursor:pointer;padding:4px;transition:top ${blFrozen?3.5:1.6}s linear`;arena.appendChild(el);requestAnimationFrame(()=>requestAnimationFrame(()=>{el.style.top='270px';}));
+      el.onpointerdown=(e)=>{e.preventDefault();if(!blRun||el.dataset.hit)return;el.dataset.hit='1';if(type==='bomb'){blScore=Math.max(0,blScore-0.5);tone('bomb');}else if(type==='ice'){blFrozen=true;tone('win');document.getElementById('blFreezeTag').style.display='inline';setTimeout(()=>{blFrozen=false;document.getElementById('blFreezeTag').style.display='none';},2500);}else{blScore=Math.min(2.5,blScore+val);tone('tick');}document.getElementById('blScore').innerText=blScore.toFixed(1);el.remove();};
+      setTimeout(()=>{if(el.parentNode)el.remove();},3600);
+    },620);
+  };
+
+  if(!document.getElementById('csModal')){
+    const csM=document.createElement('div');csM.className='modal';csM.id='csModal';
+  // 5. 3D-векторные иконки (SVG) вместо смайликов на Поле + Искры и Вибрация
+  const SVG_ICONS={
+    gem:`<svg class="svg-ico" viewBox="0 0 40 40"><defs><linearGradient id="gGem" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#6ee7b7"/><stop offset="50%" stop-color="#10b981"/><stop offset="100%" stop-color="#047857"/></linearGradient></defs><polygon points="20,3 35,14 20,37 5,14" fill="url(#gGem)" stroke="#a7f3d0" stroke-width="1.5"/><polygon points="20,3 28,14 20,37 12,14" fill="rgba(255,255,255,0.22)"/></svg>`,
+    jack:`<svg class="svg-ico" viewBox="0 0 40 40"><defs><linearGradient id="gGold" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#fef08a"/><stop offset="50%" stop-color="#f59e0b"/><stop offset="100%" stop-color="#b45309"/></linearGradient></defs><polygon points="11,6 29,6 37,16 20,36 3,16" fill="url(#gGold)" stroke="#fef9c3" stroke-width="1.5"/><polygon points="15,16 25,16 20,36" fill="rgba(255,255,255,0.22)"/></svg>`,
+    bomb:`<svg class="svg-ico" viewBox="0 0 40 40"><defs><radialGradient id="gBomb" cx="35%" cy="35%" r="65%"><stop offset="0%" stop-color="#64748b"/><stop offset="45%" stop-color="#1e293b"/><stop offset="100%" stop-color="#020617"/></radialGradient></defs><rect x="17" y="7" width="6" height="5" rx="1.5" fill="#94a3b8"/><path d="M20,7 Q25,2 30,5" fill="none" stroke="#d97706" stroke-width="2" stroke-linecap="round"/><circle class="wick-spark" cx="31" cy="5" r="3.2" fill="#fde047"/><circle cx="20" cy="23" r="13" fill="url(#gBomb)" stroke="#475569" stroke-width="1.2"/></svg>`,
+    shield:`<svg class="svg-ico" viewBox="0 0 40 40"><defs><linearGradient id="gSh" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#7dd3fc"/><stop offset="100%" stop-color="#0284c7"/></linearGradient></defs><path d="M20,4 L33,9 V19 C33,28 27,34 20,37 C13,34 7,28 7,19 V9 Z" fill="url(#gSh)" stroke="#e0f2fe" stroke-width="1.5"/></svg>`,
+    scan:`<svg class="svg-ico" viewBox="0 0 40 40"><circle cx="18" cy="18" r="10" fill="rgba(192,132,252,0.28)" stroke="#e9d5ff" stroke-width="2.5"/><line x1="25.5" y1="25.5" x2="34" y2="34" stroke="#c084fc" stroke-width="4" stroke-linecap="round"/></svg>`
+  };
+
+  function spawnFx(el,txt,col,isBomb){
+    if(!el)return;const r=el.getBoundingClientRect(),cx=r.left+r.width/2,cy=r.top+r.height/2;
+    try{const hf=window.Telegram?.WebApp?.HapticFeedback;if(hf)isBomb?hf.notificationOccurred('error'):hf.impactOccurred('medium');}catch(e){}
+    const pop=document.createElement('div');pop.className='float-pop';pop.style.left=cx+'px';pop.style.top=(cy-10)+'px';pop.style.color=col;pop.innerText=txt;document.body.appendChild(pop);setTimeout(()=>pop.remove(),900);
+    for(let i=0;i<8;i++){const sp=document.createElement('div');sp.style.cssText=`position:fixed;left:${cx}px;top:${cy}px;width:6px;height:6px;border-radius:50%;background:${isBomb?'#ef4444':col};pointer-events:none;z-index:240;transition:all 0.5s ease-out`;document.body.appendChild(sp);const ang=(Math.PI*2/8)*i,dist=25+Math.random()*25;requestAnimationFrame(()=>{sp.style.transform=`translate(${Math.cos(ang)*dist}px,${Math.sin(ang)*dist}px) scale(0.1)`;sp.style.opacity='0';});setTimeout(()=>sp.remove(),550);}
+  }
+
+  let hasFieldShield=false;
+  const origStart=window.start;
+  window.start=function(m='normal'){
+    hasFieldShield=false;if(typeof origStart==='function')origStart(m);
+    const idx1=board.findIndex(x=>x.t==='c'&&x.v===1);
+    if(idx1!==-1){board[idx1]=(Math.random()<0.6)?{t:'sh',i:'🛡',v:0,l:'+1 ХОД'}:{t:'sc',i:'🔍',v:0,l:'+1 ХОД'};if(typeof save==='function')save();render();}
+  };
+  const origRender=window.render;
+  window.render=function(){
+    if(typeof origRender==='function')origRender();
+    const cells=document.querySelectorAll('#grid .cell');
+    board.forEach((it,i)=>{
+      const c=cells[i];if(!c||!opened.includes(i))return;
+      let h=`<span>${it.i}</span>`;
+      if(it.t==='b')h=SVG_ICONS.bomb;else if(it.t==='j')h=SVG_ICONS.jack;else if(it.t==='sh'||it.i==='🛡')h=SVG_ICONS.shield;else if(it.t==='sc')h=SVG_ICONS.scan;else if(it.t==='c')h=SVG_ICONS.gem;
+      c.innerHTML=`${h}<span class="c-val" style="margin-top:2px">${it.l}</span>`;
+    });
+  };
+  const origOpenC=window.openC;
+  window.openC=function(i){
+    if(!synced||over||opened.includes(i))return;const it=board[i],cellEl=document.querySelectorAll('#grid .cell')[i];
+    if(it&&it.t==='sh'){opened.push(i);hasFieldShield=true;tone('win');toast('🛡 Щит: +1 ход и защита от бомбы!');if(typeof save==='function')save();render();spawnFx(cellEl,'+1 ХОД','#7dd3fc',false);return;}
+    if(it&&it.t==='sc'){opened.push(i);tone('win');const sIdx=board.findIndex((x,idx)=>!opened.includes(idx)&&x.t!=='b');toast(sIdx!==-1?`🔍 Сканер (+1 ход): клетка №${sIdx+1} БЕЗОПАСНА!`:'🔍 Сканер (+1 ход)!');if(typeof save==='function')save();render();spawnFx(cellEl,'+1 ХОД','#7dd3fc',false);return;}
+    if(it&&it.t==='b'&&(hasFieldShield||window._activeShield)){hasFieldShield=false;window._activeShield=false;board[i]={t:'c',i:'🛡',v:0,l:'СПАС!'};toast('🛡 ЩИТ СПАС ОТ БОМБЫ!');}
+    if(typeof origOpenC==='function')origOpenC(i);
+    if(it&&cellEl){if(it.t==='b')spawnFx(cellEl,'💥 БУМ!','#f87171',true);else if(it.t==='j')spawnFx(cellEl,it.l+' 💎','#fde047',false);else spawnFx(cellEl,it.l+' ❇️','#6ee7b7',false);}
+  };
+  if(typeof render==='function')render();
+  // 6. Упаковка Ракеты (12ч) и Сейфа + Ловец Кристаллов (10 сек, потолок 2.5 ❇️, 3 билета)
+  const miniTab=document.getElementById('tab-mini');
+  if(miniTab){
+    const boxes=miniTab.querySelectorAll(':scope > .box');
+    [{box:boxes,id:'rocketPop',title:'🚀 Краш-Ракета',sub:'Умножай ставку до x10 (1 раз в 12ч)',color:'#f43f5e',btn:'Играть'},
+     {box:boxes,id:'safePop',title:'🔐 Взлом Сейфа',sub:'Код от 1 до 100 за 5 попыток • Приз: +4 ❇️',color:'#8b5cf6',btn:'Взломать'}].forEach(g=>{
+      if(!g.box||document.getElementById(g.id))return;
+      const m=document.createElement('div');m.className='modal';m.id=g.id;
+      const card=document.createElement('div');card.className='receipt';card.style.borderColor=g.color;
+      card.innerHTML=`<div class="row-sb" style="margin-bottom:6px"><h3 style="color:${g.color};font-size:15px">${g.title}</h3><button class="btn-out" style="border-color:#78716c;color:#d6d3d1" onclick="document.getElementById('${g.id}').classList.remove('open')">✖</button></div>`;
+      g.box.style.margin='0';g.box.style.border='none';g.box.style.background='transparent';g.box.style.padding='0';
+      const oldH=g.box.querySelector('h3');if(oldH)oldH.remove();
+      card.appendChild(g.box);m.appendChild(card);document.body.appendChild(m);
+      const item=document.createElement('div');item.className='box';item.style.borderColor=g.color;
+      item.innerHTML=`<div class="row-sb"><div><h3 style="font-size:14px;color:${g.color}">${g.title}</h3><p style="font-size:11px;color:#d6d3d1;margin-top:2px">${g.sub}</p></div><button class="btn" onclick="document.getElementById('${g.id}').classList.add('open')">${g.btn}</button></div>`;
+      miniTab.appendChild(item);
+    });
+    const rPop=document.getElementById('rocketPop');if(rPop)rPop.innerHTML=rPop.innerHTML.replace(/24ч/g,'12ч').replace(/24:00:00/g,'12:00:00');
+  }
+
+  const TK_KEY='mp_catch_tickets_v1';
+  window.getTickets=function(){let d=JSON.parse(localStorage.getItem(TK_KEY)||'null');if(!d||Date.now()-d.t>=86400000){d={n:3,t:Date.now()};localStorage.setItem(TK_KEY,JSON.stringify(d));}return d;};
+  window.saveTickets=function(d){localStorage.setItem(TK_KEY,JSON.stringify(d));syncCloud(TK_KEY,JSON.stringify(d));const b=document.getElementById('tkBadge');if(b)b.innerText=`🎟 Билетов: ${d.n}/3`;};
+
+  if(miniTab&&!document.getElementById('tkBadge')){
+    const cCard=document.createElement('div');cCard.className='box';cCard.style.cssText='border-color:#10b981;background:linear-gradient(135deg,rgba(16,185,129,0.2),rgba(24,20,15,0.9))';
+    cCard.innerHTML=`<div class="row-sb"><div><h3 style="font-size:14px;color:#6ee7b7">❄️ Ловец Кристаллов (Blum)</h3><p style="font-size:11px;color:#d6d3d1;margin-top:2px">10 сек • До 2.5 ❇️ • <b id="tkBadge" style="color:#fde047">🎟 Билетов: ${getTickets().n}/3</b></p></div><button class="btn btn-green" onclick="openBlumCatch()">Играть</button></div>`;
+    miniTab.appendChild(cCard);
+
+    const kCard=document.createElement('div');kCard.className='box';kCard.style.cssText='border-color:#eab308;background:linear-gradient(135deg,rgba(161,98,7,0.35),rgba(24,20,15,0.9))';
+    kCard.innerHTML=`<div class="row-sb"><div><h3 style="font-size:14px;color:#fde047">📦 Кейсы Удачи (5 видов)</h3><p style="font-size:11px;color:#d6d3d1;margin-top:2px">Кристаллы, Карточки, VIP и Мифический кейс</p></div><button class="btn" onclick="openCsModal()">Открыть</button></div>`;
+    miniTab.appendChild(kCard);
+  }
+
+  if(!document.getElementById('blumModal')){
+    const bm=document.createElement('div');bm.className='modal';bm.id='blumModal';
+    bm.innerHTML=`<div class="receipt" style="border-color:#10b981;padding:12px"><div class="row-sb" style="margin-bottom:6px"><h3 style="color:#6ee7b7;font-size:15px">❄️ Ловец Кристаллов</h3><button class="btn-out" onclick="closeBlum()">✖</button></div><div class="row-sb" style="background:rgba(0,0,0,0.4);padding:6px 10px;border-radius:8px;margin-bottom:8px;font-size:12px;font-weight:bold"><span>⏱ <b id="blTime" style="color:#fde047">10</b>с</span><span id="blFreezeTag" style="color:#38bdf8;display:none">❄️ ЗАМОРОЗКА!</span><span>Собрано: <b id="blScore" style="color:#4ade80">0.0</b> / 2.5 ❇️</span></div><div id="blArena" style="position:relative;width:100%;height:260px;background:radial-gradient(circle at top,#062c22,#050a08);border:2px solid #10b981;border-radius:12px;overflow:hidden;margin-bottom:8px;touch-action:manipulation"></div><button class="btn btn-green" id="blStartBtn" style="width:100%;padding:10px" onclick="startBlumRound()">🎟 Играть (1 билет)</button></div>`;
+    document.body.appendChild(bm);
+  }
+  let blRun=false,blScore=0,blLeft=10,blFrozen=false,blSpawnIv=null,blTimeIv=null;
+  window.openBlumCatch=function(){document.getElementById('blStartBtn').innerText=`🎟 Потратить 1 билет (${getTickets().n} шт.)`;document.getElementById('blumModal').classList.add('open');};
+  window.closeBlum=function(){if(!blRun)document.getElementById('blumModal').classList.remove('open');};
+  window.startBlumRound=function(){
+    if(blRun)return;const tk=getTickets();if(tk.n<=0){toast('🎟 Билеты кончились! Жди 24ч');return;}tk.n--;saveTickets(tk);
+    blRun=true;blScore=0;blLeft=10;blFrozen=false;document.getElementById('blScore').innerText='0.0';document.getElementById('blTime').innerText='10';document.getElementById('blStartBtn').disabled=true;
+    const arena=document.getElementById('blArena');arena.innerHTML='';
+    blTimeIv=setInterval(()=>{if(blFrozen)return;blLeft--;document.getElementById('blTime').innerText=blLeft;if(blLeft<=0){clearInterval(blTimeIv);clearInterval(blSpawnIv);blRun=false;arena.innerHTML='';const win=Math.round(blScore*10)/10;if(win>0)setBal(getBal()+win);toast(`🎉 Собрано: +${win} ❇️`);document.getElementById('blStartBtn').disabled=false;document.getElementById('blStartBtn').innerText=`🎟 Ещё (${getTickets().n} шт.)`;}},1000);
+    blSpawnIv=setInterval(()=>{if(!blRun)return;const r=Math.random();let type='c1',ico='❇️',val=0.1;if(r<0.25){type='bomb';ico='💣';}else if(r<0.31){type='ice';ico='❄️';}else if(r<0.42){type='c3';ico='💎';val=0.3;}else if(r<0.66){type='c2';ico='❇️';val=0.2;}
+      const el=document.createElement('div');el.innerText=ico;el.style.cssText=`position:absolute;left:${10+Math.floor(Math.random()*230)}px;top:-34px;font-size:24px;cursor:pointer;padding:4px;transition:top ${blFrozen?3.5:1.6}s linear`;arena.appendChild(el);requestAnimationFrame(()=>requestAnimationFrame(()=>{el.style.top='270px';}));
+      el.onpointerdown=(e)=>{e.preventDefault();if(!blRun||el.dataset.hit)return;el.dataset.hit='1';if(type==='bomb'){blScore=Math.max(0,blScore-0.5);tone('bomb');}else if(type==='ice'){blFrozen=true;tone('win');document.getElementById('blFreezeTag').style.display='inline';setTimeout(()=>{blFrozen=false;document.getElementById('blFreezeTag').style.display='none';},2500);}else{blScore=Math.min(2.5,blScore+val);tone('tick');}document.getElementById('blScore').innerText=blScore.toFixed(1);el.remove();};
+      setTimeout(()=>{if(el.parentNode)el.remove();},3600);
+    },620);
+  };
+  // 6. Упаковка Ракеты (12ч) и Сейфа + Ловец Кристаллов (10 сек, потолок 2.5 ❇️, 3 билета)
+  const miniTab=document.getElementById('tab-mini');
+  if(miniTab){
+    const boxes=miniTab.querySelectorAll(':scope > .box');
+    [{box:boxes,id:'rocketPop',title:'🚀 Краш-Ракета',sub:'Умножай ставку до x10 (1 раз в 12ч)',color:'#f43f5e',btn:'Играть'},
+     {box:boxes,id:'safePop',title:'🔐 Взлом Сейфа',sub:'Код от 1 до 100 за 5 попыток • Приз: +4 ❇️',color:'#8b5cf6',btn:'Взломать'}].forEach(g=>{
+      if(!g.box||document.getElementById(g.id))return;
+      const m=document.createElement('div');m.className='modal';m.id=g.id;
+      const card=document.createElement('div');card.className='receipt';card.style.borderColor=g.color;
+      card.innerHTML=`<div class="row-sb" style="margin-bottom:6px"><h3 style="color:${g.color};font-size:15px">${g.title}</h3><button class="btn-out" style="border-color:#78716c;color:#d6d3d1" onclick="document.getElementById('${g.id}').classList.remove('open')">✖</button></div>`;
+      g.box.style.margin='0';g.box.style.border='none';g.box.style.background='transparent';g.box.style.padding='0';
+      const oldH=g.box.querySelector('h3');if(oldH)oldH.remove();
+      card.appendChild(g.box);m.appendChild(card);document.body.appendChild(m);
+      const item=document.createElement('div');item.className='box';item.style.borderColor=g.color;
+      item.innerHTML=`<div class="row-sb"><div><h3 style="font-size:14px;color:${g.color}">${g.title}</h3><p style="font-size:11px;color:#d6d3d1;margin-top:2px">${g.sub}</p></div><button class="btn" onclick="document.getElementById('${g.id}').classList.add('open')">${g.btn}</button></div>`;
+      miniTab.appendChild(item);
+    });
+    const rPop=document.getElementById('rocketPop');if(rPop)rPop.innerHTML=rPop.innerHTML.replace(/24ч/g,'12ч').replace(/24:00:00/g,'12:00:00');
+  }
+
+  const TK_KEY='mp_catch_tickets_v1';
+  window.getTickets=function(){let d=JSON.parse(localStorage.getItem(TK_KEY)||'null');if(!d||Date.now()-d.t>=86400000){d={n:3,t:Date.now()};localStorage.setItem(TK_KEY,JSON.stringify(d));}return d;};
+  window.saveTickets=function(d){localStorage.setItem(TK_KEY,JSON.stringify(d));syncCloud(TK_KEY,JSON.stringify(d));const b=document.getElementById('tkBadge');if(b)b.innerText=`🎟 Билетов: ${d.n}/3`;};
+
+  if(miniTab&&!document.getElementById('tkBadge')){
+    const cCard=document.createElement('div');cCard.className='box';cCard.style.cssText='border-color:#10b981;background:linear-gradient(135deg,rgba(16,185,129,0.2),rgba(24,20,15,0.9))';
+    cCard.innerHTML=`<div class="row-sb"><div><h3 style="font-size:14px;color:#6ee7b7">❄️ Ловец Кристаллов (Blum)</h3><p style="font-size:11px;color:#d6d3d1;margin-top:2px">10 сек • До 2.5 ❇️ • <b id="tkBadge" style="color:#fde047">🎟 Билетов: ${getTickets().n}/3</b></p></div><button class="btn btn-green" onclick="openBlumCatch()">Играть</button></div>`;
+    miniTab.appendChild(cCard);
+
+    const kCard=document.createElement('div');kCard.className='box';kCard.style.cssText='border-color:#eab308;background:linear-gradient(135deg,rgba(161,98,7,0.35),rgba(24,20,15,0.9))';
+    kCard.innerHTML=`<div class="row-sb"><div><h3 style="font-size:14px;color:#fde047">📦 Кейсы Удачи (5 видов)</h3><p style="font-size:11px;color:#d6d3d1;margin-top:2px">Кристаллы, Карточки, VIP и Мифический кейс</p></div><button class="btn" onclick="openCsModal()">Открыть</button></div>`;
+    miniTab.appendChild(kCard);
+  }
+
+  if(!document.getElementById('blumModal')){
+    const bm=document.createElement('div');bm.className='modal';bm.id='blumModal';
+    bm.innerHTML=`<div class="receipt" style="border-color:#10b981;padding:12px"><div class="row-sb" style="margin-bottom:6px"><h3 style="color:#6ee7b7;font-size:15px">❄️ Ловец Кристаллов</h3><button class="btn-out" onclick="closeBlum()">✖</button></div><div class="row-sb" style="background:rgba(0,0,0,0.4);padding:6px 10px;border-radius:8px;margin-bottom:8px;font-size:12px;font-weight:bold"><span>⏱ <b id="blTime" style="color:#fde047">10</b>с</span><span id="blFreezeTag" style="color:#38bdf8;display:none">❄️ ЗАМОРОЗКА!</span><span>Собрано: <b id="blScore" style="color:#4ade80">0.0</b> / 2.5 ❇️</span></div><div id="blArena" style="position:relative;width:100%;height:260px;background:radial-gradient(circle at top,#062c22,#050a08);border:2px solid #10b981;border-radius:12px;overflow:hidden;margin-bottom:8px;touch-action:manipulation"></div><button class="btn btn-green" id="blStartBtn" style="width:100%;padding:10px" onclick="startBlumRound()">🎟 Играть (1 билет)</button></div>`;
+    document.body.appendChild(bm);
+  }
+  let blRun=false,blScore=0,blLeft=10,blFrozen=false,blSpawnIv=null,blTimeIv=null;
+  window.openBlumCatch=function(){document.getElementById('blStartBtn').innerText=`🎟 Потратить 1 билет (${getTickets().n} шт.)`;document.getElementById('blumModal').classList.add('open');};
+  window.closeBlum=function(){if(!blRun)document.getElementById('blumModal').classList.remove('open');};
+  window.startBlumRound=function(){
+    if(blRun)return;const tk=getTickets();if(tk.n<=0){toast('🎟 Билеты кончились! Жди 24ч');return;}tk.n--;saveTickets(tk);
+    blRun=true;blScore=0;blLeft=10;blFrozen=false;document.getElementById('blScore').innerText='0.0';document.getElementById('blTime').innerText='10';document.getElementById('blStartBtn').disabled=true;
+    const arena=document.getElementById('blArena');arena.innerHTML='';
+    blTimeIv=setInterval(()=>{if(blFrozen)return;blLeft--;document.getElementById('blTime').innerText=blLeft;if(blLeft<=0){clearInterval(blTimeIv);clearInterval(blSpawnIv);blRun=false;arena.innerHTML='';const win=Math.round(blScore*10)/10;if(win>0)setBal(getBal()+win);toast(`🎉 Собрано: +${win} ❇️`);document.getElementById('blStartBtn').disabled=false;document.getElementById('blStartBtn').innerText=`🎟 Ещё (${getTickets().n} шт.)`;}},1000);
+    blSpawnIv=setInterval(()=>{if(!blRun)return;const r=Math.random();let type='c1',ico='❇️',val=0.1;if(r<0.25){type='bomb';ico='💣';}else if(r<0.31){type='ice';ico='❄️';}else if(r<0.42){type='c3';ico='💎';val=0.3;}else if(r<0.66){type='c2';ico='❇️';val=0.2;}
+      const el=document.createElement('div');el.innerText=ico;el.style.cssText=`position:absolute;left:${10+Math.floor(Math.random()*230)}px;top:-34px;font-size:24px;cursor:pointer;padding:4px;transition:top ${blFrozen?3.5:1.6}s linear`;arena.appendChild(el);requestAnimationFrame(()=>requestAnimationFrame(()=>{el.style.top='270px';}));
+      el.onpointerdown=(e)=>{e.preventDefault();if(!blRun||el.dataset.hit)return;el.dataset.hit='1';if(type==='bomb'){blScore=Math.max(0,blScore-0.5);tone('bomb');}else if(type==='ice'){blFrozen=true;tone('win');document.getElementById('blFreezeTag').style.display='inline';setTimeout(()=>{blFrozen=false;document.getElementById('blFreezeTag').style.display='none';},2500);}else{blScore=Math.min(2.5,blScore+val);tone('tick');}document.getElementById('blScore').innerText=blScore.toFixed(1);el.remove();};
+      setTimeout(()=>{if(el.parentNode)el.remove();},3600);
+    },620);
+  };
 </body>
 </html>
 
