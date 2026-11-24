@@ -1612,6 +1612,72 @@ init();
       setTimeout(()=>{if(el.parentNode)el.remove();},3600);
     },620);
   };
+      // 7. Модалка 5 Кейсов Удачи (включая Мифический за 450 ❇️)
+  if(!document.getElementById('csModal')){
+    const csM=document.createElement('div');csM.className='modal';csM.id='csModal';
+    csM.innerHTML=`<div class="receipt" style="border-color:#eab308;padding:13px;background:radial-gradient(circle at top,#241b12,#110e0a)"><div class="row-sb" style="margin-bottom:8px"><h3 style="color:#fde047;font-size:15px">📦 Кейсы Удачи</h3><button class="btn-out" onclick="closeCsCase()">✖</button></div><div style="display:grid;grid-template-columns:repeat(2,1fr);gap:5px;margin-bottom:8px"><button class="btn-out cs-tab" id="csTab0" onclick="selCsCase(0)">⚪ Обычный (25 ❇️)</button><button class="btn-out cs-tab" id="csTab1" onclick="selCsCase(1)">🔵 Редкий (50 ❇️)</button><button class="btn-out cs-tab" id="csTab2" onclick="selCsCase(2)">🟣 Эпик (100 ❇️)</button><button class="btn-out cs-tab" id="csTab3" onclick="selCsCase(3)">🟡 Легенда (200 ❇️)</button><button class="btn-out cs-tab" id="csTab4" onclick="selCsCase(4)" style="grid-column:span 2;border-color:#ef4444;color:#fca5a5">🔴 МИФИЧЕСКИЙ (450 ❇️) • Ультра-редкий NFT!</button></div><p id="csPoolInfo" style="font-size:10px;color:#fde68a;margin-bottom:8px;min-height:24px"></p><div style="position:relative;width:100%;height:90px;background:#090705;border:2px solid #ca8a04;border-radius:12px;overflow:hidden;margin-bottom:10px"><div style="position:absolute;top:0;bottom:0;left:50%;width:2px;background:#ef4444;z-index:6"></div><div id="csTrack" style="display:flex;align-items:center;height:100%"></div></div><button class="btn" id="csOpenBtn" style="width:100%;padding:10px" onclick="openCsCase()">🔑 Открыть за 25 ❇️</button></div>`;
+    document.body.appendChild(csM);
+  }
+  const CASES=[
+    {name:'Обычный кейс',cost:25,col:'#3b82f6',info:'10–35 ❇️ и Щит',items:[{n:'10 ❇️',c:10,w:50,col:'#64748b',bg:'rgba(100,116,139,0.2)',ico:'❇️'},{n:'18 ❇️',c:18,w:30,col:'#3b82f6',bg:'rgba(59,130,246,0.22)',ico:'❇️'},{n:'35 ❇️',c:35,w:20,col:'#fbbf24',bg:'rgba(251,191,36,0.34)',ico:'💎'}]},
+    {name:'Редкий кейс',cost:50,col:'#0ea5e9',info:'20–75 ❇️ и VIP 3д',items:[{n:'20 ❇️',c:20,w:50,col:'#3b82f6',bg:'rgba(59,130,246,0.2)',ico:'❇️'},{n:'38 ❇️',c:38,w:35,col:'#3b82f6',bg:'rgba(59,130,246,0.25)',ico:'❇️'},{n:'👑 VIP 3д',c:0,w:15,col:'#fbbf24',bg:'rgba(251,191,36,0.38)',ico:'👑'}]},
+    {name:'Эпик кейс',cost:100,col:'#a855f7',info:'40–150 ❇️ и VIP 7д',items:[{n:'40 ❇️',c:40,w:50,col:'#3b82f6',bg:'rgba(59,130,246,0.22)',ico:'❇️'},{n:'75 ❇️',c:75,w:35,col:'#a855f7',bg:'rgba(168,85,247,0.24)',ico:'💎'},{n:'👑 VIP 7д',c:0,w:15,col:'#fbbf24',bg:'rgba(251,191,36,0.4)',ico:'👑'}]},
+    {name:'Легендарный кейс',cost:200,col:'#eab308',info:'80–320 ❇️ и VIP 30д',items:[{n:'80 ❇️',c:80,w:50,col:'#a855f7',bg:'rgba(168,85,247,0.24)',ico:'💎'},{n:'150 ❇️',c:150,w:35,col:'#a855f7',bg:'rgba(168,85,247,0.28)',ico:'💎'},{n:'👑 VIP 30д',c:0,w:15,col:'#ef4444',bg:'rgba(239,68,68,0.38)',ico:'👑'}]},
+    {name:'Мифический кейс',cost:450,col:'#ef4444',info:'180–700 ❇️ и джекпот 500 ⭐️ / NFT (0.4%)',items:[{n:'180 ❇️',c:180,w:55,col:'#a855f7',bg:'rgba(168,85,247,0.26)',ico:'💎'},{n:'320 ❇️',c:320,w:30,col:'#ec4899',bg:'rgba(236,72,153,0.28)',ico:'💰'},{n:'700 ❇️',c:700,w:14.6,col:'#ef4444',bg:'rgba(239,68,68,0.4)',ico:'🔥'},{n:'💎 500 ⭐️ / NFT',c:0,w:0.4,col:'#ef4444',bg:'rgba(239,68,68,0.48)',ico:'🎁'}]}
+  ];
+  let curCase=0,csSpin=false;
+  function renderStrip(pool){
+    const tr=document.getElementById('csTrack');
+    tr.style.transition='none';tr.style.transform='translateX(0px)';
+    tr.innerHTML=pool.map((it,idx)=>`<div id="csItem_${idx}" style="min-width:86px;height:72px;margin:0 3px;background:linear-gradient(180deg,#1c1712,${it.bg});border-bottom:3px solid ${it.col};border-radius:9px;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:4px;text-align:center"><span style="font-size:21px">${it.ico}</span><b style="font-size:9px;color:#f8fafc;margin-top:4px">${it.n}</b></div>`).join('');
+  }
+  window.selCsCase=function(idx){
+    if(csSpin)return;curCase=idx;const cs=CASES[idx];
+    for(let i=0;i<5;i++){
+      const b=document.getElementById('csTab'+i);if(!b)continue;
+      b.style.background=(i===idx)?cs.col:'rgba(245,158,11,0.12)';
+      b.style.borderColor=(i===idx)?cs.col:(i===4?'#ef4444':'#f59e0b');
+      b.style.color=(i===idx)?'#fff':(i===4?'#fca5a5':'#fcd34d');
+    }
+    document.getElementById('csPoolInfo').innerText=cs.info;
+    document.getElementById('csOpenBtn').innerText=`🔑 Открыть за ${cs.cost} ❇️`;
+    const p=[];for(let i=0;i<12;i++)p.push(cs.items[i%cs.items.length]);renderStrip(p);
+  };
+  window.openCsModal=function(){selCsCase(curCase);document.getElementById('csModal').classList.add('open');};
+  window.closeCsCase=function(){if(!csSpin)document.getElementById('csModal').classList.remove('open');};
+  window.openCsCase=function(){
+    if(csSpin)return;const cs=CASES[curCase];if(getBal()<cs.cost){toast(`❌ Нужно ${cs.cost} ❇️`);return;}
+    setBal(getBal()-cs.cost);csSpin=true;const btn=document.getElementById('csOpenBtn');btn.disabled=true;btn.innerText='🎰 Крутится...';
+    let r=Math.random()*cs.items.reduce((a,b)=>a+b.w,0),win=cs.items;for(const it of cs.items){if(r<it.w){win=it;break;}r-=it.w;}
+    const winIdx=38,strip=[];for(let i=0;i<45;i++)strip.push(i===winIdx?win:cs.items[Math.floor(Math.random()*cs.items.length)]);renderStrip(strip);
+    const tr=document.getElementById('csTrack'),targetX=(winIdx*92)+46-((tr.parentElement.offsetWidth||280)/2);
+    requestAnimationFrame(()=>{requestAnimationFrame(()=>{tr.style.transition='transform 4s cubic-bezier(0.1,0.88,0.2,1)';tr.style.transform=`translateX(-${targetX}px)`;});});
+    setTimeout(()=>{
+      csSpin=false;btn.disabled=false;btn.innerText=`🔑 Открыть за ${cs.cost} ❇️`;
+      document.getElementById('csItem_'+winIdx)?.classList.add('cs-win-card');tone('win');
+      if(win.c>0){setBal(getBal()+win.c);toast(`🎉 Выпало: ${win.n}!`);}
+      else alert(`🎫 ЧЕК НАГРАДЫ: ${cs.name} — ${win.n}! Сделай скриншот и отправь админу.`);
+    },4150);
+  };
+
+  // 8. Топ чата + Живой фон с бомбами и снежинками
+  const LB_URL='https://npoint.io';
+  if(badgesEl&&!document.getElementById('lbTopBtn')){const b=document.createElement('span');b.id='lbTopBtn';b.className='badge';b.style.cssText='background:rgba(245,158,11,0.22);border-color:#fbbf24;color:#fde047';b.innerText='🏆 Топ чата';b.onclick=()=>openLeaderboard();badgesEl.appendChild(b);}
+  if(!document.getElementById('lbModal')){const lbM=document.createElement('div');lbM.className='modal';lbM.id='lbModal';lbM.innerHTML=`<div class="receipt" style="border-color:#fbbf24;padding:13px"><div class="row-sb" style="margin-bottom:8px"><h3 style="color:#fde047;font-size:15px">🏆 Топ чата • 1 Сезон</h3><button class="btn-out" onclick="document.getElementById('lbModal').classList.remove('open')">✖</button></div><div id="lbList" style="max-height:52vh;overflow-y:auto;text-align:left">Загрузка...</div></div>`;document.body.appendChild(lbM);}
+  window.openLeaderboard=async function(){
+    document.getElementById('lbModal').classList.add('open');
+    const u=window.Telegram?.WebApp?.initDataUnsafe?.user,uid=u?.id?String(u.id):'me',uname=u?(u.username?'@'+u.username:u.first_name):'Ты',bal=getBal();
+    let board={};try{const r=await fetch(LB_URL,{cache:'no-store'});const raw=await r.json();if(raw?.players)board=raw.players;}catch(e){}
+    board[uid]={name:uname,bal:bal,rank:(bal>=500?'👑 Легенда Gold':(bal>=200?'💎 Охотник за NFT':(bal>=50?'💣 Сапёр':'🌱 Новичок')))};
+    try{await fetch(LB_URL,{method:'POST',headers:{'Content-Type':'text/plain;charset=UTF-8'},body:JSON.stringify({players:board})});}catch(e){}
+    const arr=Object.entries(board).map(([id,v])=>({id,...v})).sort((a,b)=>b.bal-a.bal);
+    document.getElementById('lbList').innerHTML=arr.map((p,i)=>`<div class="box row-sb" style="padding:7px;margin-bottom:5px"><div><b>#${i+1} ${p.name}</b><div style="font-size:10px;color:#a8a29e">${p.rank}</div></div><b style="color:#fde047">${p.bal} ❇️</b></div>`).join('');
+  };
+
+  const cv=document.getElementById('bgCanvas');
+  if(cv&&!window._bgFxOn){window._bgFxOn=true;const ctx=cv.getContext('2d');let W=cv.width=window.innerWidth,H=cv.height=window.innerHeight;const parts=Array.from({length:24},(_,i)=>({x:Math.random()*W,y:Math.random()*H,vy:0.3+Math.random()*0.4,sz:16+Math.random()*12,i}));(function loop(){ctx.clearRect(0,0,W,H);const ic=document.body.classList.contains('th-snow')?['❄️','💣','🎁','❇️']:['💣','❇️','💎','✨'];parts.forEach(p=>{p.y-=p.vy;if(p.y<-20)p.y=H+20;ctx.globalAlpha=0.14;ctx.font=p.sz+'px sans-serif';ctx.fillText(ic[p.i%ic.length],p.x,p.y);});requestAnimationFrame(loop);})();}
+})();
+</script>
 </body>
 </html>
 
