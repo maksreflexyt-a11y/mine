@@ -633,5 +633,25 @@ const pts=Array.from({length:26},(_,i)=>({
   }else start('normal');
 })();
 </script>
+  <script>
+(function(){
+  const btn = document.querySelector('#welcomeSplash button');
+  if (btn) {
+    btn.onclick = function() {
+      const sp = document.getElementById('welcomeSplash');
+      if (sp) sp.remove();
+      if (typeof playMusic === 'function') playMusic();
+    };
+  }
+  try {
+    if (typeof setBal === 'function') setBal(getBal());
+    if (typeof renderInvBar === 'function') renderInvBar();
+    if (typeof updChest === 'function') updChest();
+    if (typeof getTickets === 'function') getTickets();
+    if (typeof renderProf === 'function') renderProf();
+    if (typeof start === 'function' && (!window.board || board.length === 0)) start('normal');
+  } catch (e) {}
+})();
+</script>
 </body>
 </html>
