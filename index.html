@@ -6,310 +6,188 @@
 <title>Hamster Kombat</title>
 <script src="https://telegram.org"></script>
 <style>
-*{box-sizing:border-box;margin:0;padding:0;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;user-select:none}
-body{background:#000;color:#fff;min-height:100vh;display:flex;flex-direction:column;align-items:center;overflow-x:hidden}
-.top{width:100%;max-width:410px;display:flex;justify-content:space-between;align-items:center;padding:12px 16px 10px}
-.pill{background:#272a2f;padding:6px 12px;border-radius:14px;font-size:12px;font-weight:700;display:flex;align-items:center;gap:6px;cursor:pointer}
-.sheet{flex:1;width:100%;max-width:410px;background:linear-gradient(180deg,#1c1f24 0%,#141619 100%);border-top:2px solid #f3ba2f;border-radius:34px 34px 0 0;box-shadow:0 -8px 34px rgba(243,186,47,0.32);padding:14px 14px 86px;display:flex;flex-direction:column;align-items:center}
+*{box-sizing:border-box;margin:0;padding:0;font-family:-apple-system,sans-serif;user-select:none}
+body{background:#000;color:#fff;min-height:100vh;display:flex;flex-direction:column;align-items:center}
+.top{width:100%;max-width:410px;display:flex;justify-content:space-between;padding:12px 16px}
+.pill{background:#272a2f;padding:6px 12px;border-radius:14px;font-size:12px;font-weight:700;cursor:pointer}
+.sheet{flex:1;width:100%;max-width:410px;background:#1c1f24;border-top:2px solid #f3ba2f;border-radius:32px 32px 0 0;box-shadow:0 -6px 30px rgba(243,186,47,0.3);padding:14px 14px 86px;display:flex;flex-direction:column;align-items:center}
 .g3{width:100%;display:grid;grid-template-columns:repeat(3,1fr);gap:7px;margin-bottom:12px}
-.c3{background:#272a2f;border-radius:12px;padding:7px 4px;text-align:center}
-.c3 span{font-size:10px;color:#9ca3af;display:block;margin-bottom:2px}.c3 b{font-size:12px}
-.coin{display:inline-flex;align-items:center;justify-content:center;width:16px;height:16px;border-radius:50%;background:radial-gradient(circle at 30% 30%,#fef08a,#f59e0b 65%,#b45309);border:1.5px solid #fde047;color:#78350f;font-size:10px;font-weight:900;margin-right:3px}
-.bal{font-size:36px;font-weight:900;display:flex;align-items:center;justify-content:center;gap:8px;margin-bottom:4px}
-.lg-row{width:100%;display:flex;justify-content:space-between;font-size:12px;font-weight:700;color:#9ca3af;margin-bottom:4px;cursor:pointer;padding:2px 4px}
-.bar{width:100%;height:8px;background:#272a2f;border-radius:10px;overflow:hidden;border:1px solid #374151;margin-bottom:12px;cursor:pointer}
-.fill{height:100%;width:5%;background:linear-gradient(90deg,#f59e0b,#ec4899,#8b5cf6);transition:width 0.25s}
-.d3{width:100%;display:grid;grid-template-columns:repeat(3,1fr);gap:7px;margin-bottom:12px}
-.db{background:#272a2f;border-radius:14px;padding:8px 4px;text-align:center;cursor:pointer;font-size:11px;font-weight:700}
-.db:active{transform:scale(0.95)}.db span{display:block;font-size:9px;color:#9ca3af;margin-top:2px}
-.ring{width:236px;height:236px;border-radius:50%;background:radial-gradient(circle,#3b82f6 0%,#1d4ed8 58%,#172554 100%);padding:13px;box-shadow:0 0 46px rgba(59,130,246,0.48),inset 0 0 22px rgba(255,255,255,0.22);margin:2px 0 14px;cursor:pointer;transition:transform 0.07s;touch-action:manipulation}
+.c3{background:#272a2f;border-radius:12px;padding:7px 4px;text-align:center;font-size:12px;font-weight:700}
+.c3 span{display:block;font-size:10px;color:#9ca3af;margin-bottom:2px}
+.bal{font-size:36px;font-weight:900;display:flex;align-items:center;gap:8px;margin-bottom:4px}
+.coin{display:inline-flex;align-items:center;justify-content:center;width:34px;height:34px;border-radius:50%;background:radial-gradient(circle at 30% 30%,#fef08a,#f59e0b);border:2px solid #fde047;color:#78350f;font-size:20px;font-weight:900}
+.lg-row{width:100%;display:flex;justify-content:space-between;font-size:12px;color:#9ca3af;margin-bottom:4px;cursor:pointer}
+.bar{width:100%;height:8px;background:#272a2f;border-radius:8px;overflow:hidden;margin-bottom:12px;cursor:pointer}
+.fill{height:100%;width:5%;background:linear-gradient(90deg,#f59e0b,#ec4899,#8b5cf6)}
+.db{background:#272a2f;border-radius:12px;padding:8px 4px;text-align:center;cursor:pointer;font-size:11px;font-weight:700}
+.db span{display:block;font-size:9px;color:#9ca3af;margin-top:2px}
+.ring{width:230px;height:230px;border-radius:50%;background:radial-gradient(circle,#3b82f6,#1d4ed8 60%,#172554);padding:13px;box-shadow:0 0 42px rgba(59,130,246,0.48);margin:4px 0 14px;cursor:pointer;transition:transform 0.07s;touch-action:manipulation}
 .ring:active{transform:scale(0.93)}
-.core{width:100%;height:100%;border-radius:50%;background:radial-gradient(circle at 50% 40%,#2563eb,#1e3a8a 65%,#090d16);display:flex;align-items:center;justify-content:center;overflow:hidden;border:2px solid rgba(147,197,253,0.4)}
-.en-line{width:100%;display:flex;justify-content:space-between;align-items:center;font-size:14px;font-weight:800}
+.core{width:100%;height:100%;border-radius:50%;background:#0f172a;display:flex;align-items:center;justify-content:center;overflow:hidden}
 .tab{display:none;width:100%;flex-direction:column;align-items:center;gap:9px}.tab.act{display:flex}
-.cats{display:flex;gap:4px;width:100%;background:#272a2f;padding:4px;border-radius:12px}
-.cat{flex:1;background:none;border:none;color:#9ca3af;padding:7px 2px;border-radius:9px;font-size:11px;font-weight:700;cursor:pointer}.cat.act{background:#141619;color:#fff}
 .cgrid{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;width:100%}
 .card{background:#272a2f;border-radius:14px;padding:10px;display:flex;flex-direction:column;justify-content:space-between}
-.buy{background:#3b82f6;border:none;color:#fff;padding:5px 10px;border-radius:8px;font-size:11px;font-weight:700;cursor:pointer}.buy:disabled{background:#374151;color:#6b7280}
+.buy{background:#3b82f6;border:none;color:#fff;padding:6px 11px;border-radius:8px;font-size:11px;font-weight:700;cursor:pointer}.buy:disabled{background:#374151;color:#6b7280}
 .row{width:100%;background:#272a2f;border-radius:14px;padding:11px;display:flex;justify-content:space-between;align-items:center;gap:8px}
-.nav{position:fixed;bottom:8px;left:10px;right:10px;max-width:390px;margin:0 auto;background:#272a2f;border-radius:18px;display:flex;padding:5px;z-index:80;box-shadow:0 8px 25px rgba(0,0,0,0.85)}
+.nav{position:fixed;bottom:8px;left:10px;right:10px;max-width:390px;margin:0 auto;background:#272a2f;border-radius:18px;display:flex;padding:5px;z-index:80}
 .nb{flex:1;background:none;border:none;color:#8e9297;padding:6px 2px;border-radius:13px;display:flex;flex-direction:column;align-items:center;font-size:10px;font-weight:700;gap:2px;cursor:pointer}
 .nb span{font-size:16px}.nb.act{background:#1c1f24;color:#fff}
 .modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.92);z-index:220;align-items:center;justify-content:center;padding:18px}.modal.open{display:flex}
-.m-box{width:100%;max-width:350px;background:linear-gradient(180deg,#272a2f,#141619);border:2px solid #f3ba2f;border-radius:24px;padding:18px;text-align:center}
+.mbox{width:100%;max-width:340px;background:#1c1f24;border:2px solid #f3ba2f;border-radius:22px;padding:18px;text-align:center}
 @keyframes fly{0%{opacity:1;transform:translate(-50%,0)}100%{opacity:0;transform:translate(-50%,-85px)}}
-.fly{position:fixed;font-size:26px;font-weight:900;color:#fff;pointer-events:none;z-index:200;text-shadow:0 2px 10px #000;animation:fly 0.7s forwards}
+.fly{position:fixed;font-size:26px;font-weight:900;color:#fff;pointer-events:none;z-index:200;animation:fly 0.7s forwards}
 .toast{position:fixed;top:14px;background:#22c55e;color:#fff;padding:7px 14px;border-radius:14px;font-size:12px;font-weight:800;opacity:0;pointer-events:none;transition:0.2s;z-index:250}.toast.show{opacity:1}
 </style>
 </head>
 <body>
 <div class="toast" id="toast"></div>
-<div class="top">
-  <div class="pill" id="ceoPill" onclick="editNick()">🐹 CEO</div>
-  <div class="pill" id="exPill" onclick="swEx()">🔶 Binance</div>
+
+<div id="splash" style="position:fixed;inset:0;background:radial-gradient(circle at top,#1e293b,#090d16);z-index:300;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:20px;text-align:center">
+  <div style="font-size:64px;margin-bottom:8px">🐹</div>
+  <div style="padding:4px 14px;background:rgba(243,186,47,0.2);border:1px solid #f3ba2f;border-radius:20px;font-size:11px;font-weight:800;color:#fde047;margin-bottom:8px">🏆 1-Й СЕЗОН • @maksyuga</div>
+  <h1 style="font-size:26px;margin-bottom:10px">HAMSTER KOMBAT</h1>
+  <p style="font-size:13px;color:#d1d5db;max-width:290px;margin-bottom:18px">Тапай Хомяка-CEO, качай прибыль в час, открывай все 11 лиг и выводи монеты на Звёзды ⭐️ в чате!</p>
+  <button class="buy" style="padding:14px 40px;font-size:16px;border-radius:14px;background:linear-gradient(135deg,#f59e0b,#d97706)" onclick="document.getElementById('splash').remove()">🚀 ИГРАТЬ</button>
 </div>
+
+<div class="top"><div class="pill" id="ceoPill" onclick="editNick()">🐹 CEO</div><div class="pill" id="exPill" onclick="swEx()">🔶 Binance</div></div>
+
 <div class="sheet">
   <div class="g3">
-    <div class="c3"><span style="color:#f59e0b">Прибыль за тап</span><b><i class="coin">$</i>+<span id="tapV">1</span></b></div>
-    <div class="c3" style="cursor:pointer" onclick="openLeagues()"><span style="color:#60a5fa">Монет для апа ℹ️</span><b id="goalV">5K</b></div>
-    <div class="c3"><span style="color:#4ade80">Прибыль в час</span><b><i class="coin">$</i>+<span id="pphV">0</span></b></div>
+    <div class="c3"><span style="color:#f59e0b">За тап</span>+$<b id="tapV">1</b></div>
+    <div class="c3" style="cursor:pointer" onclick="openLg()"><span style="color:#60a5fa">Лиги (нажми)</span><b id="goalV">5K</b></div>
+    <div class="c3"><span style="color:#4ade80">В час</span>+$<b id="pphV">0</b></div>
   </div>
 
   <div class="tab act" id="t-ex">
-    <div class="bal"><i class="coin" style="width:34px;height:34px;font-size:20px">$</i><span id="balV">0</span></div>
-    <div class="lg-row" onclick="openLeagues()"><b id="lgN" style="color:#fff">Bronze ></b><span>Level <b id="lgL" style="color:#fff">1</b>/11</span></div>
-    <div class="bar" onclick="openLeagues()"><div class="fill" id="lgF"></div></div>
-    <div class="d3">
-      <div class="db" onclick="doDaily()">📅 Награда<span id="dSt">Забрать</span></div>
+    <div class="bal"><i class="coin">$</i><b id="balV">0</b></div>
+    <div class="lg-row" onclick="openLg()"><b id="lgN" style="color:#fff">Bronze ></b><span>Level <b id="lgL" style="color:#fff">1</b>/11</span></div>
+    <div class="bar" onclick="openLg()"><div class="fill" id="lgF"></div></div>
+    <div class="g3">
+      <div class="db" onclick="doDaily()">📅 Награда<span>+50K</span></div>
       <div class="db" onclick="doCode()">🔐 Шифр<span>MORSE</span></div>
       <div class="db" onclick="go('mine',document.getElementById('bMine'))">🃏 Комбо<span>+5M</span></div>
     </div>
     <div class="ring" id="hamBtn">
       <div class="core">
-        <img src="hamster.png" alt="CEO" style="width:100%;height:100%;object-fit:cover;pointer-events:none" onerror="this.style.display='none';this.nextElementSibling.style.display='block'">
-        <svg viewBox="0 0 240 240" width="212" height="212" style="display:none;pointer-events:none">
-          <defs>
-            <radialGradient id="f3d" cx="46%" cy="34%" r="62%"><stop offset="0%" stop-color="#f6d5b8"/><stop offset="55%" stop-color="#cf9461"/><stop offset="100%" stop-color="#85512b"/></radialGradient>
-            <radialGradient id="c3d" cx="50%" cy="40%" r="55%"><stop offset="0%" stop-color="#fffaf5"/><stop offset="75%" stop-color="#fae0c5"/><stop offset="100%" stop-color="#dfaf82"/></radialGradient>
-            <linearGradient id="s3d" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#334155"/><stop offset="55%" stop-color="#1e293b"/><stop offset="100%" stop-color="#0f172a"/></linearGradient>
-          </defs>
-          <ellipse cx="66" cy="52" rx="22" ry="25" transform="rotate(-18 66 52)" fill="#9a6038"/><ellipse cx="67" cy="53" rx="13" ry="16" transform="rotate(-18 67 53)" fill="#f4a29e"/>
-          <ellipse cx="174" cy="52" rx="22" ry="25" transform="rotate(18 174 52)" fill="#9a6038"/><ellipse cx="173" cy="53" rx="13" ry="16" transform="rotate(18 173 53)" fill="#f4a29e"/>
-          <path d="M58,95 C56,52 86,36 120,36 C154,36 184,52 182,95 C185,126 164,146 120,146 C76,146 55,126 58,95 Z" fill="url(#f3d)"/>
-          <path d="M108,37 Q118,21 126,35 Q134,24 135,38 Z" fill="#f6d5b8"/>
-          <ellipse cx="86" cy="112" rx="26" ry="22" fill="url(#c3d)"/><ellipse cx="154" cy="112" rx="26" ry="22" fill="url(#c3d)"/><ellipse cx="120" cy="114" rx="34" ry="26" fill="url(#c3d)"/>
-          <ellipse cx="94" cy="84" rx="11" ry="13" fill="#0f172a"/><circle cx="97" cy="80" r="4.5" fill="#fff"/>
-          <ellipse cx="146" cy="84" rx="11" ry="13" fill="#0f172a"/><circle cx="149" cy="80" r="4.5" fill="#fff"/>
-          <path d="M78,68 Q94,61 107,69" fill="none" stroke="#4a2511" stroke-width="4.5" stroke-linecap="round"/><path d="M133,69 Q146,61 162,68" fill="none" stroke="#4a2511" stroke-width="4.5" stroke-linecap="round"/>
-          <ellipse cx="120" cy="100" rx="9" ry="6" fill="#fb7185"/><path d="M104,113 Q120,126 136,113" fill="none" stroke="#4a2511" stroke-width="3" stroke-linecap="round"/>
-          <rect x="114" y="116" width="5.5" height="7" rx="1.5" fill="#fff"/><rect x="120.5" y="116" width="5.5" height="7" rx="1.5" fill="#fff"/>
-          <path d="M42,225 C42,165 72,144 120,144 C168,144 198,165 198,225 Z" fill="url(#s3d)"/>
-          <polygon points="94,144 146,144 120,196" fill="#f8fafc"/><polygon points="113,146 127,146 131,184 120,198 109,184" fill="#dc2626"/>
-          <ellipse cx="86" cy="196" rx="26" ry="14" transform="rotate(-12 86 196)" fill="#cf9461"/><ellipse cx="154" cy="196" rx="26" ry="14" transform="rotate(12 154 196)" fill="#cf9461"/>
+        <img src="hamster.png" style="width:100%;height:100%;object-fit:cover;pointer-events:none" onerror="this.style.display='none';this.nextElementSibling.style.display='block'">
+        <svg viewBox="0 0 200 200" width="195" height="195" style="display:none;pointer-events:none">
+          <circle cx="58" cy="50" r="20" fill="#9a673a"/><circle cx="142" cy="50" r="20" fill="#9a673a"/>
+          <ellipse cx="100" cy="90" rx="52" ry="46" fill="#d4a373"/><ellipse cx="100" cy="104" rx="30" ry="22" fill="#faedcd"/>
+          <circle cx="80" cy="78" r="9" fill="#111"/><circle cx="83" cy="75" r="3" fill="#fff"/>
+          <circle cx="120" cy="78" r="9" fill="#111"/><circle cx="123" cy="75" r="3" fill="#fff"/>
+          <ellipse cx="100" cy="93" r="7" ry="5" fill="#fb7185"/><path d="M89,105 Q100,114 111,105" fill="none" stroke="#451a03" stroke-width="3"/>
+          <path d="M40,195 C40,148 66,134 100,134 C134,134 160,148 160,195 Z" fill="#1f2937"/>
+          <polygon points="84,134 116,134 100,175" fill="#fff"/><polygon points="96,136 104,136 107,168 100,180 93,168" fill="#ef4444"/>
         </svg>
       </div>
     </div>
-    <div class="en-line">
+    <div style="width:100%;display:flex;justify-content:space-between;font-size:14px;font-weight:800">
       <span>⚡ <b id="enV">1000</b> / <span id="enM">1000</span></span>
       <span style="cursor:pointer" onclick="go('boost',null)">🚀 Boost</span>
     </div>
   </div>
   <div class="tab" id="t-mine">
-    <div class="row" style="padding:9px"><b style="font-size:12px">🃏 Daily Combo (+5,000,000)</b><div id="cSlots" style="display:flex;gap:5px"></div></div>
-    <div class="cats">
-      <button class="cat act" onclick="setC('markets',this)">Markets</button>
-      <button class="cat" onclick="setC('pr',this)">PR&Team</button>
-      <button class="cat" onclick="setC('legal',this)">Legal</button>
-      <button class="cat" onclick="setC('special',this)">Specials</button>
-    </div>
+    <div class="row" style="padding:9px"><b style="font-size:12px">🃏 Комбо дня (+5M)</b><div id="cSlots" style="display:flex;gap:5px"></div></div>
     <div class="cgrid" id="mGrid"></div>
   </div>
 
   <div class="tab" id="t-boost">
-    <div class="row"><div><b>⚡ Full Energy</b><div style="font-size:11px;color:#9ca3af">Восстановить энергию (раз в 4ч)</div></div><button class="buy" onclick="fullEn()">Взять</button></div>
+    <div class="row"><div><b>⚡ Full Energy</b><div style="font-size:11px;color:#9ca3af">Полный заряд (раз в 4ч)</div></div><button class="buy" onclick="fullEn()">Взять</button></div>
     <div class="row"><div><b>👆 Multitap • lvl <span id="mtL">1</span></b><div style="font-size:11px;color:#9ca3af">+1 монета за тап</div></div><button class="buy" id="mtB" onclick="upMt()">2K</button></div>
     <div class="row"><div><b>🔋 Energy limit • lvl <span id="elL">1</span></b><div style="font-size:11px;color:#9ca3af">+500 к запасу энергии</div></div><button class="buy" id="elB" onclick="upEl()">2K</button></div>
-    <button class="buy" style="width:100%;padding:10px;background:#374151" onclick="go('ex',document.getElementById('bEx'))">← Назад к хомяку</button>
-  </div>
-
-  <div class="tab" id="t-friends">
-    <div class="row"><div><b>🎁 Пригласить друга</b><div style="font-size:11px;color:#fde047">+25,000 монет за приглашение</div></div><button class="buy" onclick="invFr()">Позвать</button></div>
-    <div class="row"><div><b>🏆 Лидерборд CEO чата</b><div style="font-size:11px;color:#4ade80">Топ-10 игроков по балансу</div></div><button class="buy" onclick="topChat()">Открыть</button></div>
+    <button class="buy" style="width:100%;padding:10px;background:#374151" onclick="go('ex',document.getElementById('bEx'))">← Назад</button>
   </div>
 
   <div class="tab" id="t-earn">
-    <div class="row"><div><b>📅 Ежедневная награда</b><div style="font-size:11px;color:#fde047">+50,000 монет (раз в 24ч)</div></div><button class="buy" onclick="doDaily()">Забрать</button></div>
-    <div class="row"><div><b>🔐 Ежедневный шифр</b><div style="font-size:11px;color:#fde047">+1,000,000 (код: MORSE)</div></div><button class="buy" onclick="doCode()">Ввести</button></div>
-    <div class="row"><div><b>🎟 Airdrop-промокод от админа</b><div style="font-size:11px;color:#60a5fa">Коды: HAMSTER2026, CEO777, MAKSYUGA</div></div><button class="buy" onclick="doPromo()">Ввести</button></div>
-    <div class="row"><div><b>📢 Бонус за наш чат</b><div style="font-size:11px;color:#fde047">+100,000 монет</div></div><button class="buy" onclick="doChat()">Забрать</button></div>
+    <div class="row"><div><b>📅 Ежедневка</b><div style="font-size:11px;color:#fde047">+50,000 монет</div></div><button class="buy" onclick="doDaily()">Забрать</button></div>
+    <div class="row"><div><b>🔐 Шифр Морзе</b><div style="font-size:11px;color:#fde047">+1,000,000 (код: MORSE)</div></div><button class="buy" onclick="doCode()">Ввести</button></div>
+    <div class="row"><div><b>🎟 Промокод админа</b><div style="font-size:11px;color:#60a5fa">Коды: CEO777 / MAKSYUGA</div></div><button class="buy" onclick="doPromo()">Ввести</button></div>
+    <div class="row"><div><b>🏆 Топ CEO чата</b><div style="font-size:11px;color:#4ade80">Рейтинг игроков</div></div><button class="buy" onclick="topChat()">Открыть</button></div>
   </div>
 
   <div class="tab" id="t-air">
     <div style="text-align:center;background:#272a2f;border-radius:14px;padding:10px;width:100%">
-      <h3>🪙 Airdrop • Награды Сезона</h3>
-      <p style="font-size:11px;color:#9ca3af;margin-top:3px">Копи монеты CEO и прибыль в час — выводи на реальные Звёзды Telegram ⭐️, NFT-подарки и права в чате у @maksyuga!</p>
+      <h3>🪙 Airdrop • Вывод на призы</h3>
+      <p style="font-size:11px;color:#9ca3af;margin-top:3px">Обменяй монеты CEO на реальные Звёзды Telegram ⭐️, NFT и права в чате у @maksyuga!</p>
     </div>
     <div id="aGrid" style="width:100%;display:flex;flex-direction:column;gap:8px"></div>
   </div>
 </div>
 
 <div class="modal" id="lgModal">
-  <div class="m-box">
-    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
-      <b style="color:#f3ba2f;font-size:14px">🏆 Все 11 Лиг CEO</b>
-      <button class="buy" style="background:#374151" onclick="document.getElementById('lgModal').classList.remove('open')">✖</button>
-    </div>
+  <div class="mbox">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px"><b style="color:#f3ba2f">🏆 Все 11 Лиг CEO</b><button class="buy" style="background:#374151" onclick="document.getElementById('lgModal').classList.remove('open')">✖</button></div>
     <div style="display:flex;justify-content:space-between;align-items:center;margin:10px 0">
       <button class="buy" style="font-size:18px;padding:6px 14px" onclick="stepLg(-1)">‹</button>
-      <div>
-        <div id="vArt" style="font-size:66px;margin-bottom:4px">🐹👔</div>
-        <h2 id="vName" style="font-size:21px">Bronze</h2>
-        <div id="vReq" style="font-size:12px;color:#9ca3af;margin-top:2px">От 0 монет</div>
-      </div>
+      <div><div id="vArt" style="font-size:66px">🐹👔</div><h2 id="vName" style="font-size:20px">Bronze</h2><div id="vReq" style="font-size:12px;color:#9ca3af">От 0 монет</div></div>
       <button class="buy" style="font-size:18px;padding:6px 14px" onclick="stepLg(1)">›</button>
     </div>
-    <div id="vPerk" style="background:#1c1f24;border-radius:12px;padding:10px;font-size:11px;color:#fde047">Костюм стажёра CEO</div>
+    <div id="vPerk" style="background:#141619;border-radius:12px;padding:9px;font-size:11px;color:#fde047">Костюм стажёра CEO</div>
   </div>
 </div>
 
 <div class="nav">
   <button class="nb act" id="bEx" onclick="go('ex',this)"><span>🔶</span>Exchange</button>
   <button class="nb" id="bMine" onclick="go('mine',this)"><span>⛏</span>Mine</button>
-  <button class="nb" id="bFr" onclick="go('friends',this)"><span>👥</span>Friends</button>
   <button class="nb" id="bEarn" onclick="go('earn',this)"><span>💰</span>Earn</button>
   <button class="nb" id="bAir" onclick="go('air',this)"><span>🪙</span>Airdrop</button>
 </div>
 <script>
-const K='hk_v4';
-let st=JSON.parse(localStorage.getItem(K)||'null')||{
-  bal:0,tap:1,pph:0,en:1000,maxEn:1000,mt:1,el:1,last:Date.now(),feLast:0,nick:'',ex:0,cards:{},combo:[],dLast:0,codes:[]
-};
-const EX=[{i:'🔶',n:'Binance'},{i:'⚫️',n:'Bybit'},{i:'⚪️',n:'OKX'},{i:'🔵',n:'BingX'}];
+const K='hk_clean_v1';
+let st=JSON.parse(localStorage.getItem(K)||'null')||{bal:0,tap:1,pph:0,en:1000,maxEn:1000,mt:1,el:1,last:Date.now(),fe:0,nick:'',ex:0,cards:{},combo:[],dLast:0,codes:[]};
+const EX=['🔶 Binance','⚫️ Bybit','⚪️ OKX','🔵 BingX'];
 const LGs=[
-  {n:'Bronze',m:0,x:5e3,art:'🐹👔',perk:'Костюм стажёра CEO • Старт карьеры'},
-  {n:'Silver',m:5e3,x:25e3,art:'🐹🕶',perk:'Серебряные часы и тёмные очки CEO'},
-  {n:'Gold',m:25e3,x:1e5,art:'🐹🏅',perk:'Золотой зажим для галстука + уважение в чате'},
-  {n:'Platinum',m:1e5,x:1e6,art:'🐹💼',perk:'Платиновый кейс крупного инвестора'},
-  {n:'Diamond',m:1e6,x:2e6,art:'🐹💎',perk:'Бриллиантовая булавка и VIP-статус'},
-  {n:'Epic',m:2e6,x:1e7,art:'🐹🔥',perk:'Огненная аура топ-трейдера биржи'},
-  {n:'Legendary',m:1e7,x:5e7,art:'🐹⚡',perk:'Легендарный пиджак с золотой вышивкой'},
-  {n:'Master',m:5e7,x:1e8,art:'🐹🎩',perk:'Цилиндр и трость Мастера рынка'},
-  {n:'Grandmaster',m:1e8,x:1e9,art:'🐹🚀',perk:'Космический скафандр Грандмастера'},
-  {n:'Lord',m:1e9,x:1e10,art:'🐹👑',perk:'Золотая корона Лорда крипто-империи'},
+  {n:'Bronze',m:0,x:5e3,art:'🐹👔',perk:'Костюм стажёра CEO'},{n:'Silver',m:5e3,x:25e3,art:'🐹🕶',perk:'Серебряные часы и очки'},
+  {n:'Gold',m:25e3,x:1e5,art:'🐹🏅',perk:'Золотой зажим для галстука'},{n:'Platinum',m:1e5,x:1e6,art:'🐹💼',perk:'Платиновый кейс инвестора'},
+  {n:'Diamond',m:1e6,x:2e6,art:'🐹💎',perk:'Бриллиантовая булавка CEO'},{n:'Epic',m:2e6,x:1e7,art:'🐹🔥',perk:'Огненная аура трейдера'},
+  {n:'Legendary',m:1e7,x:5e7,art:'🐹⚡',perk:'Легендарный золотой пиджак'},{n:'Master',m:5e7,x:1e8,art:'🐹🎩',perk:'Цилиндр Мастера биржи'},
+  {n:'Grandmaster',m:1e8,x:1e9,art:'🐹🚀',perk:'Космический скафандр'},{n:'Lord',m:1e9,x:1e10,art:'🐹👑',perk:'Корона Лорда империи'},
   {n:'Creator',m:1e10,x:5e10,art:'🐹🌌',perk:'Высший ранг Создателя @maksyuga'}
 ];
 const CARDS=[
-  {id:'c1',c:'markets',i:'🪙',n:'Fan tokens',b:500,p:950},{id:'c2',c:'markets',i:'📈',n:'Staking',b:800,p:1400},
-  {id:'c3',c:'markets',i:'₿',n:'BTC pairs',b:400,p:700},{id:'c4',c:'markets',i:'🔷',n:'ETH pairs',b:450,p:780},
-  {id:'c5',c:'markets',i:'📊',n:'Margin trading',b:1400,p:2800},{id:'c6',c:'pr',i:'👔',n:'CEO',b:1000,p:2100},
-  {id:'c7',c:'pr',i:'📢',n:'Marketing',b:600,p:1100},{id:'c8',c:'pr',i:'💻',n:'IT team',b:1200,p:2500},
-  {id:'c9',c:'pr',i:'🛡',n:'Security team',b:900,p:1850},{id:'c10',c:'pr',i:'🤝',n:'Influencers',b:1800,p:3600},
-  {id:'c11',c:'legal',i:'🪪',n:'KYC',b:500,p:900},{id:'c12',c:'legal',i:'🏢',n:'KYB',b:1100,p:2200},
-  {id:'c13',c:'legal',i:'🇪🇺',n:'License Europe',b:2500,p:5200},{id:'c14',c:'legal',i:'🇦🇪',n:'License UAE',b:3000,p:6400},
-  {id:'c15',c:'legal',i:'🇯🇵',n:'License Japan',b:4500,p:9500},{id:'c16',c:'special',i:'▶️',n:'Hamster YouTube',b:1500,p:3500},
-  {id:'c17',c:'special',i:'🎤',n:'Hamster Conference',b:4000,p:9000},{id:'c18',c:'special',i:'💎',n:'TON + Hamster',b:6000,p:14000},
-  {id:'c19',c:'special',i:'🚀',n:'Pre-market Launch',b:8500,p:20000},{id:'c20',c:'special',i:'👑',n:'CEO @maksyuga',b:12000,p:30000}
+  {id:'c1',i:'🪙',n:'Fan tokens',b:500,p:950},{id:'c2',i:'📈',n:'Staking',b:800,p:1400},
+  {id:'c3',i:'👔',n:'CEO',b:1000,p:2100},{id:'c4',i:'📢',n:'Marketing',b:600,p:1100},
+  {id:'c5',i:'💻',n:'IT team',b:1200,p:2500},{id:'c6',i:'🪪',n:'KYC',b:500,p:900},
+  {id:'c7',i:'🇪🇺',n:'License Europe',b:2500,p:5200},{id:'c8',i:'▶️',n:'Hamster YouTube',b:1500,p:3500},
+  {id:'c9',i:'💎',n:'TON + Hamster',b:6000,p:14000},{id:'c10',i:'👑',n:'CEO @maksyuga',b:12000,p:30000}
 ];
-const COMBO=['c1','c6','c13'];
-let cat='markets',viewLg=0,lastTap=0;
+const COMBO=['c1','c3','c7'];let vLg=0,lastTap=0;
 
 function save(){st.last=Date.now();localStorage.setItem(K,JSON.stringify(st));}
 function toast(m){const t=document.getElementById('toast');t.innerText=m;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2000);}
 function kf(n){if(n>=1e9)return(n/1e9).toFixed(2)+'B';if(n>=1e6)return(n/1e6).toFixed(2)+'M';if(n>=1e3)return(n/1e3).toFixed(1)+'K';return Math.floor(n)+'';}
 function go(id,el){document.querySelectorAll('.tab').forEach(x=>x.classList.remove('act'));document.getElementById('t-'+id).classList.add('act');if(el){document.querySelectorAll('.nb').forEach(x=>x.classList.remove('act'));el.classList.add('act');}}
-function swEx(){st.ex=(st.ex+1)%EX.length;document.getElementById('exPill').innerText=EX[st.ex].i+' '+EX[st.ex].n;toast('Биржа: '+EX[st.ex].n);save();}
+function swEx(){st.ex=(st.ex+1)%EX.length;document.getElementById('exPill').innerText=EX[st.ex];save();}
 function editNick(){const v=prompt('Имя CEO:',st.nick);if(v&&v.trim()){st.nick=v.trim();document.getElementById('ceoPill').innerText='🐹 '+st.nick;save();}}
-function setC(c,el){cat=c;document.querySelectorAll('.cat').forEach(b=>b.classList.remove('act'));el.classList.add('act');drawCards();}
-function openLeagues(){
-  for(let i=LGs.length-1;i>=0;i--)if(st.bal>=LGs[i].m){viewLg=i;break;}
-  drawLgModal();document.getElementById('lgModal').classList.add('open');
-}
-function stepLg(d){viewLg=(viewLg+d+LGs.length)%LGs.length;drawLgModal();}
-function drawLgModal(){
-  const g=LGs[viewLg];
-  document.getElementById('vArt').innerText=g.art;
-  document.getElementById('vName').innerText=`${g.n} (${viewLg+1}/11)`;
-  document.getElementById('vReq').innerText=`Порог лиги: от ${g.m.toLocaleString('en-US')} монет`;
-  document.getElementById('vPerk').innerText=g.perk;
-}
+
+function openLg(){for(let i=LGs.length-1;i>=0;i--)if(st.bal>=LGs[i].m){vLg=i;break;}drawLg();document.getElementById('lgModal').classList.add('open');}
+function stepLg(d){vLg=(vLg+d+LGs.length)%LGs.length;drawLg();}
+function drawLg(){const g=LGs[vLg];document.getElementById('vArt').innerText=g.art;document.getElementById('vName').innerText=`${g.n} (${vLg+1}/11)`;document.getElementById('vReq').innerText='От '+g.m.toLocaleString('en-US')+' монет';document.getElementById('vPerk').innerText=g.perk;}
 
 function drawCards(){
   document.getElementById('cSlots').innerHTML=COMBO.map(id=>{const ok=st.combo.includes(id),c=CARDS.find(x=>x.id===id);return `<div style="width:26px;height:26px;border-radius:7px;background:${ok?'#22c55e':'#141619'};display:flex;align-items:center;justify-content:center;font-size:13px">${ok?c.i:'?'}</div>`;}).join('');
-  document.getElementById('mGrid').innerHTML=CARDS.filter(c=>c.c===cat).map(c=>{const l=st.cards[c.id]||0,cost=Math.floor(c.b*Math.pow(1.48,l));return `<div class="card"><div style="display:flex;gap:7px;align-items:center;border-bottom:1px solid #374151;padding-bottom:7px;margin-bottom:6px"><span style="font-size:24px">${c.i}</span><div><b style="font-size:12px">${c.n}</b><div style="font-size:10px;color:#9ca3af">Прибыль в час</div><div style="font-size:11px;color:#4ade80;font-weight:700">+${kf(c.p)}</div></div></div><div style="display:flex;justify-content:space-between;align-items:center;font-size:11px"><span style="color:#9ca3af">lvl ${l}</span><button class="buy" ${st.bal<cost?'disabled':''} onclick="buyC('${c.id}')">${kf(cost)}</button></div></div>`;}).join('');
+  document.getElementById('mGrid').innerHTML=CARDS.map(c=>{const l=st.cards[c.id]||0,cost=Math.floor(c.b*Math.pow(1.48,l));return `<div class="card"><div style="display:flex;gap:7px;align-items:center;margin-bottom:7px"><span style="font-size:24px">${c.i}</span><div><b style="font-size:12px">${c.n}</b><div style="font-size:11px;color:#4ade80">+${kf(c.p)}/ч</div></div></div><div style="display:flex;justify-content:space-between;align-items:center;font-size:11px"><span style="color:#9ca3af">lvl ${l}</span><button class="buy" ${st.bal<cost?'disabled':''} onclick="buyC('${c.id}')">${kf(cost)}</button></div></div>`;}).join('');
 }
-function buyC(id){
-  const c=CARDS.find(x=>x.id===id),l=st.cards[id]||0,cost=Math.floor(c.b*Math.pow(1.48,l));if(st.bal<cost)return;
-  st.bal-=cost;st.cards[id]=l+1;st.pph+=c.p;
-  if(COMBO.includes(id)&&!st.combo.includes(id)){st.combo.push(id);if(st.combo.length===3){st.bal+=5e6;toast('🎉 DAILY COMBO! +5M монет!');}else toast(`🃏 Комбо: ${st.combo.length}/3`);}else toast(`✅ ${c.n} -> lvl ${l+1}`);
-  upd();save();
-}
+function buyC(id){const c=CARDS.find(x=>x.id===id),l=st.cards[id]||0,cost=Math.floor(c.b*Math.pow(1.48,l));if(st.bal<cost)return;st.bal-=cost;st.cards[id]=l+1;st.pph+=c.p;if(COMBO.includes(id)&&!st.combo.includes(id)){st.combo.push(id);if(st.combo.length===3){st.bal+=5e6;toast('🎉 COMBO +5M!');}else toast(`🃏 Комбо ${st.combo.length}/3`);}else toast(`✅ ${c.n} lvl ${l+1}`);upd();save();}
 
-document.getElementById('hamBtn').onclick=function(ev){
-  if(st.en<st.tap){toast('⚡ Мало энергии!');return;}
-  lastTap=Date.now();st.en-=st.tap;st.bal+=st.tap;
-  try{window.Telegram?.WebApp?.HapticFeedback?.impactOccurred('light');}catch(err){}
-  const d=document.createElement('div');d.className='fly';d.innerText='+'+st.tap;d.style.left=(ev.clientX||180)+'px';d.style.top=(ev.clientY||300)+'px';document.body.appendChild(d);setTimeout(()=>d.remove(),700);
-  upd();save();
-};
+document.getElementById('hamBtn').onclick=function(ev){if(st.en<st.tap){toast('⚡ Мало энергии!');return;}lastTap=Date.now();st.en-=st.tap;st.bal+=st.tap;try{window.Telegram?.WebApp?.HapticFeedback?.impactOccurred('light');}catch(e){}const d=document.createElement('div');d.className='fly';d.innerText='+'+st.tap;d.style.left=(ev.clientX||180)+'px';d.style.top=(ev.clientY||300)+'px';document.body.appendChild(d);setTimeout(()=>d.remove(),700);upd();save();};
 
-function fullEn(){
-  if(Date.now()-(st.feLast||0)<14400000){toast('⏳ Full Energy раз в 4 часа!');return;}
-  st.feLast=Date.now();st.en=st.maxEn;toast('⚡ Энергия восстановлена!');upd();save();
-}
-function upMt(){const c=2000*Math.pow(2,st.mt-1);if(st.bal<c){toast('❌ Мало монет');return;}st.bal-=c;st.mt++;st.tap++;toast('👆 Multitap lvl '+st.mt);upd();save();}
-function upEl(){const c=2000*Math.pow(2,st.el-1);if(st.bal<c){toast('❌ Мало монет');return;}st.bal-=c;st.el++;st.maxEn+=500;st.en=st.maxEn;toast('🔋 Energy limit lvl '+st.el);upd();save();}
-function doDaily(){if(Date.now()-st.dLast<864e5){toast('⏳ Уже забрано сегодня!');return;}st.dLast=Date.now();st.bal+=50000;toast('📅 +50,000 монет!');upd();save();}
-function doCode(){const v=prompt('Введи шифр дня (подсказка: MORSE):','');if(!v)return;const u=v.trim().toUpperCase();if(u==='MORSE'&&!st.codes.includes(u)){st.codes.push(u);st.bal+=1e6;toast('🔐 +1,000,000 монет!');upd();save();}else toast('❌ Неверный или старый шифр');}
-function doPromo(){const v=prompt('Введи Airdrop-код (HAMSTER2026 / CEO777 / MAKSYUGA):','');if(!v)return;const u=v.trim().toUpperCase(),P={HAMSTER2026:250000,CEO777:500000,MAKSYUGA:1000000};if(P[u]&&!st.codes.includes(u)){st.codes.push(u);st.bal+=P[u];toast(`🎟 +${kf(P[u])} монет!`);upd();save();}else toast('❌ Неверный или активированный код');}
-function doChat(){if(st.codes.includes('CHAT')){toast('✅ Бонус за чат уже получен!');return;}st.codes.push('CHAT');st.bal+=1e5;toast('📢 +100,000 монет!');upd();save();}
+function fullEn(){if(Date.now()-(st.fe||0)<14400000){toast('⏳ Раз в 4 часа!');return;}st.fe=Date.now();st.en=st.maxEn;toast('⚡ Энергия 100%!');upd();save();}
+function upMt(){const c=2000*Math.pow(2,st.mt-1);if(st.bal<c){toast('❌ Мало монет');return;}st.bal-=c;st.mt++;st.tap++;upd();save();}
+function upEl(){const c=2000*Math.pow(2,st.el-1);if(st.bal<c){toast('❌ Мало монет');return;}st.bal-=c;st.el++;st.maxEn+=500;st.en=st.maxEn;upd();save();}
+function doDaily(){if(Date.now()-st.dLast<864e5){toast('⏳ Уже забрано!');return;}st.dLast=Date.now();st.bal+=50000;toast('📅 +50,000!');upd();save();}
+function doCode(){const v=prompt('Шифр (подсказка: MORSE):','');if(v&&v.trim().toUpperCase()==='MORSE'&&!st.codes.includes('MORSE')){st.codes.push('MORSE');st.bal+=1e6;toast('🔐 +1,000,000!');upd();save();}else toast('❌ Неверный код');}
+function doPromo(){const v=prompt('Код (CEO777 / MAKSYUGA):','');if(!v)return;const u=v.trim().toUpperCase(),P={CEO777:5e5,MAKSYUGA:1e6};if(P[u]&&!st.codes.includes(u)){st.codes.push(u);st.bal+=P[u];toast('🎟 +'+kf(P[u]));upd();save();}else toast('❌ Неверный код');}
 
-const AIR=[
-  {n:'Снятие лимитов в чате (12ч)',p:5e4},{n:'Закреп поста в чате (24ч)',p:15e4},
-  {n:'Вечный Префикс CEO в чате',p:4e5},{n:'Модератор чата (5 дней)',p:12e5},
-  {n:'25 Звёзд Telegram ⭐️',p:25e5},{n:'100 Звёзд Telegram ⭐️',p:75e5},
-  {n:'500 Звёзд Telegram ⭐️',p:25e6},{n:'Telegram Gift / NFT Подарок 🎁',p:4e7},
-  {n:'👑 АДМИНКА НАВСЕГДА в чате',p:8e7}
-];
+const AIR=[{n:'Префикс CEO в чате',p:4e5},{n:'Модератор чата (5д)',p:12e5},{n:'25 Звёзд Telegram ⭐️',p:25e5},{n:'100 Звёзд Telegram ⭐️',p:75e5},{n:'Telegram Gift / NFT 🎁',p:4e7},{n:'👑 АДМИНКА НАВСЕГДА',p:8e7}];
 document.getElementById('aGrid').innerHTML=AIR.map(x=>`<div class="row"><b style="font-size:12px">${x.n}</b><button class="buy" onclick="buyA('${x.n}',${x.p})">${kf(x.p)}</button></div>`).join('');
-function buyA(n,p){if(st.bal<p){toast('❌ Нужно '+kf(p));return;}st.bal-=p;upd();save();alert(`🪙 ЗАЯВКА НА AIRDROP #HK-${Math.floor(1000+Math.random()*9000)}:\n${n} (${kf(p)} монет).\nОтправь скрин @maksyuga!`);}
+function buyA(n,p){if(st.bal<p){toast('❌ Нужно '+kf(p));return;}st.bal-=p;upd();save();alert(`🪙 ЗАЯВКА #HK-${Math.floor(1000+Math.random()*9000)}:\n${n}\nОтправь скрин @maksyuga!`);}
+async function topChat(){const LB='https://npoint.io||(u?.username?'@'+u.username:'CEO');let b={};try{const r=await fetch(LB,{cache:'no-store'});const j=await r.json();if(j?.players)b=j.players;}catch(e){}b[uid]={name:nm,bal:Math.floor(st.bal)};try{await fetch(LB,{method:'POST',headers:{'Content-Type':'text/plain;charset=UTF-8'},body:JSON.stringify({players:b})});}catch(e){}alert('🏆 ТОП CEO ЧАТА:\n\n'+Object.values(b).sort((a,b)=>b.bal-a.bal).slice(0,10).map((p,i)=>`#${i+1} ${p.name} — ${kf(p.bal)}`).join('\n'));}
 
-function invFr(){st.bal+=25000;upd();save();const u='https://t.me('🐹 Залетай в Hamster Kombat CEO (1 Сезон)! Качай биржу и забирай Звёзды в чате!');if(window.Telegram?.WebApp?.openTelegramLink)window.Telegram.WebApp.openTelegramLink(u);else window.open(u,'_blank');}
-async function topChat(){
-  const LB='https://npoint.io||(u?.username?'@'+u.username:'CEO');
-  let b={};try{const r=await fetch(LB,{cache:'no-store'});const j=await r.json();if(j?.players)b=j.players;}catch(e){}
-  b[uid]={name:nm,bal:Math.floor(st.bal),pph:st.pph};
-  try{await fetch(LB,{method:'POST',headers:{'Content-Type':'text/plain;charset=UTF-8'},body:JSON.stringify({players:b})});}catch(e){}
-  alert('🏆 ТОП CEO ЧАТА • 1 СЕЗОН:\n\n'+Object.values(b).sort((a,b)=>b.bal-a.bal).slice(0,10).map((p,i)=>`#${i+1} ${p.name} — ${kf(p.bal)}`).join('\n'));
-}
+function upd(){document.getElementById('balV').innerText=Math.floor(st.bal).toLocaleString('en-US');document.getElementById('tapV').innerText=st.tap;document.getElementById('pphV').innerText=kf(st.pph);document.getElementById('enV').innerText=Math.floor(st.en);document.getElementById('enM').innerText=st.maxEn;document.getElementById('mtL').innerText=st.mt;document.getElementById('mtB').innerText=kf(2000*Math.pow(2,st.mt-1));document.getElementById('elL').innerText=st.el;document.getElementById('elB').innerText=kf(2000*Math.pow(2,st.el-1));let idx=0;for(let i=LGs.length-1;i>=0;i--)if(st.bal>=LGs[i].m){idx=i;break;}const lg=LGs[idx];document.getElementById('lgN').innerText=lg.n+' >';document.getElementById('lgL').innerText=idx+1;document.getElementById('goalV').innerText=kf(lg.x);document.getElementById('lgF').style.width=Math.min(100,Math.max(4,((st.bal-lg.m)/(lg.x-lg.m))*100))+'%';drawCards();}
 
-function upd(){
-  document.getElementById('balV').innerText=Math.floor(st.bal).toLocaleString('en-US');
-  document.getElementById('tapV').innerText=st.tap;document.getElementById('pphV').innerText=kf(st.pph);
-  document.getElementById('enV').innerText=Math.floor(st.en);document.getElementById('enM').innerText=st.maxEn;
-  document.getElementById('mtL').innerText=st.mt;document.getElementById('mtB').innerText=kf(2000*Math.pow(2,st.mt-1));
-  document.getElementById('elL').innerText=st.el;document.getElementById('elB').innerText=kf(2000*Math.pow(2,st.el-1));
-  document.getElementById('dSt').innerText=(Date.now()-st.dLast>=864e5)?'Забрать':'Готово';
-  let idx=0;for(let i=LGs.length-1;i>=0;i--)if(st.bal>=LGs[i].m){idx=i;break;}
-  const lg=LGs[idx];document.getElementById('lgN').innerText=lg.n+' >';document.getElementById('lgL').innerText=idx+1;document.getElementById('goalV').innerText=kf(lg.x);
-  document.getElementById('lgF').style.width=Math.min(100,Math.max(4,((st.bal-lg.m)/(lg.x-lg.m))*100))+'%';
-  drawCards();
-}
-
-function showSplash(lgName){
-  const sp=document.createElement('div');
-  sp.style.cssText='position:fixed;inset:0;background:radial-gradient(circle at top,#1e293b 0%,#090d16 78%);z-index:300;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:22px;text-align:center';
-  sp.innerHTML=`
-    <div style="font-size:66px;margin-bottom:8px;filter:drop-shadow(0 0 24px rgba(243,186,47,0.65))">🐹</div>
-    <div style="padding:4px 14px;background:rgba(243,186,47,0.18);border:1px solid #f3ba2f;border-radius:20px;font-size:11px;font-weight:800;color:#fde047;letter-spacing:1px;margin-bottom:8px">🏆 1-Й СЕЗОН • CEO EDITION</div>
-    <h1 style="font-size:28px;font-weight:900;color:#fff;margin-bottom:10px">HAMSTER KOMBAT</h1>
-    <div style="background:#1c1f24;border:1px solid #374151;border-radius:16px;padding:14px;max-width:310px;width:100%;margin-bottom:18px">
-      <p style="font-size:13px;color:#d1d5db;line-height:1.45;margin-bottom:10px">Тапай Хомяка-CEO, прокачивай карточки биржи, открывай все 11 лиг и выводи монеты на призы в чате!</p>
-      <div style="font-size:11px;color:#9ca3af;background:#141619;padding:7px;border-radius:9px;margin-bottom:6px">Твоя текущая лига: <b style="color:#f3ba2f">${lgName}</b></div>
-      <p style="font-size:11px;color:#9ca3af">👨‍💻 Разработчик: <b style="color:#fde047">@maksyuga</b></p>
-    </div>
-    <button class="buy" style="width:100%;max-width:260px;padding:14px;font-size:16px;border-radius:14px;background:linear-gradient(135deg,#f59e0b,#d97706);box-shadow:0 4px 20px rgba(245,158,11,0.45)" onclick="this.parentElement.remove()">🚀 ИГРАТЬ</button>
-  `;
-  document.body.appendChild(sp);
-}
-
-(function boot(){
-  const u=window.Telegram?.WebApp?.initDataUnsafe?.user;if(window.Telegram?.WebApp)window.Telegram.WebApp.expand();
-  if(!st.nick&&u)st.nick=u.username?'@'+u.username:u.first_name;if(st.nick)document.getElementById('ceoPill').innerText='🐹 '+st.nick;
-  document.getElementById('exPill').innerText=EX[st.ex||0].i+' '+EX[st.ex||0].n;
-  const sec=Math.max(0,Math.floor((Date.now()-(st.last||Date.now()))/1000));
-  if(sec>15&&st.pph>0){const e=Math.floor((st.pph/3600)*Math.min(10800,sec));if(e>0){st.bal+=e;toast('💰 Биржа принесла +'+kf(e)+' пока тебя не было!');}}
-  st.en=Math.min(st.maxEn,(st.en??st.maxEn)+sec*1);
-  upd();save();
-  let idx=0;for(let i=LGs.length-1;i>=0;i--)if(st.bal>=LGs[i].m){idx=i;break;}
-  showSplash(LGs[idx].n);
-  setInterval(()=>{
-    if(Date.now()-lastTap>2000&&st.en<st.maxEn){st.en=Math.min(st.maxEn,st.en+1);save();}
-    if(st.pph>0){st.bal+=st.pph/3600;save();}
-    document.getElementById('balV').innerText=Math.floor(st.bal).toLocaleString('en-US');
-    document.getElementById('enV').innerText=Math.floor(st.en);
-  },1000);
-})();
+(function(){const u=window.Telegram?.WebApp?.initDataUnsafe?.user;if(window.Telegram?.WebApp)window.Telegram.WebApp.expand();if(!st.nick&&u)st.nick=u.username?'@'+u.username:u.first_name;if(st.nick)document.getElementById('ceoPill').innerText='🐹 '+st.nick;document.getElementById('exPill').innerText=EX[st.ex||0];const sec=Math.max(0,Math.floor((Date.now()-(st.last||Date.now()))/1000));if(sec>15&&st.pph>0){const e=Math.floor((st.pph/3600)*Math.min(10800,sec));if(e>0){st.bal+=e;toast('💰 Оффлайн-доход: +'+kf(e));}}st.en=Math.min(st.maxEn,(st.en??st.maxEn)+sec*1);upd();save();setInterval(()=>{if(Date.now()-lastTap>2000&&st.en<st.maxEn){st.en=Math.min(st.maxEn,st.en+1);save();}if(st.pph>0){st.bal+=st.pph/3600;save();}document.getElementById('balV').innerText=Math.floor(st.bal).toLocaleString('en-US');document.getElementById('enV').innerText=Math.floor(st.en);},1000);})();
 </script>
 </body>
 </html>
