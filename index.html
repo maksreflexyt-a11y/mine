@@ -1139,5 +1139,28 @@ init();
   if(gameTab&&gridEl&&!document.getElementById('boostBtn')){const bBtn=document.createElement('button');bBtn.id='boostBtn';bBtn.className='btn-out';bBtn.style.cssText='margin-bottom:8px;width:100%;max-width:320px;padding:6px;border-color:#78716c;color:#a8a29e;opacity:0.75';bBtn.innerText='🚧 Буст x2 на раунд • Скоро';bBtn.onclick=()=>toast('🚧 Буст x2 скоро появится в игре!');gameTab.insertBefore(bBtn,gridEl);}
 })();
 </script>
+  <script>
+(function(){
+  // 1. Удаляем дубль старой карточки "Кейсы Удачи (4 вида)", оставляем только одну на 5 видов
+  document.querySelectorAll('#tab-mini .box').forEach(b=>{
+    if(b.innerText.includes('4 вида'))b.remove();
+  });
+
+  // 2. Убеждаемся, что при открытии всегда показываются все 5 кейсов (включая Мифический 450 ❇️)
+  const modal=document.getElementById('csModal');
+  if(modal&&!document.getElementById('csTab4')){
+    const grid=modal.querySelector('div[style*="grid-template-columns"]');
+    if(grid){
+      const b4=document.createElement('button');
+      b4.className='btn-out cs-tab';
+      b4.id='csTab4';
+      b4.style.cssText='grid-column:span 2;border-color:#ef4444;color:#fca5a5';
+      b4.innerText='🔴 МИФИЧЕСКИЙ (450 ❇️) • Ультра-редкий NFT!';
+      b4.onclick=()=>selCsCase(4);
+      grid.appendChild(b4);
+    }
+  }
+})();
+</script>
 </body>
 </html>
