@@ -41,7 +41,6 @@ body{background:#000;color:#fff;min-height:100vh;display:flex;flex-direction:col
 </head>
 <body>
 <div class="toast" id="toast"></div>
-
 <div id="splash" style="position:fixed;inset:0;background:radial-gradient(circle at top,#1e293b,#090d16);z-index:300;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:20px;text-align:center">
   <div style="font-size:64px;margin-bottom:8px">🐹</div>
   <div style="padding:4px 14px;background:rgba(243,186,47,0.2);border:1px solid #f3ba2f;border-radius:20px;font-size:11px;font-weight:800;color:#fde047;margin-bottom:8px">🏆 1-Й СЕЗОН • @maksyuga</div>
@@ -49,16 +48,13 @@ body{background:#000;color:#fff;min-height:100vh;display:flex;flex-direction:col
   <p style="font-size:13px;color:#d1d5db;max-width:290px;margin-bottom:18px">Тапай Хомяка-CEO, качай прибыль в час, открывай все 11 лиг и выводи монеты на Звёзды ⭐️ в чате!</p>
   <button class="buy" style="padding:14px 40px;font-size:16px;border-radius:14px;background:linear-gradient(135deg,#f59e0b,#d97706)" onclick="document.getElementById('splash').remove()">🚀 ИГРАТЬ</button>
 </div>
-
 <div class="top"><div class="pill" id="ceoPill" onclick="editNick()">🐹 CEO</div><div class="pill" id="exPill" onclick="swEx()">🔶 Binance</div></div>
-
 <div class="sheet">
   <div class="g3">
     <div class="c3"><span style="color:#f59e0b">За тап</span>+$<b id="tapV">1</b></div>
     <div class="c3" style="cursor:pointer" onclick="openLg()"><span style="color:#60a5fa">Лиги (нажми)</span><b id="goalV">5K</b></div>
     <div class="c3"><span style="color:#4ade80">В час</span>+$<b id="pphV">0</b></div>
   </div>
-
   <div class="tab act" id="t-ex">
     <div class="bal"><i class="coin">$</i><b id="balV">0</b></div>
     <div class="lg-row" onclick="openLg()"><b id="lgN" style="color:#fff">Bronze ></b><span>Level <b id="lgL" style="color:#fff">1</b>/11</span></div>
@@ -91,21 +87,18 @@ body{background:#000;color:#fff;min-height:100vh;display:flex;flex-direction:col
     <div class="row" style="padding:9px"><b style="font-size:12px">🃏 Комбо дня (+5M)</b><div id="cSlots" style="display:flex;gap:5px"></div></div>
     <div class="cgrid" id="mGrid"></div>
   </div>
-
   <div class="tab" id="t-boost">
     <div class="row"><div><b>⚡ Full Energy</b><div style="font-size:11px;color:#9ca3af">Полный заряд (раз в 4ч)</div></div><button class="buy" onclick="fullEn()">Взять</button></div>
     <div class="row"><div><b>👆 Multitap • lvl <span id="mtL">1</span></b><div style="font-size:11px;color:#9ca3af">+1 монета за тап</div></div><button class="buy" id="mtB" onclick="upMt()">2K</button></div>
     <div class="row"><div><b>🔋 Energy limit • lvl <span id="elL">1</span></b><div style="font-size:11px;color:#9ca3af">+500 к запасу энергии</div></div><button class="buy" id="elB" onclick="upEl()">2K</button></div>
     <button class="buy" style="width:100%;padding:10px;background:#374151" onclick="go('ex',document.getElementById('bEx'))">← Назад</button>
   </div>
-
   <div class="tab" id="t-earn">
     <div class="row"><div><b>📅 Ежедневка</b><div style="font-size:11px;color:#fde047">+50,000 монет</div></div><button class="buy" onclick="doDaily()">Забрать</button></div>
     <div class="row"><div><b>🔐 Шифр Морзе</b><div style="font-size:11px;color:#fde047">+1,000,000 (код: MORSE)</div></div><button class="buy" onclick="doCode()">Ввести</button></div>
     <div class="row"><div><b>🎟 Промокод админа</b><div style="font-size:11px;color:#60a5fa">Коды: CEO777 / MAKSYUGA</div></div><button class="buy" onclick="doPromo()">Ввести</button></div>
     <div class="row"><div><b>🏆 Топ CEO чата</b><div style="font-size:11px;color:#4ade80">Рейтинг игроков</div></div><button class="buy" onclick="topChat()">Открыть</button></div>
   </div>
-
   <div class="tab" id="t-air">
     <div style="text-align:center;background:#272a2f;border-radius:14px;padding:10px;width:100%">
       <h3>🪙 Airdrop • Вывод на призы</h3>
@@ -114,7 +107,6 @@ body{background:#000;color:#fff;min-height:100vh;display:flex;flex-direction:col
     <div id="aGrid" style="width:100%;display:flex;flex-direction:column;gap:8px"></div>
   </div>
 </div>
-
 <div class="modal" id="lgModal">
   <div class="mbox">
     <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px"><b style="color:#f3ba2f">🏆 Все 11 Лиг CEO</b><button class="buy" style="background:#374151" onclick="document.getElementById('lgModal').classList.remove('open')">✖</button></div>
@@ -126,7 +118,6 @@ body{background:#000;color:#fff;min-height:100vh;display:flex;flex-direction:col
     <div id="vPerk" style="background:#141619;border-radius:12px;padding:9px;font-size:11px;color:#fde047">Костюм стажёра CEO</div>
   </div>
 </div>
-
 <div class="nav">
   <button class="nb act" id="bEx" onclick="go('ex',this)"><span>🔶</span>Exchange</button>
   <button class="nb" id="bMine" onclick="go('mine',this)"><span>⛏</span>Mine</button>
@@ -134,59 +125,35 @@ body{background:#000;color:#fff;min-height:100vh;display:flex;flex-direction:col
   <button class="nb" id="bAir" onclick="go('air',this)"><span>🪙</span>Airdrop</button>
 </div>
 <script>
-const K='hk_clean_v1';
+const K='hk_final_1';
 let st=JSON.parse(localStorage.getItem(K)||'null')||{bal:0,tap:1,pph:0,en:1000,maxEn:1000,mt:1,el:1,last:Date.now(),fe:0,nick:'',ex:0,cards:{},combo:[],dLast:0,codes:[]};
 const EX=['🔶 Binance','⚫️ Bybit','⚪️ OKX','🔵 BingX'];
-const LGs=[
-  {n:'Bronze',m:0,x:5e3,art:'🐹👔',perk:'Костюм стажёра CEO'},{n:'Silver',m:5e3,x:25e3,art:'🐹🕶',perk:'Серебряные часы и очки'},
-  {n:'Gold',m:25e3,x:1e5,art:'🐹🏅',perk:'Золотой зажим для галстука'},{n:'Platinum',m:1e5,x:1e6,art:'🐹💼',perk:'Платиновый кейс инвестора'},
-  {n:'Diamond',m:1e6,x:2e6,art:'🐹💎',perk:'Бриллиантовая булавка CEO'},{n:'Epic',m:2e6,x:1e7,art:'🐹🔥',perk:'Огненная аура трейдера'},
-  {n:'Legendary',m:1e7,x:5e7,art:'🐹⚡',perk:'Легендарный золотой пиджак'},{n:'Master',m:5e7,x:1e8,art:'🐹🎩',perk:'Цилиндр Мастера биржи'},
-  {n:'Grandmaster',m:1e8,x:1e9,art:'🐹🚀',perk:'Космический скафандр'},{n:'Lord',m:1e9,x:1e10,art:'🐹👑',perk:'Корона Лорда империи'},
-  {n:'Creator',m:1e10,x:5e10,art:'🐹🌌',perk:'Высший ранг Создателя @maksyuga'}
-];
-const CARDS=[
-  {id:'c1',i:'🪙',n:'Fan tokens',b:500,p:950},{id:'c2',i:'📈',n:'Staking',b:800,p:1400},
-  {id:'c3',i:'👔',n:'CEO',b:1000,p:2100},{id:'c4',i:'📢',n:'Marketing',b:600,p:1100},
-  {id:'c5',i:'💻',n:'IT team',b:1200,p:2500},{id:'c6',i:'🪪',n:'KYC',b:500,p:900},
-  {id:'c7',i:'🇪🇺',n:'License Europe',b:2500,p:5200},{id:'c8',i:'▶️',n:'Hamster YouTube',b:1500,p:3500},
-  {id:'c9',i:'💎',n:'TON + Hamster',b:6000,p:14000},{id:'c10',i:'👑',n:'CEO @maksyuga',b:12000,p:30000}
-];
+const LGs=[{n:'Bronze',m:0,x:5e3,art:'🐹👔',perk:'Костюм стажёра CEO'},{n:'Silver',m:5e3,x:25e3,art:'🐹🕶',perk:'Серебряные часы и очки'},{n:'Gold',m:25e3,x:1e5,art:'🐹🏅',perk:'Золотой зажим для галстука'},{n:'Platinum',m:1e5,x:1e6,art:'🐹💼',perk:'Платиновый кейс инвестора'},{n:'Diamond',m:1e6,x:2e6,art:'🐹💎',perk:'Бриллиантовая булавка CEO'},{n:'Epic',m:2e6,x:1e7,art:'🐹🔥',perk:'Огненная аура трейдера'},{n:'Legendary',m:1e7,x:5e7,art:'🐹⚡',perk:'Легендарный золотой пиджак'},{n:'Master',m:5e7,x:1e8,art:'🐹🎩',perk:'Цилиндр Мастера биржи'},{n:'Grandmaster',m:1e8,x:1e9,art:'🐹🚀',perk:'Космический скафандр'},{n:'Lord',m:1e9,x:1e10,art:'🐹👑',perk:'Корона Лорда империи'},{n:'Creator',m:1e10,x:5e10,art:'🐹🌌',perk:'Высший ранг Создателя @maksyuga'}];
+const CARDS=[{id:'c1',i:'🪙',n:'Fan tokens',b:500,p:950},{id:'c2',i:'📈',n:'Staking',b:800,p:1400},{id:'c3',i:'👔',n:'CEO',b:1000,p:2100},{id:'c4',i:'📢',n:'Marketing',b:600,p:1100},{id:'c5',i:'💻',n:'IT team',b:1200,p:2500},{id:'c6',i:'🪪',n:'KYC',b:500,p:900},{id:'c7',i:'🇪🇺',n:'License Europe',b:2500,p:5200},{id:'c8',i:'▶️',n:'Hamster YouTube',b:1500,p:3500},{id:'c9',i:'💎',n:'TON + Hamster',b:6000,p:14000},{id:'c10',i:'👑',n:'CEO @maksyuga',b:12000,p:30000}];
 const COMBO=['c1','c3','c7'];let vLg=0,lastTap=0;
-
 function save(){st.last=Date.now();localStorage.setItem(K,JSON.stringify(st));}
 function toast(m){const t=document.getElementById('toast');t.innerText=m;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2000);}
 function kf(n){if(n>=1e9)return(n/1e9).toFixed(2)+'B';if(n>=1e6)return(n/1e6).toFixed(2)+'M';if(n>=1e3)return(n/1e3).toFixed(1)+'K';return Math.floor(n)+'';}
 function go(id,el){document.querySelectorAll('.tab').forEach(x=>x.classList.remove('act'));document.getElementById('t-'+id).classList.add('act');if(el){document.querySelectorAll('.nb').forEach(x=>x.classList.remove('act'));el.classList.add('act');}}
 function swEx(){st.ex=(st.ex+1)%EX.length;document.getElementById('exPill').innerText=EX[st.ex];save();}
 function editNick(){const v=prompt('Имя CEO:',st.nick);if(v&&v.trim()){st.nick=v.trim();document.getElementById('ceoPill').innerText='🐹 '+st.nick;save();}}
-
 function openLg(){for(let i=LGs.length-1;i>=0;i--)if(st.bal>=LGs[i].m){vLg=i;break;}drawLg();document.getElementById('lgModal').classList.add('open');}
 function stepLg(d){vLg=(vLg+d+LGs.length)%LGs.length;drawLg();}
 function drawLg(){const g=LGs[vLg];document.getElementById('vArt').innerText=g.art;document.getElementById('vName').innerText=`${g.n} (${vLg+1}/11)`;document.getElementById('vReq').innerText='От '+g.m.toLocaleString('en-US')+' монет';document.getElementById('vPerk').innerText=g.perk;}
-
-function drawCards(){
-  document.getElementById('cSlots').innerHTML=COMBO.map(id=>{const ok=st.combo.includes(id),c=CARDS.find(x=>x.id===id);return `<div style="width:26px;height:26px;border-radius:7px;background:${ok?'#22c55e':'#141619'};display:flex;align-items:center;justify-content:center;font-size:13px">${ok?c.i:'?'}</div>`;}).join('');
-  document.getElementById('mGrid').innerHTML=CARDS.map(c=>{const l=st.cards[c.id]||0,cost=Math.floor(c.b*Math.pow(1.48,l));return `<div class="card"><div style="display:flex;gap:7px;align-items:center;margin-bottom:7px"><span style="font-size:24px">${c.i}</span><div><b style="font-size:12px">${c.n}</b><div style="font-size:11px;color:#4ade80">+${kf(c.p)}/ч</div></div></div><div style="display:flex;justify-content:space-between;align-items:center;font-size:11px"><span style="color:#9ca3af">lvl ${l}</span><button class="buy" ${st.bal<cost?'disabled':''} onclick="buyC('${c.id}')">${kf(cost)}</button></div></div>`;}).join('');
-}
+function drawCards(){document.getElementById('cSlots').innerHTML=COMBO.map(id=>{const ok=st.combo.includes(id),c=CARDS.find(x=>x.id===id);return `<div style="width:26px;height:26px;border-radius:7px;background:${ok?'#22c55e':'#141619'};display:flex;align-items:center;justify-content:center;font-size:13px">${ok?c.i:'?'}</div>`;}).join('');document.getElementById('mGrid').innerHTML=CARDS.map(c=>{const l=st.cards[c.id]||0,cost=Math.floor(c.b*Math.pow(1.48,l));return `<div class="card"><div style="display:flex;gap:7px;align-items:center;margin-bottom:7px"><span style="font-size:24px">${c.i}</span><div><b style="font-size:12px">${c.n}</b><div style="font-size:11px;color:#4ade80">+${kf(c.p)}/ч</div></div></div><div style="display:flex;justify-content:space-between;align-items:center;font-size:11px"><span style="color:#9ca3af">lvl ${l}</span><button class="buy" ${st.bal<cost?'disabled':''} onclick="buyC('${c.id}')">${kf(cost)}</button></div></div>`;}).join('');}
 function buyC(id){const c=CARDS.find(x=>x.id===id),l=st.cards[id]||0,cost=Math.floor(c.b*Math.pow(1.48,l));if(st.bal<cost)return;st.bal-=cost;st.cards[id]=l+1;st.pph+=c.p;if(COMBO.includes(id)&&!st.combo.includes(id)){st.combo.push(id);if(st.combo.length===3){st.bal+=5e6;toast('🎉 COMBO +5M!');}else toast(`🃏 Комбо ${st.combo.length}/3`);}else toast(`✅ ${c.n} lvl ${l+1}`);upd();save();}
-
 document.getElementById('hamBtn').onclick=function(ev){if(st.en<st.tap){toast('⚡ Мало энергии!');return;}lastTap=Date.now();st.en-=st.tap;st.bal+=st.tap;try{window.Telegram?.WebApp?.HapticFeedback?.impactOccurred('light');}catch(e){}const d=document.createElement('div');d.className='fly';d.innerText='+'+st.tap;d.style.left=(ev.clientX||180)+'px';d.style.top=(ev.clientY||300)+'px';document.body.appendChild(d);setTimeout(()=>d.remove(),700);upd();save();};
-
 function fullEn(){if(Date.now()-(st.fe||0)<14400000){toast('⏳ Раз в 4 часа!');return;}st.fe=Date.now();st.en=st.maxEn;toast('⚡ Энергия 100%!');upd();save();}
 function upMt(){const c=2000*Math.pow(2,st.mt-1);if(st.bal<c){toast('❌ Мало монет');return;}st.bal-=c;st.mt++;st.tap++;upd();save();}
 function upEl(){const c=2000*Math.pow(2,st.el-1);if(st.bal<c){toast('❌ Мало монет');return;}st.bal-=c;st.el++;st.maxEn+=500;st.en=st.maxEn;upd();save();}
 function doDaily(){if(Date.now()-st.dLast<864e5){toast('⏳ Уже забрано!');return;}st.dLast=Date.now();st.bal+=50000;toast('📅 +50,000!');upd();save();}
 function doCode(){const v=prompt('Шифр (подсказка: MORSE):','');if(v&&v.trim().toUpperCase()==='MORSE'&&!st.codes.includes('MORSE')){st.codes.push('MORSE');st.bal+=1e6;toast('🔐 +1,000,000!');upd();save();}else toast('❌ Неверный код');}
 function doPromo(){const v=prompt('Код (CEO777 / MAKSYUGA):','');if(!v)return;const u=v.trim().toUpperCase(),P={CEO777:5e5,MAKSYUGA:1e6};if(P[u]&&!st.codes.includes(u)){st.codes.push(u);st.bal+=P[u];toast('🎟 +'+kf(P[u]));upd();save();}else toast('❌ Неверный код');}
-
 const AIR=[{n:'Префикс CEO в чате',p:4e5},{n:'Модератор чата (5д)',p:12e5},{n:'25 Звёзд Telegram ⭐️',p:25e5},{n:'100 Звёзд Telegram ⭐️',p:75e5},{n:'Telegram Gift / NFT 🎁',p:4e7},{n:'👑 АДМИНКА НАВСЕГДА',p:8e7}];
 document.getElementById('aGrid').innerHTML=AIR.map(x=>`<div class="row"><b style="font-size:12px">${x.n}</b><button class="buy" onclick="buyA('${x.n}',${x.p})">${kf(x.p)}</button></div>`).join('');
 function buyA(n,p){if(st.bal<p){toast('❌ Нужно '+kf(p));return;}st.bal-=p;upd();save();alert(`🪙 ЗАЯВКА #HK-${Math.floor(1000+Math.random()*9000)}:\n${n}\nОтправь скрин @maksyuga!`);}
 async function topChat(){const LB='https://npoint.io||(u?.username?'@'+u.username:'CEO');let b={};try{const r=await fetch(LB,{cache:'no-store'});const j=await r.json();if(j?.players)b=j.players;}catch(e){}b[uid]={name:nm,bal:Math.floor(st.bal)};try{await fetch(LB,{method:'POST',headers:{'Content-Type':'text/plain;charset=UTF-8'},body:JSON.stringify({players:b})});}catch(e){}alert('🏆 ТОП CEO ЧАТА:\n\n'+Object.values(b).sort((a,b)=>b.bal-a.bal).slice(0,10).map((p,i)=>`#${i+1} ${p.name} — ${kf(p.bal)}`).join('\n'));}
-
 function upd(){document.getElementById('balV').innerText=Math.floor(st.bal).toLocaleString('en-US');document.getElementById('tapV').innerText=st.tap;document.getElementById('pphV').innerText=kf(st.pph);document.getElementById('enV').innerText=Math.floor(st.en);document.getElementById('enM').innerText=st.maxEn;document.getElementById('mtL').innerText=st.mt;document.getElementById('mtB').innerText=kf(2000*Math.pow(2,st.mt-1));document.getElementById('elL').innerText=st.el;document.getElementById('elB').innerText=kf(2000*Math.pow(2,st.el-1));let idx=0;for(let i=LGs.length-1;i>=0;i--)if(st.bal>=LGs[i].m){idx=i;break;}const lg=LGs[idx];document.getElementById('lgN').innerText=lg.n+' >';document.getElementById('lgL').innerText=idx+1;document.getElementById('goalV').innerText=kf(lg.x);document.getElementById('lgF').style.width=Math.min(100,Math.max(4,((st.bal-lg.m)/(lg.x-lg.m))*100))+'%';drawCards();}
-
 (function(){const u=window.Telegram?.WebApp?.initDataUnsafe?.user;if(window.Telegram?.WebApp)window.Telegram.WebApp.expand();if(!st.nick&&u)st.nick=u.username?'@'+u.username:u.first_name;if(st.nick)document.getElementById('ceoPill').innerText='🐹 '+st.nick;document.getElementById('exPill').innerText=EX[st.ex||0];const sec=Math.max(0,Math.floor((Date.now()-(st.last||Date.now()))/1000));if(sec>15&&st.pph>0){const e=Math.floor((st.pph/3600)*Math.min(10800,sec));if(e>0){st.bal+=e;toast('💰 Оффлайн-доход: +'+kf(e));}}st.en=Math.min(st.maxEn,(st.en??st.maxEn)+sec*1);upd();save();setInterval(()=>{if(Date.now()-lastTap>2000&&st.en<st.maxEn){st.en=Math.min(st.maxEn,st.en+1);save();}if(st.pph>0){st.bal+=st.pph/3600;save();}document.getElementById('balV').innerText=Math.floor(st.bal).toLocaleString('en-US');document.getElementById('enV').innerText=Math.floor(st.en);},1000);})();
 </script>
 </body>
