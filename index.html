@@ -1162,5 +1162,27 @@ init();
   }
 })();
 </script>
+  <script>
+(function(){
+  // 1. Удаляем старое окно кейсов (оставляем только самое последнее, где есть 5-й Мифический кейс)
+  const modals=document.querySelectorAll('#csModal');
+  if(modals.length>1){
+    for(let i=0;i<modals.length-1;i++)modals[i].remove();
+  }
+
+  // 2. Удаляем все дубли карточек кейсов во вкладке "Игры" и оставляем строго одну на 5 видов
+  const miniTab=document.getElementById('tab-mini');
+  if(miniTab){
+    miniTab.querySelectorAll('.box').forEach(b=>{
+      if(b.innerText.includes('Кейсы'))b.remove();
+    });
+    const kCard=document.createElement('div');
+    kCard.className='box';
+    kCard.style.cssText='border-color:#eab308;background:linear-gradient(135deg,rgba(161,98,7,0.35),rgba(24,20,15,0.9))';
+    kCard.innerHTML=`<div class="row-sb"><div><h3 style="font-size:14px;color:#fde047">📦 Кейсы Удачи (5 видов)</h3><p style="font-size:11px;color:#d6d3d1;margin-top:2px">Кристаллы, Карточки, Баффы, VIP и Мифический кейс</p></div><button class="btn" onclick="openCsModal()">Открыть</button></div>`;
+    miniTab.appendChild(kCard);
+  }
+})();
+</script>
 </body>
 </html>
