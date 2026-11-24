@@ -1006,6 +1006,83 @@ init();
   }
 })();
 </script>
+  <script>
+(function(){
+  // 1. Полный обновлённый Магазин призов до 1 000 ❇️
+  SHOP_ITEMS.length=0;
+  SHOP_ITEMS.push(
+    {n:'Снятие лимитов в чате (12ч)',p:10},
+    {n:'Закреп твоего поста в чате (24ч)',p:20},
+    {n:'Вечный Префикс в чате',p:30},
+    {n:'Свой стикер/эмодзи в пак чата',p:45},
+    {n:'Аватарка группы на 3 дня',p:65},
+    {n:'Модератор чата (5 дней)',p:90},
+    {n:'Своё правило чата (24ч)',p:110},
+    {n:'25 Звёзд Telegram ⭐️',p:140},
+    {n:'Временный Админ (3 дня)',p:170},
+    {n:'50 Звёзд Telegram ⭐️',p:210},
+    {n:'100 Звёзд Telegram ⭐️',p:270},
+    {n:'250 Звёзд Telegram ⭐️',p:350},
+    {n:'350 Звёзд Telegram ⭐️',p:430},
+    {n:'Telegram Gift / NFT Подарок 🎁',p:500},
+    {n:'TG Premium (3 месяца)',p:600},
+    {n:'TG Premium (6 месяцев)',p:750},
+    {n:'👑 АДМИНКА НАВСЕГДА + TG Prem 12 мес',p:1000}
+  );
+  const sh=document.getElementById('shopList');
+  if(sh)sh.innerHTML=SHOP_ITEMS.map(x=>`<div class="box row-sb"><b style="font-size:12px">${x.n}</b><button class="btn-out" onclick="buy('${x.n}',${x.p})">${x.p} ❇️</button></div>`).join('');
+
+  // 2. Убираем обе рулетки из вкладки "Магаз" и ставим блок "Карты для Поля"
+  const shopTab=document.getElementById('tab-shop');
+  if(shopTab){
+    shopTab.querySelectorAll(':scope > .box').forEach(b=>b.remove());
+    let cBox=document.getElementById('cardsShopBox');
+    if(!cBox){
+      const cSec=document.createElement('div');
+      cSec.className='sec';
+      cSec.innerText='🃏 Карты для Поля (Сразу в бой)';
+      cBox=document.createElement('div');
+      cBox.id='cardsShopBox';
+      cBox.style.width='100%';
+      const firstSec=shopTab.querySelector('.sec');
+      shopTab.insertBefore(cSec,firstSec);
+      shopTab.insertBefore(cBox,firstSec);
+    }
+    cBox.innerHTML=`
+      <div class="box row-sb"><b style="font-size:12px">🔥 Карта «Хайролл» (x1.5 и 4 хода)</b><button class="btn-out" onclick="buyCardDirect('high',12)">12 ❇️</button></div>
+      <div class="box row-sb"><b style="font-size:12px">🖤 «Чёрная карта» (Всего 1 бомба)</b><button class="btn-out" onclick="buyCardDirect('black',25)">25 ❇️</button></div>
+      <div class="box row-sb"><b style="font-size:12px">👑 VIP-карта (x1.5 к раундам • 3 дня)</b><button class="btn-out" onclick="buyVipDirect(70,3)">70 ❇️</button></div>`;
+  }
+
+  // 3. Убираем старое Колесо дня из Профиля
+  const luckBtn=document.getElementById('luckBtn');
+  if(luckBtn){
+    const b=luckBtn.closest('.box');
+    if(b)b.remove();
+  }
+
+  // 4. Покупка и моментальная активация карт
+  window.buyCardDirect=function(tm,p){
+    if(getBal()<p){toast(`❌ Нужно ${p} ❇️`);return;}
+    setBal(getBal()-p);tone('win');
+    if(typeof tint!=='undefined'&&tint)clearInterval(tint);
+    localStorage.removeItem(K);syncCloud(K,null);
+    log(`🃏 Куплена карта [${tm.toUpperCase()}] (-${p}❇️)`);
+    toast('✅ Карта активирована! Запускаем поле...');
+    start(tm);
+    document.querySelector('.nav-btn').click();
+  };
+
+  window.buyVipDirect=function(p,days){
+    if(getBal()<p){toast(`❌ Нужно ${p} ❇️`);return;}
+    setBal(getBal()-p);tone('win');
+    const exp=Math.max(getVip(),Date.now())+(days*86400000);
+    localStorage.setItem(VK,exp);syncCloud(VK,exp);updVipUI();
+    log(`👑 Куплена VIP-карта на ${days} дн. (-${p}❇️)`);
+    toast(`👑 VIP активирован на ${days} дн. (x1.5)!`);
+  };
+})();
+</script>
 </body>
 </html>
 
