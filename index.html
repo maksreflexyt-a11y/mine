@@ -1457,6 +1457,173 @@ init();
   setTimeout(()=>syncLeaderboard(false),2500);
 })();
 </script>
+  <script>
+(function(){
+  // 1. Убираем старую широкую полосу баффов и ставим кнопку "🎒 Рюкзак" рядом с балансом
+  const oldBar=document.getElementById('invBar');
+  if(oldBar)oldBar.remove();
+
+  const badgesEl=document.querySelector('.badges');
+  if(badgesEl&&!document.getElementById('bagBtn')){
+    const bagBtn=document.createElement('span');
+    bagBtn.id='bagBtn';
+    bagBtn.className='badge';
+    bagBtn.style.cssText='background:rgba(56,189,248,0.18);border-color:#38bdf8;color:#7dd3fc';
+    bagBtn.innerText='🎒 Рюкзак (0)';
+    bagBtn.onclick=()=>openBagModal();
+    const modeB=document.getElementById('modeBadge');
+    if(modeB)badgesEl.insertBefore(bagBtn,modeB);
+    else badgesEl.appendChild(bagBtn);
+  }
+
+  const bagModal=document.createElement('div');
+  bagModal.className='modal';bagModal.id='bagModal';
+  bagModal.innerHTML=`
+    <div class="receipt" style="border-color:#38bdf8;padding:13px">
+      <div class="row-sb" style="margin-bottom:8px">
+        <h3 style="color:#7dd3fc;font-size:15px">🎒 Твой Рюкзак</h3>
+        <button class="btn-out" style="border-color:#78716c;color:#d6d3d1" onclick="document.getElementById('bagModal').classList.remove('open')">✖</button>
+      </div>
+      <div id="bagList" style="text-align:left"></div>
+    </div>`;
+  document.body.appendChild(bagModal);
+
+  window.renderInvBar=function(){
+    const inv=getInv();
+    const total=(inv.sh||0)+(inv.sc||0)+(inv.high||0)+(inv.black||0);
+    const b=document.getElementById('bagBtn');
+    if(b)b.innerText=`🎒 Рюкзак (${total})`;
+    const list=document.getElementById('bagList');
+    if(!list)return;
+    const items=[
+      {k:'sh',ico:'🛡',n:'Щит сапёра',d:'Спасёт от 1 бомбы в текущем раунде'},
+      {k:'sc',ico:'🔍',n:'Сканер сапёра',d:'Покажет номер 1 безопасной клетки'},
+      {k:'high',ico:'🔥',n:'Карта «Хайролл»',d:'4 попытки и награды x1.5 на раунд'},
+      {k:'black',ico:'🖤',n:'Чёрная карта',d:'Всего 1 бомба на всём поле!'}
+    ];
+    list.innerHTML=items.map(it=>{
+      const cnt=inv[it.k]||0;
+      return `<div class="box row-sb" style="padding:8px;margin-bottom:6px;opacity:${cnt>0?1:0.55}">
+        <div><b style="font-size:12px">${it.ico} ${it.n} (${cnt} шт.)</b><p style="font-size:10px;color:#a8a29e;margin-top:2px">${it.d}</p></div>
+        <button class="btn" ${cnt<=0?'disabled':''} onclick="document.getElementById('bagModal').classList.remove('open');useInv('${it.k}')">Юзать</button>
+      </div>`;
+    }).join('');
+  };
+  window.openBagModal=function(){renderInvBar();document.getElementById('bagModal').classList.add('open');};
+  renderInvBar();
+
+  // 2. Обновляем Ловец Кристаллов: 15 секунд, номиналы +0.1..+0.5, редкая снежинка, макс 7 ❇️
+  document.querySelectorAll('#tab-mini .box').forEach(b=>{
+    if(b.innerText.includes('Ловец Кристаллов')){
+      b.innerHTML=`<div class="row-sb"><div><h3 style="font-size:14px;color:#6ee7b7">❄️ Ловец Кристаллов (Blum)</h3><p style="font-size:11px;color:#d6d3d1;margin-top:2px">15 сек • +0.1..+0.5 ❇️ и редкая ❄️ • <b id="tkBadge" style="color:#fde047">🎟 Билетов: ${getTickets().n}/3</b></p></div><button class="btn btn-green" onclick="openBlumCatch()">Играть</button></div>`;
+    }
+  });
+
+  let blRun=false,blScore=0,blLeft=15,blFrozen=false,blSpawnIv=null,blTimeIv=null;
+  window.startBlumRound=function(){
+    if(blRun)return;
+    const tk=getTickets();
+    if(tk.n<=0){toast(`🎟 Билеты кончились! Новые через ${fmt((tk.t+86400000)-Date.now())} (или выбей 🎟 в Гонке!)`);return;}
+    tk.n--;saveTickets(tk);
+    blRun=true;blScore=0;blLeft=15;blFrozen=false;
+    document.getElementById('blScore').innerText='0.0';
+    document.getElementById('blTime').innerText='15';
+    document.getElementById('blStartBtn').disabled=true;
+    const arena=document.getElementById('blArena');arena.innerHTML='';
+
+    blTimeIv=setInterval(()=>{
+      if(blFrozen)return;
+      blLeft--;document.getElementById('blTime').innerText=blLeft;
+      if(blLeft<=0){
+        clearInterval(blTimeIv);clearInterval(blSpawnIv);blRun=false;arena.innerHTML='';
+        const win=Math.round(blScore*10)/10;
+        if(win>0){setBal(getBal()+win);log(`❄️ Ловец (15с): +${win}❇️`);}
+        toast(`🎉 Время вышло! Собрано: +${win} ❇️`);
+        document.getElementById('blStartBtn').disabled=false;
+        document.getElementById('blStartBtn').innerText=`🎟 Играть ещё (${getTickets().n} шт.)`;
+      }
+    },1000);
+
+    blSpawnIv=setInterval(()=>{
+      if(!blRun)return;
+      const r=Math.random();
+      let type='c1',ico='❇️',val=0.1;
+      if(r<0.15){type='bomb';ico='💣';val=-0.5;}
+      else if(r<0.20){type='ice';ico='❄️';val=0;}
+      else if(r<0.28){type='c5';ico='💎';val=0.5;}
+      else if(r<0.40){type='c4';ico='💎';val=0.4;}
+      else if(r<0.58){type='c3';ico='❇️';val=0.3;}
+      else if(r<0.78){type='c2';ico='❇️';val=0.2;}
+
+      const el=document.createElement('div');el.innerText=ico;
+      const x=10+Math.floor(Math.random()*((arena.offsetWidth||280)-44));
+      el.style.cssText=`position:absolute;left:${x}px;top:-34px;font-size:${val>=0.4?27:23}px;cursor:pointer;padding:4px;transition:top ${blFrozen?4.0:1.9}s linear`;
+      arena.appendChild(el);
+      requestAnimationFrame(()=>requestAnimationFrame(()=>{el.style.top='270px';}));
+
+      el.onpointerdown=(e)=>{
+        e.preventDefault();if(!blRun||el.dataset.hit)return;el.dataset.hit='1';
+        if(type==='bomb'){
+          blScore=Math.max(0,blScore-0.5);tone('bomb');
+          arena.style.borderColor='#ef4444';setTimeout(()=>arena.style.borderColor='#10b981',250);
+        }else if(type==='ice'){
+          blFrozen=true;tone('win');
+          document.getElementById('blFreezeTag').style.display='inline';
+          arena.style.boxShadow='inset 0 0 25px rgba(56,189,248,0.6)';
+          setTimeout(()=>{blFrozen=false;document.getElementById('blFreezeTag').style.display='none';arena.style.boxShadow='none';},3000);
+        }else{
+          blScore=Math.min(7.0,blScore+val);tone('tick');
+        }
+        document.getElementById('blScore').innerText=blScore.toFixed(1);
+        el.remove();
+      };
+      setTimeout(()=>{if(el.parentNode)el.remove();},blFrozen?4100:2000);
+    },320);
+  };
+
+  // 3. Фикс Лидерборда чата (совместимый запрос без ошибок CORS + резервное чтение)
+  const LB_URL='https://npoint.io';
+  function getRankName(b){if(b>=500)return '👑 Легенда Gold';if(b>=200)return '💎 Охотник за NFT';if(b>=50)return '💣 Опытный Сапёр';return '🌱 Новичок';}
+
+  window.syncLeaderboard=async function(openAfter=false){
+    const u=window.Telegram?.WebApp?.initDataUnsafe?.user;
+    const uid=u?.id?String(u.id):('guest_'+(localStorage.getItem('mp_gid')||(()=>{const g=Math.floor(Math.random()*99999);localStorage.setItem('mp_gid',g);return g;})()));
+    const uname=u?(u.username?'@'+u.username:(u.first_name||'Игрок')):'Игрок #'+uid.slice(-4);
+    const bal=Math.round((typeof getBal==='function'?getBal():0)*10)/10;
+
+    let board={};
+    try{
+      const r=await fetch(LB_URL,{cache:'no-store'});
+      if(r.ok){
+        const raw=await r.json();
+        if(raw&&typeof raw==='object'&&raw.players)board=raw.players;
+      }
+    }catch(e){}
+
+    board[uid]={name:uname,bal:bal,rank:getRankName(bal),ts:Date.now()};
+    localStorage.setItem('mp_lb_cache',JSON.stringify(board));
+
+    try{
+      await fetch(LB_URL,{method:'POST',headers:{'Content-Type':'text/plain;charset=UTF-8'},body:JSON.stringify({players:board})});
+    }catch(e){
+      try{await fetch(LB_URL,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({players:board})});}catch(e2){}
+    }
+
+    if(openAfter){
+      const arr=Object.entries(board).map(([id,v])=>({id,...v})).sort((a,b)=>b.bal-a.bal).slice(0,25);
+      const listEl=document.getElementById('lbList');
+      listEl.innerHTML=arr.map((p,idx)=>{
+        const medal=idx===0?'🥇':(idx===1?'🥈':(idx===2?'🥉':`<b>#${idx+1}</b>`));
+        const isMe=p.id===uid;
+        return `<div class="box row-sb" style="padding:7px 9px;margin-bottom:5px;${isMe?'border-color:#10b981;background:rgba(16,185,129,0.16)':''}">
+          <div><div style="font-size:12px">${medal} <b>${p.name}</b> ${isMe?'<span style="color:#6ee7b7;font-size:10px">(Ты)</span>':''}</div><div style="font-size:10px;color:#a8a29e;margin-top:2px">${p.rank||getRankName(p.bal)}</div></div>
+          <b style="color:#fde047;font-size:13px">${p.bal} ❇️</b>
+        </div>`;
+      }).join('');
+    }
+  };
+})();
+</script>
 </body>
 </html>
 
