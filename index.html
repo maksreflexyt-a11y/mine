@@ -1624,6 +1624,378 @@ init();
   };
 })();
 </script>
+  <script>
+(function(){
+  function getRank(b){if(b>=500)return '👑 Легенда Gold';if(b>=200)return '💎 Охотник за NFT';if(b>=50)return '💣 Опытный Сапёр';return '🌱 Новичок';}
+
+  // 1. Стартовое меню 1-го сезона от @maksyuga
+  const splash=document.createElement('div');
+  splash.id='welcomeSplash';
+  splash.style.cssText='position:fixed;inset:0;background:radial-gradient(circle at top,#292011 0%,#0c0a07 78%);z-index:200;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:20px;text-align:center;transition:opacity 0.35s';
+  splash.innerHTML=`
+    <div style="font-size:62px;margin-bottom:8px;filter:drop-shadow(0 0 22px rgba(250,204,21,0.65))">💣</div>
+    <div style="padding:4px 14px;background:rgba(245,158,11,0.18);border:1px solid #f59e0b;border-radius:20px;font-size:11px;font-weight:bold;color:#fde047;letter-spacing:1px;margin-bottom:8px">🏆 1-Й СЕЗОН • GOLD EDITION</div>
+    <h1 style="font-size:25px;text-transform:uppercase;letter-spacing:1.5px;background:linear-gradient(90deg,#fde047,#f59e0b,#fef08a);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:12px">Минное Поле 2.0</h1>
+    <div style="background:rgba(24,20,15,0.88);border:1px solid #574122;border-radius:14px;padding:14px;max-width:310px;width:100%;margin-bottom:18px;box-shadow:0 8px 25px rgba(0,0,0,0.6)">
+      <p style="font-size:13px;color:#f8fafc;line-height:1.45;margin-bottom:10px">Добро пожаловать! Открывай клетки, крути кейсы, лови кристаллы и забирай призы.</p>
+      <div style="font-size:11px;color:#d6d3d1;background:rgba(0,0,0,0.35);padding:7px;border-radius:8px;margin-bottom:6px">Твой ранг: <b id="spRank" style="color:#6ee7b7">${getRank(typeof getBal==='function'?getBal():0)}</b></div>
+      <p style="font-size:11px;color:#a8a29e">👨‍💻 Разработчик: <b style="color:#fbbf24">@maksyuga</b></p>
+    </div>
+    <button class="btn" style="width:100%;max-width:260px;padding:14px;font-size:16px;border-radius:14px;box-shadow:0 4px 20px rgba(245,158,11,0.5)" onclick="enterGameLobby()">🚀 ИГРАТЬ</button>
+  `;
+  document.body.appendChild(splash);
+  window.enterGameLobby=function(){tone('win');splash.style.opacity='0';setTimeout(()=>splash.remove(),350);if(typeof startBgm==='function')startBgm();};
+
+  // 2. Фикс надписи Ракеты на 12 часов
+  const rPop=document.getElementById('rocketPop');
+  if(rPop)rPop.innerHTML=rPop.innerHTML.replace(/1 раз в 24ч/g,'1 раз в 12ч').replace(/24:00:00/g,'12:00:00');
+  document.querySelectorAll('#tab-mini .box').forEach(b=>{if(b.innerText.includes('Краш-Ракета'))b.innerHTML=b.innerHTML.replace(/24ч/g,'12ч');});
+
+  // 3. Рюкзак Баффов и Карт (включая VIP-карту на 3 дня)
+  const INV_K='mp_inv_v1';
+  window.getInv=function(){return JSON.parse(localStorage.getItem(INV_K)||'{"sh":0,"sc":0,"high":0,"black":0,"vip3":0}');};
+  window.saveInv=function(v){const s=JSON.stringify(v);localStorage.setItem(INV_K,s);syncCloud(INV_K,s);renderInvBar();};
+  try{const cs=window.Telegram?.WebApp?.CloudStorage;if(cs)cs.getItem(INV_K,(e,v)=>{if(!e&&v){localStorage.setItem(INV_K,v);renderInvBar();}});}catch(e){}
+
+  const badgesEl=document.querySelector('.badges');
+  if(badgesEl&&!document.getElementById('bagBtn')){
+    const bagBtn=document.createElement('span');bagBtn.id='bagBtn';bagBtn.className='badge';
+    bagBtn.style.cssText='background:rgba(56,189,248,0.18);border-color:#38bdf8;color:#7dd3fc';
+    bagBtn.innerText='🎒 Рюкзак (0)';bagBtn.onclick=()=>openBagModal();
+    const modeB=document.getElementById('modeBadge');
+    if(modeB)badgesEl.insertBefore(bagBtn,modeB);else badgesEl.appendChild(bagBtn);
+  }
+  const bagModal=document.createElement('div');bagModal.className='modal';bagModal.id='bagModal';
+  bagModal.innerHTML=`<div class="receipt" style="border-color:#38bdf8;padding:13px"><div class="row-sb" style="margin-bottom:8px"><h3 style="color:#7dd3fc;font-size:15px">🎒 Твой Рюкзак</h3><button class="btn-out" style="border-color:#78716c;color:#d6d3d1" onclick="document.getElementById('bagModal').classList.remove('open')">✖</button></div><div id="bagList" style="text-align:left"></div></div>`;
+  document.body.appendChild(bagModal);
+
+  window.renderInvBar=function(){
+    const inv=getInv(),total=(inv.sh||0)+(inv.sc||0)+(inv.high||0)+(inv.black||0)+(inv.vip3||0);
+    const b=document.getElementById('bagBtn');if(b)b.innerText=`🎒 Рюкзак (${total})`;
+    const list=document.getElementById('bagList');if(!list)return;
+    const items=[
+      {k:'sh',ico:'🛡',n:'Щит сапёра',d:'Спасёт от 1 бомбы в текущем раунде'},
+      {k:'sc',ico:'🔍',n:'Сканер сапёра',d:'Покажет номер 1 безопасной клетки'},
+      {k:'high',ico:'🔥',n:'Карта «Хайролл»',d:'4 попытки и награды x1.5 на раунд'},
+      {k:'black',ico:'🖤',n:'Чёрная карта',d:'Всего 1 бомба на всём поле!'},
+      {k:'vip3',ico:'👑',n:'VIP-карта (3 дня)',d:'Бонус x1.5 ко всем раундам на 3 дня'}
+    ];
+    list.innerHTML=items.map(it=>{
+      const cnt=inv[it.k]||0;
+      return `<div class="box row-sb" style="padding:8px;margin-bottom:6px;opacity:${cnt>0?1:0.55}"><div><b style="font-size:12px">${it.ico} ${it.n} (${cnt} шт.)</b><p style="font-size:10px;color:#a8a29e;margin-top:2px">${it.d}</p></div><button class="btn" ${cnt<=0?'disabled':''} onclick="document.getElementById('bagModal').classList.remove('open');useInv('${it.k}')">Юзать</button></div>`;
+    }).join('');
+  };
+  window.openBagModal=function(){renderInvBar();document.getElementById('bagModal').classList.add('open');};
+  renderInvBar();
+  // 4. Активация баффов и VIP-карты из Рюкзака + покупка в Магазин
+  window.useInv=function(type){
+    const inv=getInv();if((inv[type]||0)<=0){toast('🎒 Пусто! Купи в Магазе или выбей в Сундуке/Кейсе');return;}
+    if(type==='sh'){if(over){toast('⏳ Дождись нового раунда!');return;}inv.sh--;saveInv(inv);window._activeShield=true;tone('win');toast('🛡 Щит активирован на этот раунд!');log('🛡 Щит из рюкзака');}
+    else if(type==='sc'){if(over){toast('⏳ Дождись нового раунда!');return;}const sIdx=board.findIndex((x,idx)=>!opened.includes(idx)&&x.t!=='b');if(sIdx===-1){toast('Нет закрытых безопасных клеток!');return;}inv.sc--;saveInv(inv);tone('win');toast(`🔍 Сканер: клетка №${sIdx+1} БЕЗОПАСНА!`);log(`🔍 Сканер: клетка №${sIdx+1}`);}
+    else if(type==='high'||type==='black'){inv[type]--;saveInv(inv);tone('win');if(typeof tint!=='undefined'&&tint)clearInterval(tint);localStorage.removeItem(K);syncCloud(K,null);start(type);document.querySelector('.nav-btn').click();toast(`🃏 Карта [${type.toUpperCase()}] запущена!`);}
+    else if(type==='vip3'){inv.vip3--;saveInv(inv);tone('win');const exp=Math.max(getVip(),Date.now())+(3*86400000);localStorage.setItem(VK,exp);syncCloud(VK,exp);updVipUI();toast('👑 VIP-карта активирована на 3 дня (x1.5)!');log('👑 VIP (3 дня) из рюкзака');}
+  };
+
+  const origOpenForInv=window.openC;
+  window.openC=function(i){if(!synced||over||opened.includes(i))return;const it=board[i];if(it&&it.t==='b'&&window._activeShield){window._activeShield=false;board[i]={t:'c',i:'🛡',v:0,l:'СПАС!'};toast('🛡 ЩИТ ИЗ РЮКЗАКА СПАС ОТ БОМБЫ!');log('🛡 Щит из рюкзака спас от бомбы');}origOpenForInv(i);};
+
+  const origClaim=window.claimChest;
+  window.claimChest=function(){
+    const st=getCh(),dayIdx=st.c%7;
+    if(dayIdx===2||dayIdx===4){st.c++;st.l=Date.now();const s=JSON.stringify(st);localStorage.setItem(CHK,s);syncCloud(CHK,s);const inv=getInv();if(dayIdx===2)inv.sh++;else inv.sc++;saveInv(inv);tone('win');updChest();toast(dayIdx===2?'🎁 Получен 🛡 Щит сапёра в Рюкзак!':'🎁 Получен 🔍 Сканер сапёра в Рюкзак!');log(dayIdx===2?'🎁 Сундук: +1 🛡 Щит':'🎁 Сундук: +1 🔍 Сканер');return;}
+    origClaim();
+  };
+
+  const shopTab=document.getElementById('tab-shop');
+  if(shopTab){
+    let cBox=document.getElementById('cardsShopBox');
+    if(!cBox){const cSec=document.createElement('div');cSec.className='sec';cSec.innerText='🎒 Карты и Баффы (В Рюкзак)';cBox=document.createElement('div');cBox.id='cardsShopBox';cBox.style.width='100%';const firstSec=shopTab.querySelector('.sec');shopTab.insertBefore(cSec,firstSec);shopTab.insertBefore(cBox,firstSec);}
+    cBox.innerHTML=`
+      <div class="box row-sb"><b style="font-size:12px">🛡 Щит сапёра (В рюкзак)</b><button class="btn-out" onclick="buyToInv('sh',8,'🛡 Щит сапёра')">8 ❇️</button></div>
+      <div class="box row-sb"><b style="font-size:12px">🔍 Сканер сапёра (В рюкзак)</b><button class="btn-out" onclick="buyToInv('sc',6,'🔍 Сканер сапёра')">6 ❇️</button></div>
+      <div class="box row-sb"><b style="font-size:12px">🔥 Карта «Хайролл» (В рюкзак)</b><button class="btn-out" onclick="buyToInv('high',12,'🔥 Карта Хайролл')">12 ❇️</button></div>
+      <div class="box row-sb"><b style="font-size:12px">🖤 «Чёрная карта» (В рюкзак)</b><button class="btn-out" onclick="buyToInv('black',25,'🖤 Чёрная карта')">25 ❇️</button></div>
+      <div class="box row-sb"><b style="font-size:12px">👑 VIP-карта на 3 дня (В рюкзак)</b><button class="btn-out" onclick="buyToInv('vip3',70,'👑 VIP-карта (3 дня)')">70 ❇️</button></div>`;
+  }
+  window.buyToInv=function(k,p,label){if(getBal()<p){toast(`❌ Нужно ${p} ❇️`);return;}setBal(getBal()-p);tone('win');const inv=getInv();inv[k]=(inv[k]||0)+1;saveInv(inv);log(`🎒 Куплено в рюкзак: ${label} (-${p}❇️)`);toast('✅ Добавлено в Рюкзак наверху!');};
+
+  // 5. Ловец Кристаллов (10 сек • Макс 2.5 ❇️ за игру • 3 билета в 24ч • без Гонки)
+  const TK_KEY='mp_catch_tickets_v1';
+  window.getTickets=function(){
+    let d=JSON.parse(localStorage.getItem(TK_KEY)||'null');
+    if(!d){d={n:3,t:Date.now()};localStorage.setItem(TK_KEY,JSON.stringify(d));}
+    else if(Date.now()-d.t>=86400000){d={n:3,t:Date.now()};localStorage.setItem(TK_KEY,JSON.stringify(d));}
+    return d;
+  };
+  window.saveTickets=function(d){const s=JSON.stringify(d);localStorage.setItem(TK_KEY,s);syncCloud(TK_KEY,s);const b=document.getElementById('tkBadge');if(b)b.innerText=`🎟 Билетов: ${d.n}/3`;};
+  try{const cs=window.Telegram?.WebApp?.CloudStorage;if(cs)cs.getItem(TK_KEY,(e,v)=>{if(!e&&v){localStorage.setItem(TK_KEY,v);getTickets();}});}catch(e){}
+
+  document.querySelectorAll('#tab-mini .box').forEach(b=>{
+    if(b.innerText.includes('Гонка'))b.remove();
+    if(b.innerText.includes('Ловец Кристаллов')){
+      b.innerHTML=`<div class="row-sb"><div><h3 style="font-size:14px;color:#6ee7b7">❄️ Ловец Кристаллов (Blum)</h3><p style="font-size:11px;color:#d6d3d1;margin-top:2px">10 сек • До 2.5 ❇️ за игру • <b id="tkBadge" style="color:#fde047">🎟 Билетов: ${getTickets().n}/3</b></p></div><button class="btn btn-green" onclick="openBlumCatch()">Играть</button></div>`;
+    }
+  });
+
+  const blumModal=document.createElement('div');blumModal.className='modal';blumModal.id='blumModal';
+  blumModal.innerHTML=`
+    <div class="receipt" style="border-color:#10b981;padding:12px">
+      <div class="row-sb" style="margin-bottom:6px"><h3 style="color:#6ee7b7;font-size:15px">❄️ Ловец Кристаллов</h3><button class="btn-out" style="border-color:#78716c;color:#d6d3d1" onclick="closeBlum()">✖</button></div>
+      <div class="row-sb" style="background:rgba(0,0,0,0.4);padding:6px 10px;border-radius:8px;margin-bottom:8px;font-size:12px;font-weight:bold">
+        <span>⏱ <b id="blTime" style="color:#fde047">10</b>с</span><span id="blFreezeTag" style="color:#38bdf8;display:none">❄️ ЗАМОРОЗКА!</span><span>Собрано: <b id="blScore" style="color:#4ade80">0.0</b> / 2.5 ❇️</span>
+      </div>
+      <div id="blArena" style="position:relative;width:100%;height:260px;background:radial-gradient(circle at top,#062c22,#050a08);border:2px solid #10b981;border-radius:12px;overflow:hidden;margin-bottom:8px;touch-action:manipulation"></div>
+      <button class="btn btn-green" id="blStartBtn" style="width:100%;padding:10px;font-size:13px" onclick="startBlumRound()">🎟 Потратить 1 билет и начать</button>
+    </div>`;
+  document.body.appendChild(blumModal);
+
+  let blRun=false,blScore=0,blLeft=10,blFrozen=false,blSpawnIv=null,blTimeIv=null;
+  window.openBlumCatch=function(){const tk=getTickets();document.getElementById('blStartBtn').innerText=`🎟 Потратить 1 билет (${tk.n} шт.)`;document.getElementById('blumModal').classList.add('open');};
+  window.closeBlum=function(){if(blRun){toast('⏳ Доиграй 10 секунд до конца!');return;}document.getElementById('blumModal').classList.remove('open');};
+
+  window.startBlumRound=function(){
+    if(blRun)return;const tk=getTickets();
+    if(tk.n<=0){toast(`🎟 Билеты кончились! Новые через ${fmt((tk.t+86400000)-Date.now())}`);return;}
+    tk.n--;saveTickets(tk);
+    blRun=true;blScore=0;blLeft=10;blFrozen=false;
+    document.getElementById('blScore').innerText='0.0';document.getElementById('blTime').innerText='10';
+    document.getElementById('blStartBtn').disabled=true;
+    const arena=document.getElementById('blArena');arena.innerHTML='';
+
+    blTimeIv=setInterval(()=>{
+      if(blFrozen)return;blLeft--;document.getElementById('blTime').innerText=blLeft;
+      if(blLeft<=0){
+        clearInterval(blTimeIv);clearInterval(blSpawnIv);blRun=false;arena.innerHTML='';
+        const win=Math.round(blScore*10)/10;
+        if(win>0){setBal(getBal()+win);log(`❄️ Ловец (10с): +${win}❇️`);}
+        toast(`🎉 Стоп! Собрано: +${win} ❇️`);
+        document.getElementById('blStartBtn').disabled=false;document.getElementById('blStartBtn').innerText=`🎟 Играть ещё (${getTickets().n} шт.)`;
+      }
+    },1000);
+
+    blSpawnIv=setInterval(()=>{
+      if(!blRun)return;const r=Math.random();
+      let type='c1',ico='❇️',val=0.1;
+      if(r<0.25){type='bomb';ico='💣';val=-0.5;}
+      else if(r<0.31){type='ice';ico='❄️';val=0;}
+      else if(r<0.41){type='c3';ico='💎';val=0.3;}
+      else if(r<0.65){type='c2';ico='❇️';val=0.2;}
+
+      const el=document.createElement('div');el.innerText=ico;
+      const x=10+Math.floor(Math.random()*((arena.offsetWidth||280)-44));
+      el.style.cssText=`position:absolute;left:${x}px;top:-34px;font-size:${val>=0.3?27:23}px;cursor:pointer;padding:4px;transition:top ${blFrozen?3.5:1.6}s linear`;
+      arena.appendChild(el);
+      requestAnimationFrame(()=>requestAnimationFrame(()=>{el.style.top='270px';}));
+
+      el.onpointerdown=(e)=>{
+        e.preventDefault();if(!blRun||el.dataset.hit)return;el.dataset.hit='1';
+        if(type==='bomb'){blScore=Math.max(0,blScore-0.5);tone('bomb');arena.style.borderColor='#ef4444';setTimeout(()=>arena.style.borderColor='#10b981',250);}
+        else if(type==='ice'){blFrozen=true;tone('win');document.getElementById('blFreezeTag').style.display='inline';arena.style.boxShadow='inset 0 0 25px rgba(56,189,248,0.6)';setTimeout(()=>{blFrozen=false;document.getElementById('blFreezeTag').style.display='none';arena.style.boxShadow='none';},2500);}
+        else{blScore=Math.min(2.5,blScore+val);tone('tick');}
+        document.getElementById('blScore').innerText=blScore.toFixed(1);el.remove();
+      };
+      setTimeout(()=>{if(el.parentNode)el.remove();},blFrozen?3600:1700);
+    },620);
+  };
+  // 6. Общий Лидерборд чата на твоём npoint.io + кнопка приглашения
+  const LB_URL='https://npoint.io';
+  if(badgesEl&&!document.getElementById('lbTopBtn')){
+    const btn=document.createElement('span');btn.id='lbTopBtn';btn.className='badge';
+    btn.style.cssText='background:rgba(245,158,11,0.22);border-color:#fbbf24;color:#fde047';
+    btn.innerText='🏆 Топ чата';btn.onclick=()=>openLeaderboard();badgesEl.appendChild(btn);
+  }
+  const lbModal=document.createElement('div');lbModal.className='modal';lbModal.id='lbModal';
+  lbModal.innerHTML=`
+    <div class="receipt" style="border-color:#fbbf24;padding:13px;max-height:82vh;display:flex;flex-direction:column">
+      <div class="row-sb" style="margin-bottom:8px">
+        <h3 style="color:#fde047;font-size:15px">🏆 Лидерборд чата • 1 Сезон</h3>
+        <div style="display:flex;gap:5px"><button class="btn-out" onclick="openLeaderboard()">🔄</button><button class="btn-out" style="border-color:#78716c;color:#d6d3d1" onclick="document.getElementById('lbModal').classList.remove('open')">✖</button></div>
+      </div>
+      <div id="lbList" style="overflow-y:auto;text-align:left;font-size:12px;max-height:54vh">Загрузка рейтинга...</div>
+      <button class="btn" id="lbInviteBtn" style="width:100%;margin-top:8px;padding:9px;font-size:12px">📢 Позвать игроков из чата в Топ</button>
+    </div>`;
+  document.body.appendChild(lbModal);
+
+  document.getElementById('lbInviteBtn').onclick=()=>{
+    const url='https://t.me('💣 Залетай в Минное Поле 2.0 (1 Сезон)! Попробуй обогнать меня в Топе чата 🏆');
+    if(window.Telegram?.WebApp?.openTelegramLink)window.Telegram.WebApp.openTelegramLink(url);
+    else window.open(url,'_blank');
+  };
+
+  window.syncLeaderboard=async function(openAfter=false){
+    const u=window.Telegram?.WebApp?.initDataUnsafe?.user;
+    const uid=u?.id?String(u.id):('guest_'+(localStorage.getItem('mp_gid')||(()=>{const g=Math.floor(Math.random()*99999);localStorage.setItem('mp_gid',g);return g;})()));
+    const uname=u?(u.username?'@'+u.username:(u.first_name||'Игрок')):'Игрок #'+uid.slice(-4);
+    const bal=Math.round((typeof getBal==='function'?getBal():0)*10)/10;
+
+    let board={};
+    try{
+      const r=await fetch(LB_URL,{cache:'no-store'});
+      if(r.ok){const raw=await r.json();if(raw&&typeof raw==='object'&&raw.players)board=raw.players;}
+    }catch(e){}
+
+    board[uid]={name:uname,bal:bal,rank:getRank(bal),ts:Date.now()};
+    try{await fetch(LB_URL,{method:'POST',headers:{'Content-Type':'text/plain;charset=UTF-8'},body:JSON.stringify({players:board})});}
+    catch(e){try{await fetch(LB_URL,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({players:board})});}catch(e2){}}
+
+    if(openAfter){
+      const arr=Object.entries(board).map(([id,v])=>({id,...v})).sort((a,b)=>b.bal-a.bal).slice(0,25);
+      document.getElementById('lbList').innerHTML=arr.map((p,idx)=>{
+        const medal=idx===0?'🥇':(idx===1?'🥈':(idx===2?'🥉':`<b>#${idx+1}</b>`));
+        const isMe=p.id===uid;
+        return `<div class="box row-sb" style="padding:7px 9px;margin-bottom:5px;${isMe?'border-color:#10b981;background:rgba(16,185,129,0.16)':''}">
+          <div><div style="font-size:12px">${medal} <b>${p.name}</b> ${isMe?'<span style="color:#6ee7b7;font-size:10px">(Ты)</span>':''}</div><div style="font-size:10px;color:#a8a29e;margin-top:2px">${p.rank||getRank(p.bal)}</div></div>
+          <b style="color:#fde047;font-size:13px">${p.bal} ❇️</b>
+        </div>`;
+      }).join('');
+    }
+  };
+  window.openLeaderboard=function(){
+    document.getElementById('lbModal').classList.add('open');
+    document.getElementById('lbList').innerHTML='<p style="text-align:center;color:#fde68a">⏳ Синхронизация рейтинга...</p>';
+    syncLeaderboard(true);
+  };
+  const origSetBal=window.setBal;
+  if(typeof origSetBal==='function'){
+    window.setBal=function(v){origSetBal(v);clearTimeout(window._lbTimer);window._lbTimer=setTimeout(()=>syncLeaderboard(false),1500);};
+  }
+  setTimeout(()=>syncLeaderboard(false),2500);
+
+  // 7. Живой анимированный фон с бомбами 💣, кристаллами ❇️ и новогодними снежинками ❄️
+  const cv=document.getElementById('bgCanvas');
+  if(cv&&!window._bgAnimStarted){
+    window._bgAnimStarted=true;
+    const ctx=cv.getContext('2d');
+    let W=cv.width=window.innerWidth,H=cv.height=window.innerHeight;
+    window.addEventListener('resize',()=>{W=cv.width=window.innerWidth;H=cv.height=window.innerHeight;});
+    const parts=Array.from({length:28},(_,i)=>({
+      x:Math.random()*W,y:Math.random()*H,
+      vy:0.25+Math.random()*0.45,vx:(Math.random()-0.5)*0.3,
+      rot:Math.random()*Math.PI*2,vrot:(Math.random()-0.5)*0.015,
+      sz:14+Math.random()*14,idx:i,
+      alpha:0.12+Math.random()*0.13
+    }));
+    function drawBg(){
+      ctx.clearRect(0,0,W,H);
+      const isSnow=document.body.classList.contains('th-snow');
+      const icons=isSnow?['❄️','💣','🎁','❇️','🎄','❄️']:['💣','❇️','💎','💣','✨','❇️'];
+      parts.forEach(p=>{
+        p.y+=(isSnow?p.vy:-p.vy);p.x+=p.vx;p.rot+=p.vrot;
+        if(p.y<-30)p.y=H+30;if(p.y>H+30)p.y=-30;
+        if(p.x<-30)p.x=W+30;if(p.x>W+30)p.x=-30;
+        ctx.save();ctx.globalAlpha=p.alpha;ctx.translate(p.x,p.y);ctx.rotate(p.rot);
+        ctx.font=`${p.sz}px sans-serif`;ctx.textAlign='center';ctx.textBaseline='middle';
+        ctx.fillText(icons[p.idx%icons.length],0,0);ctx.restore();
+      });
+      requestAnimationFrame(drawBg);
+    }
+    drawBg();
+  }
+  // 8. Плеер на 7 полноценных треков (3 новогодних + 4 игровых с басовой партией)
+  const TRACKS=[
+    {
+      name:'🎄 Jingle Bells (Новогодний)',tempo:250,wave:'sine',
+      notes:[
+        329.6,329.6,329.6,0, 329.6,329.6,329.6,0, 329.6,392.0,261.6,293.7, 329.6,0,0,0,
+        349.2,349.2,349.2,349.2, 349.2,329.6,329.6,329.6, 329.6,293.7,293.7,329.6, 293.7,0,392.0,0,
+        329.6,329.6,329.6,0, 329.6,329.6,329.6,0, 329.6,392.0,261.6,293.7, 329.6,0,0,0,
+        349.2,349.2,349.2,349.2, 349.2,329.6,329.6,329.6, 392.0,392.0,349.2,293.7, 261.6,0,0,0,
+        196.0,329.6,293.7,261.6, 196.0,0,0,196.0, 196.0,329.6,293.7,261.6, 220.0,0,0,0,
+        220.0,349.2,329.6,293.7, 246.9,0,0,0, 392.0,392.0,349.2,293.7, 329.6,0,0,0
+      ],
+      bass:[130.8,196.0,130.8,196.0, 174.6,130.8,196.0,130.8, 130.8,196.0,110.0,174.6, 196.0,146.8,130.8,196.0]
+    },
+    {
+      name:'❄️ В лесу родилась ёлочка',tempo:310,wave:'triangle',
+      notes:[
+        261.6,440.0,440.0,392.0, 440.0,349.2,261.6,261.6, 261.6,440.0,440.0,466.2, 392.0,523.3,0,0,
+        523.3,293.7,293.7,466.2, 466.2,440.0,392.0,349.2, 261.6,440.0,440.0,392.0, 440.0,349.2,0,0
+      ],
+      bass:[174.6,130.8,174.6,130.8, 116.5,174.6,130.8,174.6]
+    },
+    {
+      name:'🔔 Щедрик (Carol of the Bells)',tempo:210,wave:'sine',
+      notes:[
+        440.0,392.0,440.0,349.2, 440.0,392.0,440.0,349.2, 440.0,392.0,440.0,349.2, 440.0,392.0,440.0,349.2,
+        523.3,493.9,523.3,440.0, 523.3,493.9,523.3,440.0, 587.3,587.3,523.3,493.9, 440.0,440.0,392.0,349.2,
+        392.0,440.0,493.9,392.0, 440.0,0,349.2,0, 440.0,392.0,440.0,349.2, 440.0,0,0,0
+      ],
+      bass:[110.0,110.0,98.0,98.0, 87.3,87.3,82.4,82.4, 110.0,98.0,87.3,82.4]
+    },
+    {
+      name:'Gold Lounge (Чилл)',tempo:390,wave:'triangle',
+      notes:[261.6,329.6,392.0,493.9, 220.0,261.6,329.6,392.0, 174.6,220.0,261.6,349.2, 196.0,246.9,293.7,392.0],
+      bass:[130.8,130.8,110.0,110.0, 87.3,87.3,98.0,98.0]
+    },
+    {
+      name:'Cyber Drive (Синтвейв)',tempo:220,wave:'sawtooth',
+      notes:[329.6,329.6,493.9,392.0, 329.6,392.0,440.0,392.0, 293.7,293.7,440.0,349.2, 293.7,349.2,392.0,329.6],
+      bass:[82.4,82.4,82.4,82.4, 73.4,73.4,73.4,73.4]
+    },
+    {
+      name:'Royal Vault (Тайный сейф)',tempo:340,wave:'triangle',
+      notes:[293.7,349.2,440.0,523.3, 493.9,440.0,349.2,329.6, 261.6,329.6,392.0,493.9, 440.0,392.0,329.6,293.7],
+      bass:[146.8,146.8,110.0,110.0, 130.8,130.8,146.8,146.8]
+    },
+    {
+      name:'Arcade Rush (Ретро-бит)',tempo:200,wave:'square',
+      notes:[523.3,0,392.0,0, 329.6,0,440.0,493.9, 466.2,440.0,0,392.0, 659.3,784.0,880.0,0, 698.5,784.0,0,659.3, 523.3,587.3,493.9,0],
+      bass:[130.8,196.0,130.8,196.0, 174.6,220.0,196.0,246.9]
+    }
+  ];
+
+  let curTr=0,bgmStep=0,bgmTimer=null,bgmPlaying=false;
+  const sndBtn=document.getElementById('sndBtn');
+  if(sndBtn){
+    let trBtn=document.getElementById('trBtn');
+    if(!trBtn){
+      trBtn=document.createElement('button');trBtn.id='trBtn';trBtn.className='snd-btn';trBtn.style.marginLeft='3px';
+      sndBtn.parentNode.insertBefore(trBtn,sndBtn.nextSibling);
+    }
+    trBtn.innerText='🎵 1/7';
+    trBtn.onclick=()=>nextBgmTrack();
+  }
+
+  function playStep(){
+    if(!bgmPlaying||!sndOn)return;
+    try{
+      if(!actx)actx=new(window.AudioContext||window.webkitAudioContext)();
+      if(actx.state==='suspended')actx.resume();
+      const tr=TRACKS[curTr],now=actx.currentTime,dur=tr.tempo/1000;
+      const freq=tr.notes[bgmStep%tr.notes.length];
+      if(freq>0){
+        const o=actx.createOscillator(),g=actx.createGain();
+        o.type=tr.wave;o.frequency.setValueAtTime(freq,now);
+        const vol=tr.wave==='square'?0.014:(tr.wave==='sawtooth'?0.02:0.034);
+        g.gain.setValueAtTime(vol,now);
+        g.gain.exponentialRampToValueAtTime(0.0008,now+dur*0.92);
+        o.connect(g);g.connect(actx.destination);o.start(now);o.stop(now+dur*0.95);
+      }
+      if(bgmStep%4===0){
+        const bFreq=tr.bass[Math.floor(bgmStep/4)%tr.bass.length];
+        const bo=actx.createOscillator(),bg=actx.createGain();
+        bo.type='sine';bo.frequency.setValueAtTime(bFreq,now);
+        bg.gain.setValueAtTime(0.04,now);
+        bg.gain.exponentialRampToValueAtTime(0.001,now+dur*3.6);
+        bo.connect(bg);bg.connect(actx.destination);bo.start(now);bo.stop(now+dur*3.7);
+      }
+      bgmStep++;
+    }catch(e){}
+  }
+
+  window.startBgm=function(){
+    if(bgmTimer)clearInterval(bgmTimer);
+    bgmPlaying=true;bgmStep=0;playStep();
+    bgmTimer=setInterval(playStep,TRACKS[curTr].tempo);
+  };
+  window.nextBgmTrack=function(){
+    curTr=(curTr+1)%TRACKS.length;
+    const b=document.getElementById('trBtn');if(b)b.innerText=`🎵 ${curTr+1}/7`;
+    toast(`🎵 ${TRACKS[curTr].name}`);
+    if(bgmPlaying)startBgm();
+  };
+})();
+</script>
 </body>
 </html>
 
