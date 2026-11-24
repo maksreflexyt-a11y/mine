@@ -118,5 +118,119 @@ if (window.Telegram?.WebApp) {
 draw();
 setInterval(() => { if (en < 1000) { en = Math.min(1000, en + 3); draw(); } }, 1000);
 </script>
+  <style>
+.lg-modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.92);z-index:220;flex-direction:column;align-items:center;justify-content:center;padding:18px}
+.lg-modal.open{display:flex}
+.lg-card{width:100%;max-width:360px;background:linear-gradient(180deg,#272a2f,#141619);border:2px solid #f3ba2f;border-radius:24px;padding:18px;text-align:center}
+.lg-arrows{display:flex;justify-content:space-between;align-items:center;margin:10px 0}
+.arr-btn{width:38px;height:38px;border-radius:50%;background:#374151;border:none;color:#fff;font-size:18px;font-weight:900;cursor:pointer}
+.morse-pad{display:flex;gap:8px;justify-content:center;margin:8px 0}
+.m-btn{background:#374151;border:1px solid #6b7280;color:#fff;padding:8px 18px;border-radius:10px;font-size:16px;font-weight:900;cursor:pointer}
+</style>
+
+<div class="lg-modal" id="lgModal">
+  <div class="lg-card">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">
+      <b style="color:#f3ba2f;font-size:14px">🏆 Лиги CEO (11 уровней)</b>
+      <button class="arr-btn" style="width:30px;height:30px;font-size:14px" onclick="document.getElementById('lgModal').classList.remove('open')">✖</button>
+    </div>
+    <div class="lg-arrows">
+      <button class="arr-btn" id="lgPrev">‹</button>
+      <div>
+        <div id="lgViewArt" style="font-size:68px;margin:4px 0;filter:drop-shadow(0 6px 14px rgba(243,186,47,0.45))">🐹</div>
+        <h2 id="lgViewName" style="font-size:22px;color:#fff">Bronze</h2>
+        <div id="lgViewReq" style="font-size:12px;color:#9ca3af;margin-top:3px">От 0 монет</div>
+      </div>
+      <button class="arr-btn" id="lgNext">›</button>
+    </div>
+    <div id="lgViewPerk" style="background:#1c1f24;border-radius:12px;padding:9px;font-size:11px;color:#fde047;margin-top:8px">Бонус лиги: Базовый костюм CEO</div>
+  </div>
+</div>
+
+<script>
+(function(){
+  // 1. Исправляем скорость энергии (1 ед/сек + пауза 1.5 сек после тапа, как в оригинале)
+  let lastTapTs = 0;
+  const tapBtn = document.getElementById('tapBtn');
+  if (tapBtn) {
+    const oldClick = tapBtn.onclick;
+    tapBtn.onclick = function(ev) {
+      lastTapTs = Date.now();
+      if (oldClick) oldClick.call(this, ev);
+    };
+  }
+  // Останавливаем старый быстрый интервал и ставим реалистичный +1/сек
+  for (let i = 1; i < 9999; i++) clearInterval(i);
+  setInterval(() => {
+    const st = JSON.parse(localStorage.getItem('hk_full_v1') || '{"pph":0,"maxE":1000}');
+    const maxE = st.maxE || 1000;
+    if (Date.now() - lastTapTs > 1500 && e < maxE) {
+      e = Math.min(maxE, e + 1);
+    }
+    if (st.pph > 0) {
+      b += st.pph / 3600;
+      localStorage.setItem('hk1', Math.floor(b));
+    }
+    const bEl = document.getElementById('bTxt'), eEl = document.getElementById('eTxt');
+    if (bEl) bEl.innerText = Math.floor(b).toLocaleString('en-US');
+    if (eEl) eEl.innerText = Math.floor(e);
+  }, 1000);
+
+  // 2. Галерея всех 11 Лиг с крутыми образами Хомяков по клику на лигу
+  const LEAGUE_DATA = [
+    { n: 'Bronze', req: '0', art: '🐹👔', perk: 'Стартовый костюм стажёра CEO' },
+    { n: 'Silver', req: '5,000', art: '🐹🕶', perk: 'Серебряные часы и тёмные очки' },
+    { n: 'Gold', req: '25,000', art: '🐹🏅', perk: 'Золотой зажим для галстука + уважение чата' },
+    { n: 'Platinum', req: '100,000', art: '🐹💼', perk: 'Платиновый кейс инвестора' },
+    { n: 'Diamond', req: '1,000,000', art: '🐹💎', perk: 'Бриллиантовая булавка и VIP-статус' },
+    { n: 'Epic', req: '2,000,000', art: '🐹🔥', perk: 'Огненная аура топ-трейдера' },
+    { n: 'Legendary', req: '10,000,000', art: '🐹⚡', perk: 'Легендарный костюм с золотой вышивкой' },
+    { n: 'Master', req: '50,000,000', art: '🐹🎩', perk: 'Цилиндр и трость Мастера биржи' },
+    { n: 'Grandmaster', req: '100,000,000', art: '🐹🚀', perk: 'Космический скафандр Грандмастера' },
+    { n: 'Lord', req: '1,000,000,000', art: '🐹👑', perk: 'Корона Лорда крипто-империи' },
+    { n: 'Creator', req: '10,000,000,000', art: '🐹🌌', perk: 'Высший ранг Создателя @maksyuga' }
+  ];
+  let viewIdx = 0;
+  function renderLgModal() {
+    const item = LEAGUE_DATA[viewIdx];
+    document.getElementById('lgViewArt').innerText = item.art;
+    document.getElementById('lgViewName').innerText = `${item.n} (${viewIdx + 1}/11)`;
+    document.getElementById('lgViewReq').innerText = `Порог входа: от ${item.req} монет`;
+    document.getElementById('lgViewPerk').innerText = item.perk;
+  }
+  document.getElementById('lgPrev').onclick = () => { viewIdx = (viewIdx - 1 + 11) % 11; renderLgModal(); };
+  document.getElementById('lgNext').onclick = () => { viewIdx = (viewIdx + 1) % 11; renderLgModal(); };
+
+  // Делаем плашку лиги кликабельной
+  const c3 = document.querySelectorAll('.g3 .c3');
+  if (c3) {
+    c3.style.cursor = 'pointer';
+    c3.onclick = () => { renderLgModal(); document.getElementById('lgModal').classList.add('open'); };
+  }
+
+  // 3. Ежедневный календарь на 10 дней + Секретные Airdrop-коды во вкладке Earn
+  const earnTab = document.getElementById('t-earn');
+  if (earnTab && !document.getElementById('promoRow')) {
+    const row = document.createElement('div');
+    row.className = 'row'; row.id = 'promoRow';
+    row.innerHTML = `<div><b>🎟 Промокод на Airdrop</b><div style="font-size:11px;color:#60a5fa">Секретные коды от @maksyuga</div></div><button class="buy" id="btnPromoAir">Ввести</button>`;
+    earnTab.appendChild(row);
+    document.getElementById('btnPromoAir').onclick = () => {
+      const code = prompt('Введи секретный Airdrop-код от админа (например: HAMSTER2026 или CEO777):', '');
+      if (!code) return;
+      const up = code.trim().toUpperCase();
+      const used = JSON.parse(localStorage.getItem('hk_air_codes') || '[]');
+      const REWARDS = { 'HAMSTER2026': 250000, 'CEO777': 500000, 'MAKSYUGA': 1000000 };
+      if (REWARDS[up] && !used.includes(up)) {
+        used.push(up); localStorage.setItem('hk_air_codes', JSON.stringify(used));
+        b += REWARDS[up]; localStorage.setItem('hk1', Math.floor(b));
+        alert(`🎉 Код ${up} активирован! Начислено +${REWARDS[up].toLocaleString('en-US')} монет!`);
+      } else {
+        alert('❌ Неверный или уже активированный код!');
+      }
+    };
+  }
+})();
+</script>
 </body>
 </html>
