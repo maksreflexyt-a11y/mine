@@ -31,3 +31,92 @@ body{background:#000;color:#fff;min-height:100vh;display:flex;flex-direction:col
   <div class="pill">🐹 <span id="ceoName">CEO</span></div>
   <div class="pill">🔶 Binance</div>
 </div>
+<div class="sheet">
+  <div class="g3">
+    <div class="card3"><span style="color:#f59e0b">Прибыль за тап</span><b>+$1</b></div>
+    <div class="card3"><span style="color:#60a5fa">Монет для апа</span><b>5K</b></div>
+    <div class="card3"><span style="color:#4ade80">Прибыль в час</span><b>+$0</b></div>
+  </div>
+
+  <div style="width:100%;text-align:center">
+    <div class="bal" style="justify-content:center"><span class="coin-ico">$</span><span id="balVal">0</span></div>
+    <div style="display:flex;justify-content:space-between;font-size:12px;font-weight:700;color:#9ca3af;margin-bottom:5px"><span>Bronze ></span><span>Level <b style="color:#fff">1</b>/11</span></div>
+    <div class="bar"><div class="fill" id="lgBar"></div></div>
+  </div>
+
+  <div class="ham-ring" id="hamBtn">
+    <div class="ham-core">
+      <svg viewBox="0 0 240 240" style="width:225px;height:225px;pointer-events:none;filter:drop-shadow(0 10px 16px rgba(0,0,0,0.6))">
+        <defs>
+          <radialGradient id="hkHead" cx="48%" cy="35%" r="60%"><stop offset="0%" stop-color="#f3d2b3"/><stop offset="55%" stop-color="#d49b6a"/><stop offset="100%" stop-color="#8c5832"/></radialGradient>
+          <radialGradient id="hkCheek" cx="50%" cy="40%" r="55%"><stop offset="0%" stop-color="#fff8f0"/><stop offset="75%" stop-color="#fae1c8"/><stop offset="100%" stop-color="#e2b48a"/></radialGradient>
+          <linearGradient id="hkSuit" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#334155"/><stop offset="50%" stop-color="#1e293b"/><stop offset="100%" stop-color="#0f172a"/></linearGradient>
+          <linearGradient id="hkTie" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#f87171"/><stop offset="50%" stop-color="#dc2626"/><stop offset="100%" stop-color="#7f1d1d"/></linearGradient>
+        </defs>
+        <ellipse cx="66" cy="52" rx="22" ry="25" transform="rotate(-18 66 52)" fill="#9c633b" stroke="#5c3518" stroke-width="2.5"/>
+        <ellipse cx="67" cy="53" rx="13" ry="16" transform="rotate(-18 67 53)" fill="#f4a29e"/>
+        <ellipse cx="174" cy="52" rx="22" ry="25" transform="rotate(18 174 52)" fill="#9c633b" stroke="#5c3518" stroke-width="2.5"/>
+        <ellipse cx="173" cy="53" rx="13" ry="16" transform="rotate(18 173 53)" fill="#f4a29e"/>
+        <path d="M58,95 C56,52 86,36 120,36 C154,36 184,52 182,95 C185,126 164,146 120,146 C76,146 55,126 58,95 Z" fill="url(#hkHead)" stroke="#5c3518" stroke-width="2.5"/>
+        <path d="M108,37 Q118,22 126,35 Q134,25 135,38 Z" fill="#f3d2b3" stroke="#8c5832" stroke-width="1.5"/>
+        <ellipse cx="86" cy="112" rx="26" ry="22" fill="url(#hkCheek)"/>
+        <ellipse cx="154" cy="112" rx="26" ry="22" fill="url(#hkCheek)"/>
+        <ellipse cx="120" cy="114" rx="34" ry="26" fill="url(#hkCheek)"/>
+        <ellipse cx="94" cy="84" rx="11" ry="13" fill="#0f172a"/><circle cx="97" cy="80" r="4.5" fill="#fff"/>
+        <ellipse cx="146" cy="84" rx="11" ry="13" fill="#0f172a"/><circle cx="149" cy="80" r="4.5" fill="#fff"/>
+        <path d="M78,68 Q94,61 107,69" fill="none" stroke="#4a2511" stroke-width="4.5" stroke-linecap="round"/>
+        <path d="M133,69 Q146,61 162,68" fill="none" stroke="#4a2511" stroke-width="4.5" stroke-linecap="round"/>
+        <ellipse cx="120" cy="100" rx="9" ry="6" fill="#fb7185"/>
+        <path d="M104,113 Q120,126 136,113" fill="none" stroke="#4a2511" stroke-width="3" stroke-linecap="round"/>
+        <rect x="114" y="116" width="5.5" height="7" rx="1.5" fill="#fff"/><rect x="120.5" y="116" width="5.5" height="7" rx="1.5" fill="#fff"/>
+        <path d="M42,225 C42,165 72,144 120,144 C168,144 198,165 198,225 Z" fill="url(#hkSuit)" stroke="#090d16" stroke-width="3"/>
+        <polygon points="94,144 146,144 120,196" fill="#f8fafc"/>
+        <polygon points="113,146 127,146 131,184 120,198 109,184" fill="url(#hkTie)"/>
+        <polygon points="94,144 114,196 96,202 80,154" fill="#1e293b" stroke="#475569" stroke-width="1.5"/>
+        <polygon points="146,144 126,196 144,202 160,154" fill="#1e293b" stroke="#475569" stroke-width="1.5"/>
+        <ellipse cx="86" cy="196" rx="26" ry="14" transform="rotate(-12 86 196)" fill="#d49b6a" stroke="#5c3518" stroke-width="2"/>
+        <ellipse cx="154" cy="196" rx="26" ry="14" transform="rotate(12 154 196)" fill="#d49b6a" stroke="#5c3518" stroke-width="2"/>
+      </svg>
+    </div>
+  </div>
+
+  <div class="en-line">
+    <span>⚡ <span id="enVal">1000</span> / 1000</span>
+    <span style="color:#fde047">🚀 Boost (скоро)</span>
+  </div>
+</div>
+
+<script>
+let bal = parseInt(localStorage.getItem('hk_b1') || '0', 10);
+let en = 1000;
+
+function draw() {
+  document.getElementById('balVal').innerText = bal.toLocaleString('en-US');
+  document.getElementById('enVal').innerText = en;
+  document.getElementById('lgBar').style.width = Math.min(100, Math.max(4, (bal / 5000) * 100)) + '%';
+}
+
+document.getElementById('hamBtn').onclick = function(e) {
+  if (en <= 0) return;
+  en--; bal++;
+  localStorage.setItem('hk_b1', bal);
+  try { window.Telegram?.WebApp?.HapticFeedback?.impactOccurred('light'); } catch (err) {}
+  const num = document.createElement('div');
+  num.className = 'fly'; num.innerText = '+1';
+  num.style.left = (e.clientX || window.innerWidth / 2) + 'px';
+  num.style.top = (e.clientY || 300) + 'px';
+  document.body.appendChild(num);
+  setTimeout(() => num.remove(), 700);
+  draw();
+};
+
+if (window.Telegram?.WebApp) {
+  window.Telegram.WebApp.expand();
+  const u = window.Telegram.WebApp.initDataUnsafe?.user;
+  if (u) document.getElementById('ceoName').innerText = (u.username ? '@' + u.username : u.first_name) + ' (CEO)';
+}
+draw();
+setInterval(() => { if (en < 1000) { en = Math.min(1000, en + 3); draw(); } }, 1000);
+</script>
+</body>
+</html>
