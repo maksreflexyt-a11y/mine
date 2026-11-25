@@ -3,104 +3,110 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no">
-<title>Blum Emerald Drop</title>
+<title>Blum • 1 Сезон</title>
 <script src="https://telegram.org"></script>
 <style>
 *{box-sizing:border-box;margin:0;padding:0;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;user-select:none}
-body{background:radial-gradient(circle at top,#071e16 0%,#030706 80%);color:#fff;min-height:100vh;display:flex;flex-direction:column;align-items:center;padding:12px 12px 82px;overflow-x:hidden}
-.top{width:100%;max-width:400px;display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}
-.pill{background:rgba(255,255,255,0.07);border:1px solid rgba(16,185,129,0.35);padding:6px 12px;border-radius:16px;font-size:12px;font-weight:700;color:#6ee7b7;cursor:pointer}
-.tab{display:none;width:100%;max-width:400px;flex-direction:column;align-items:center;gap:10px}.tab.act{display:flex}
-.bal-card{width:100%;background:linear-gradient(135deg,rgba(16,185,129,0.18),rgba(6,78,59,0.1));border:1px solid rgba(52,211,153,0.4);border-radius:20px;padding:14px;text-align:center}
-.bal-num{font-size:38px;font-weight:900;color:#fff;text-shadow:0 0 20px rgba(16,185,129,0.5)}
-.drop-box{width:100%;background:radial-gradient(circle at top,#063729,#040d0a);border:2px solid #10b981;border-radius:22px;padding:14px;text-align:center;box-shadow:0 8px 30px rgba(16,185,129,0.22)}
-.btn{background:linear-gradient(135deg,#10b981,#059669);border:none;color:#fff;padding:10px 16px;border-radius:12px;font-size:13px;font-weight:800;cursor:pointer;transition:transform 0.08s}
-.btn:active{transform:scale(0.95)}.btn:disabled{background:#1f2937;color:#6b7280}
-.arena{display:none;position:fixed;inset:0;background:radial-gradient(circle at top,#062c22,#020605);z-index:200;flex-direction:column;padding:14px}
+body{background:#000;color:#fff;min-height:100vh;display:flex;flex-direction:column;align-items:center;padding:12px 14px 86px;overflow-x:hidden}
+.top{width:100%;max-width:400px;display:flex;justify-content:space-between;align-items:center;margin-bottom:14px}
+.pill{background:#161817;border:1px solid #262928;padding:6px 12px;border-radius:20px;font-size:12px;font-weight:700;display:flex;align-items:center;gap:6px;cursor:pointer}
+.tab{display:none;width:100%;max-width:400px;flex-direction:column;align-items:center;gap:12px}.tab.act{display:flex}
+.ava{width:76px;height:76px;border-radius:50%;background:radial-gradient(circle at 30% 30%,#4ade80,#16a34a);display:flex;align-items:center;justify-content:center;font-size:38px;box-shadow:0 0 28px rgba(74,222,128,0.35);margin-top:4px}
+.bal{font-size:40px;font-weight:900;letter-spacing:-0.5px;display:flex;align-items:center;gap:8px}
+.drop-card{width:100%;background:linear-gradient(135deg,#12291d 0%,#0b1410 100%);border:1.5px solid #22c55e;border-radius:22px;padding:15px;display:flex;justify-content:space-between;align-items:center;box-shadow:0 8px 28px rgba(34,197,94,0.16)}
+.tk-pill{background:rgba(244,114,182,0.16);border:1px solid #f472b6;color:#f9a8d4;padding:4px 10px;border-radius:12px;font-size:12px;font-weight:800;display:inline-flex;align-items:center;gap:4px}
+.btn{background:#fff;color:#000;border:none;padding:10px 18px;border-radius:14px;font-size:13px;font-weight:800;cursor:pointer;transition:transform 0.08s}
+.btn:active{transform:scale(0.95)}.btn:disabled{background:#1f2221;color:#525856}
+.btn-green{background:linear-gradient(135deg,#4ade80,#16a34a);color:#000}
+.farm-btn{width:100%;padding:15px;border-radius:16px;font-size:15px;font-weight:900;background:#161817;color:#fff;border:1px solid #2c302e;cursor:pointer;position:relative;overflow:hidden}
+.farm-btn.ready{background:linear-gradient(90deg,#4ade80,#22c55e);color:#000;border:none;box-shadow:0 0 24px rgba(74,222,128,0.4)}
+.row{width:100%;background:#121413;border:1px solid #222624;border-radius:16px;padding:12px 14px;display:flex;justify-content:space-between;align-items:center;gap:10px}
+.arena{display:none;position:fixed;inset:0;background:radial-gradient(circle at top,#071f14,#000);z-index:200;flex-direction:column;padding:14px}
 .arena.open{display:flex}
-.hud{display:flex;justify-content:space-between;align-items:center;background:rgba(0,0,0,0.6);border:1px solid #10b981;border-radius:14px;padding:10px 14px;font-size:15px;font-weight:900}
-.field{flex:1;position:relative;overflow:hidden;margin-top:10px;border-radius:18px;border:1px solid rgba(52,211,153,0.25);touch-action:manipulation}
-.item{position:absolute;top:-45px;font-size:34px;cursor:pointer;padding:6px;filter:drop-shadow(0 4px 10px rgba(0,0,0,0.7))}
-.row{width:100%;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:15px;padding:12px;display:flex;justify-content:space-between;align-items:center;gap:8px}
-.nav{position:fixed;bottom:8px;left:10px;right:10px;max-width:390px;margin:0 auto;background:#0d1412;border:1px solid rgba(16,185,129,0.3);border-radius:18px;display:flex;padding:5px;z-index:80}
-.nb{flex:1;background:none;border:none;color:#6b7280;padding:6px 2px;border-radius:13px;display:flex;flex-direction:column;align-items:center;font-size:10px;font-weight:700;gap:2px;cursor:pointer}
-.nb span{font-size:17px}.nb.act{background:rgba(16,185,129,0.18);color:#6ee7b7}
-@keyframes pop{0%{opacity:1;transform:translate(-50%,0) scale(1)}100%{opacity:0;transform:translate(-50%,-60px) scale(1.3)}}
-.pop{position:fixed;font-size:20px;font-weight:900;pointer-events:none;z-index:260;animation:pop 0.6s forwards}
-.toast{position:fixed;top:14px;background:#10b981;color:#fff;padding:7px 14px;border-radius:14px;font-size:12px;font-weight:800;opacity:0;pointer-events:none;transition:0.2s;z-index:300}.toast.show{opacity:1}
+.hud{display:flex;justify-content:space-between;align-items:center;background:#121413;border:1px solid #22c55e;border-radius:16px;padding:10px 16px;font-size:16px;font-weight:900}
+.field{flex:1;position:relative;overflow:hidden;margin-top:10px;border-radius:20px;touch-action:manipulation}
+.item{position:absolute;top:-45px;font-size:36px;cursor:pointer;padding:6px;filter:drop-shadow(0 4px 12px rgba(0,0,0,0.8))}
+.nav{position:fixed;bottom:8px;left:10px;right:10px;max-width:390px;margin:0 auto;background:#121413;border:1px solid #222624;border-radius:20px;display:flex;padding:5px;z-index:80}
+.nb{flex:1;background:none;border:none;color:#6b7280;padding:6px 2px;border-radius:14px;display:flex;flex-direction:column;align-items:center;font-size:10px;font-weight:700;gap:2px;cursor:pointer}
+.nb span{font-size:17px}.nb.act{background:#1f2421;color:#fff}
+@keyframes pop{0%{opacity:1;transform:translate(-50%,0) scale(1)}100%{opacity:0;transform:translate(-50%,-65px) scale(1.3)}}
+.pop{position:fixed;font-size:22px;font-weight:900;pointer-events:none;z-index:260;animation:pop 0.6s forwards}
+.toast{position:fixed;top:14px;background:#22c55e;color:#000;padding:7px 14px;border-radius:14px;font-size:12px;font-weight:800;opacity:0;pointer-events:none;transition:0.2s;z-index:300}.toast.show{opacity:1}
 </style>
 </head>
 <body>
 <div class="toast" id="toast"></div>
 
-<div id="splash" style="position:fixed;inset:0;background:radial-gradient(circle at top,#063729,#020605);z-index:350;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:22px;text-align:center">
-  <div style="font-size:68px;margin-bottom:8px;filter:drop-shadow(0 0 22px rgba(16,185,129,0.7))">❇️</div>
-  <div style="padding:4px 14px;background:rgba(16,185,129,0.2);border:1px solid #10b981;border-radius:20px;font-size:11px;font-weight:800;color:#6ee7b7;margin-bottom:8px">🏆 1-Й СЕЗОН • @maksyuga</div>
-  <h1 style="font-size:26px;margin-bottom:10px">EMERALD DROP</h1>
-  <p style="font-size:13px;color:#d1fae5;max-width:290px;margin-bottom:20px">Лови падающие изумруды ❇️, замораживай время ❄️, уклоняйся от бомб 💣 за 30 секунд и меняй кристаллы на Звёзды ⭐️!</p>
-  <button class="btn" style="padding:14px 42px;font-size:16px;border-radius:14px" onclick="document.getElementById('splash').remove()">🚀 ИГРАТЬ</button>
+<div id="splash" style="position:fixed;inset:0;background:radial-gradient(circle at top,#0a2417,#000);z-index:350;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:22px;text-align:center">
+  <div style="font-size:68px;margin-bottom:8px;filter:drop-shadow(0 0 24px rgba(74,222,128,0.6))">🌿</div>
+  <div style="padding:4px 14px;background:rgba(74,222,128,0.16);border:1px solid #4ade80;border-radius:20px;font-size:11px;font-weight:800;color:#86efac;margin-bottom:8px">🏆 1-Й СЕЗОН • @maksyuga</div>
+  <h1 style="font-size:28px;font-weight:900;margin-bottom:10px">BLUM DROP</h1>
+  <p style="font-size:13px;color:#d1d5db;max-width:290px;margin-bottom:20px">Собирай зелёные листики 🌿 за розовые билетики 🎟, копи тысячи <b>K</b> и открывай секретный <b>Airdrop</b> сезона!</p>
+  <button class="btn btn-green" style="padding:14px 42px;font-size:16px;border-radius:16px" onclick="document.getElementById('splash').remove()">🚀 ИГРАТЬ</button>
 </div>
 
 <div class="top">
-  <div class="pill" id="uPill" onclick="editNick()">❇️ Игрок</div>
+  <div class="pill" id="uPill" onclick="editNick()">🌿 Игрок</div>
   <div class="pill" onclick="openTop()">🏆 Топ чата</div>
 </div>
 
 <div class="tab act" id="t-home">
-  <div class="bal-card">
-    <div style="font-size:11px;color:#6ee7b7;font-weight:700;margin-bottom:2px">ТВОЙ БАЛАНС</div>
-    <div class="bal-num">❇️ <span id="balV">0</span></div>
-    <div style="font-size:11px;color:#9ca3af;margin-top:4px" id="rankTxt">🌱 Новичок сезона</div>
+  <div class="ava">🌿</div>
+  <div style="font-size:13px;font-weight:700;color:#9ca3af" id="rankTxt">🌱 Новичок Blum</div>
+  <div class="bal"><span>🌿</span><span id="balV">0</span></div>
+
+  <div class="drop-card">
+    <div style="text-align:left">
+      <div style="font-size:17px;font-weight:900;margin-bottom:4px">Drop game</div>
+      <div class="tk-pill">🎟 <b id="tkV">3</b> / 3</div>
+      <div style="font-size:10px;color:#86efac;margin-top:5px" id="tkTimer">3 розовых билета раз в 24ч</div>
+    </div>
+    <button class="btn" id="playBtn" onclick="startDrop()">Play</button>
   </div>
 
-  <div class="drop-box">
-    <div style="font-size:44px;margin-bottom:4px">💎❄️💣</div>
-    <h2 style="font-size:19px;margin-bottom:4px">Drop Game • 30 сек</h2>
-    <p style="font-size:12px;color:#a7f3d0;margin-bottom:12px">Лови изумруды ❇️ (+0.1), алмазы 💎 (+0.5) и снежинки ❄️ (заморозка). Не жми на бомбы 💣!</p>
-    <div style="display:flex;justify-content:center;align-items:center;gap:10px">
-      <button class="btn" id="playBtn" style="padding:12px 24px;font-size:14px" onclick="startDrop()">🎟 Играть (1 билет)</button>
-      <div class="pill" style="cursor:default">🎟 <b id="tkV">3</b> / 3</div>
-    </div>
-    <div style="font-size:10px;color:#6ee7b7;margin-top:8px" id="tkTimer">3 бесплатных билета каждые 24 часа</div>
-  </div>
+  <button class="farm-btn" id="farmBtn" onclick="handleFarm()">Start Farming (🌿 +250)</button>
 
   <div class="row">
-    <div><b>🎁 Ежедневный бонус</b><div style="font-size:11px;color:#6ee7b7">+2.0 ❇️ и восстановление билетов</div></div>
+    <div style="text-align:left"><b>🎁 Ежедневный чек-ин</b><div style="font-size:11px;color:#f472b6">+3 розовых билета 🎟 и +150 🌿</div></div>
     <button class="btn" onclick="claimDaily()">Забрать</button>
   </div>
 </div>
 
-<div class="tab" id="t-tasks">
-  <h3 style="width:100%;font-size:16px;color:#6ee7b7">📋 Задания (Заработок ❇️)</h3>
-  <div class="row"><div><b>📢 Подписаться на наш чат</b><div style="font-size:11px;color:#fde047">+3.0 ❇️</div></div><button class="btn" id="tsk1" onclick="doTask('chat',3,this)">Выполнить</button></div>
-  <div class="row"><div><b>👥 Позвать друга из Telegram</b><div style="font-size:11px;color:#fde047">+5.0 ❇️</div></div><button class="btn" onclick="inviteFr()">Позвать</button></div>
-  <div class="row"><div><b>🎟 Промокод от @maksyuga</b><div style="font-size:11px;color:#38bdf8">Введи секретный код дня</div></div><button class="btn" onclick="useCode()">Ввести</button></div>
-  <div class="row"><div><b>🐱 Кото-Ферма (Скоро!)</b><div style="font-size:11px;color:#9ca3af">Ухаживай за котом за ❇️</div></div><button class="btn" disabled>2 Сезон</button></div>
+<div class="tab" id="t-earn">
+  <h3 style="width:100%;font-size:17px">📋 Задания (Фарм 🌿)</h3>
+  <div class="row"><div><b>📢 Вступить в наш чат</b><div style="font-size:11px;color:#4ade80">+500 🌿</div></div><button class="btn" id="tskChat" onclick="doTask('chat',500,this)">Start</button></div>
+  <div class="row"><div><b>👥 Пригласить друга из чата</b><div style="font-size:11px;color:#4ade80">+1,000 🌿 и +1 🎟</div></div><button class="btn" onclick="inviteFr()">Invite</button></div>
+  <div class="row"><div><b>🔐 Секретный код от @maksyuga</b><div style="font-size:11px;color:#f472b6">Введи код дня (подсказка: BLUM)</div></div><button class="btn" onclick="useCode()">Ввести</button></div>
+  <div class="row"><div><b>🐱 Кото-Ферма (Скоро!)</b><div style="font-size:11px;color:#9ca3af">Ухаживай за котом и фарми 🌿</div></div><button class="btn" disabled>Скоро</button></div>
 </div>
 
-<div class="tab" id="t-prizes">
-  <h3 style="width:100%;font-size:16px;color:#fde047">🎁 Награды за Кристаллы</h3>
-  <div id="pGrid" style="width:100%;display:flex;flex-direction:column;gap:8px"></div>
+<div class="tab" id="t-air">
+  <div style="width:100%;background:linear-gradient(135deg,#18181b,#09090b);border:1.5px solid #f472b6;border-radius:20px;padding:14px;text-align:center">
+    <div style="font-size:38px;margin-bottom:4px">🎁✨</div>
+    <h3 style="font-size:18px;margin-bottom:4px">Секретный Airdrop Сезона</h3>
+    <p style="font-size:11px;color:#d4d4d8">Копи десятки и сотни тысяч листиков (<b>K</b> и <b>M</b>)! Чем больше у тебя 🌿 — тем жирнее секретный бокс от <b>@maksyuga</b> (внутри прячутся Звёзды Telegram ⭐️, вечный префикс и NFT).</p>
+  </div>
+  <div id="airList" style="width:100%;display:flex;flex-direction:column;gap:8px"></div>
 </div>
 
 <div class="arena" id="arena">
   <div class="hud">
-    <span>⏱ <b id="tmV" style="color:#fde047">30</b>с</span>
-    <span id="frzTag" style="color:#38bdf8;display:none">❄️ ЗАМОРОЗКА!</span>
-    <span>❇️ <b id="scV" style="color:#4ade80">0.0</b></span>
+    <span>⏱ <b id="tmV" style="color:#fff">30</b>s</span>
+    <span id="frzTag" style="color:#38bdf8;display:none">❄️ FREEZE!</span>
+    <span style="color:#4ade80">🌿 <b id="scV">0</b></span>
   </div>
   <div class="field" id="field"></div>
 </div>
 
 <div class="nav">
-  <button class="nb act" id="nHome" onclick="go('home',this)"><span>❇️</span>Главная</button>
-  <button class="nb" id="nTasks" onclick="go('tasks',this)"><span>📋</span>Задания</button>
-  <button class="nb" id="nPrizes" onclick="go('prizes',this)"><span>🎁</span>Призы</button>
+  <button class="nb act" id="nHome" onclick="go('home',this)"><span>🏠</span>Home</button>
+  <button class="nb" id="nEarn" onclick="go('earn',this)"><span>📋</span>Earn</button>
+  <button class="nb" id="nAir" onclick="go('air',this)"><span>🪙</span>Airdrop</button>
 </div>
 <script>
-const SK = 'blum_em_v1';
+const SK = 'blum_v2';
 let st = JSON.parse(localStorage.getItem(SK) || 'null') || {
-  bal: 0, tk: 3, tkTs: Date.now(), dailyTs: 0, nick: '', done: []
+  bal: 0, tk: 3, tkTs: Date.now(), farmEnd: 0, dailyTs: 0, nick: '', done: []
 };
 
 function save() {
@@ -112,6 +118,11 @@ function toast(m) {
   t.classList.add('show');
   setTimeout(() => t.classList.remove('show'), 2000);
 }
+function kf(n) {
+  if (n >= 1e6) return (n / 1e6).toFixed(2) + ' M';
+  if (n >= 1e3) return (n / 1e3).toFixed(2) + ' K';
+  return Math.floor(n).toLocaleString('en-US');
+}
 function go(id, el) {
   document.querySelectorAll('.tab').forEach(x => x.classList.remove('act'));
   document.getElementById('t-' + id).classList.add('act');
@@ -121,10 +132,10 @@ function go(id, el) {
   }
 }
 function editNick() {
-  const v = prompt('Твой ник или @username:', st.nick);
+  const v = prompt('Твой @username:', st.nick);
   if (v && v.trim()) {
     st.nick = v.trim();
-    document.getElementById('uPill').innerText = '❇️ ' + st.nick;
+    document.getElementById('uPill').innerText = '🌿 ' + st.nick;
     save();
   }
 }
@@ -132,7 +143,7 @@ function editNick() {
 function checkTickets() {
   const diff = Date.now() - (st.tkTs || Date.now());
   if (diff >= 86400000) {
-    st.tk = 3;
+    st.tk = Math.max(st.tk, 3);
     st.tkTs = Date.now();
     save();
   }
@@ -142,14 +153,51 @@ function checkTickets() {
     const rem = Math.max(0, 86400000 - diff);
     const h = String(Math.floor(rem / 3600000)).padStart(2, '0');
     const m = String(Math.floor((rem % 3600000) / 60000)).padStart(2, '0');
-    document.getElementById('tkTimer').innerText = `Новые 3 билета через: ${h}:${m}`;
+    document.getElementById('tkTimer').innerText = `Новые 🎟 через: ${h}:${m}`;
   } else {
-    document.getElementById('tkTimer').innerText = '3 бесплатных билета каждые 24 часа';
+    document.getElementById('tkTimer').innerText = '3 розовых билета раз в 24ч';
+  }
+}
+
+function handleFarm() {
+  const now = Date.now();
+  if (!st.farmEnd) {
+    st.farmEnd = now + 7200000;
+    save();
+    updFarm();
+    toast('🌿 Фарминг запущен на 2 часа!');
+  } else if (now >= st.farmEnd) {
+    st.farmEnd = 0;
+    st.bal += 250;
+    save();
+    upd();
+    updFarm();
+    toast('🎉 Собрано +250 🌿!');
+  } else {
+    toast('⏳ Фарминг ещё идёт...');
+  }
+}
+
+function updFarm() {
+  const btn = document.getElementById('farmBtn');
+  if (!st.farmEnd) {
+    btn.className = 'farm-btn';
+    btn.innerText = 'Start Farming (🌿 +250)';
+  } else if (Date.now() >= st.farmEnd) {
+    btn.className = 'farm-btn ready';
+    btn.innerText = 'Claim 250 🌿';
+  } else {
+    const rem = st.farmEnd - Date.now();
+    const h = String(Math.floor(rem / 3600000)).padStart(2, '0');
+    const m = String(Math.floor((rem % 3600000) / 60000)).padStart(2, '0');
+    const s = String(Math.floor((rem % 60000) / 1000)).padStart(2, '0');
+    const prog = Math.floor(((7200000 - rem) / 7200000) * 250);
+    btn.className = 'farm-btn';
+    btn.innerText = `Farming 🌿 ${prog}/250 • ${h}:${m}:${s}`;
   }
 }
 
 let gRun = false, gScore = 0, gSec = 30, gFrozen = false, tInt = null, sInt = null;
-
 function popTxt(x, y, txt, col) {
   const d = document.createElement('div');
   d.className = 'pop';
@@ -163,7 +211,7 @@ function popTxt(x, y, txt, col) {
 
 function startDrop() {
   checkTickets();
-  if (gRun || st.tk <= 0) { toast('🎟 Билеты кончились!'); return; }
+  if (gRun || st.tk <= 0) { toast('🎟 Нужен розовый билет!'); return; }
   if (st.tk === 3) st.tkTs = Date.now();
   st.tk--;
   save();
@@ -173,7 +221,7 @@ function startDrop() {
   gScore = 0;
   gSec = 30;
   gFrozen = false;
-  document.getElementById('scV').innerText = '0.0';
+  document.getElementById('scV').innerText = '0';
   document.getElementById('tmV').innerText = '30';
   document.getElementById('frzTag').style.display = 'none';
   const fld = document.getElementById('field');
@@ -190,18 +238,18 @@ function startDrop() {
   sInt = setInterval(() => {
     if (!gRun) return;
     const r = Math.random();
-    let type = 'em', ico = '❇️', val = 0.1;
+    let type = 'lf', ico = '🌿', val = 1;
     if (r < 0.22) { type = 'bm'; ico = '💣'; }
     else if (r < 0.28) { type = 'fr'; ico = '❄️'; }
-    else if (r < 0.40) { type = 'dm'; ico = '💎'; val = 0.5; }
-    else if (r < 0.65) { type = 'em2'; ico = '❇️'; val = 0.2; }
+    else if (r < 0.42) { type = 'cl'; ico = '🍀'; val = 5; }
+    else if (r < 0.68) { type = 'lf2'; ico = '🍃'; val = 2; }
 
     const el = document.createElement('div');
     el.className = 'item';
     el.innerText = ico;
     const maxW = Math.max(240, fld.clientWidth - 52);
     el.style.left = (8 + Math.floor(Math.random() * maxW)) + 'px';
-    const spd = gFrozen ? 4.2 : (1.8 + Math.random() * 0.7);
+    const spd = gFrozen ? 4.2 : (1.7 + Math.random() * 0.7);
     el.style.transition = `top ${spd}s linear`;
     fld.appendChild(el);
 
@@ -217,8 +265,8 @@ function startDrop() {
       el.dataset.hit = '1';
       try { window.Telegram?.WebApp?.HapticFeedback?.impactOccurred('light'); } catch (e) {}
       if (type === 'bm') {
-        gScore = Math.max(0, gScore - 1.0);
-        popTxt(ev.clientX, ev.clientY, '-1.0 💣', '#f87171');
+        gScore = Math.max(0, gScore - 10);
+        popTxt(ev.clientX, ev.clientY, '-10 💣', '#f87171');
       } else if (type === 'fr') {
         gFrozen = true;
         document.getElementById('frzTag').style.display = 'inline';
@@ -229,14 +277,13 @@ function startDrop() {
         }, 3000);
       } else {
         gScore += val;
-        popTxt(ev.clientX, ev.clientY, `+${val}`, type === 'dm' ? '#fde047' : '#4ade80');
+        popTxt(ev.clientX, ev.clientY, `+${val}`, val === 5 ? '#fde047' : '#4ade80');
       }
-      document.getElementById('scV').innerText = gScore.toFixed(1);
+      document.getElementById('scV').innerText = gScore;
       el.remove();
     };
-
     setTimeout(() => { if (el.parentNode) el.remove(); }, 4500);
-  }, 420);
+  }, 380);
 }
 
 function endDrop() {
@@ -245,128 +292,143 @@ function endDrop() {
   gRun = false;
   document.getElementById('field').innerHTML = '';
   document.getElementById('arena').classList.remove('open');
-  const won = Math.round(gScore * 10) / 10;
-  if (won > 0) {
-    st.bal = Math.round((st.bal + won) * 10) / 10;
+  if (gScore > 0) {
+    st.bal += gScore;
     save();
     upd();
   }
-  toast(`🎉 Раунд окончен! Собрано: +${won} ❇️`);
+  toast(`🎉 Собрано: +${gScore} 🌿!`);
 }
 function claimDaily() {
-  if (Date.now() - (st.dailyTs || 0) < 86400000) { toast('⏳ Ежедневный бонус уже забран!'); return; }
+  if (Date.now() - (st.dailyTs || 0) < 86400000) { toast('⏳ Чек-ин уже собран сегодня!'); return; }
   st.dailyTs = Date.now();
-  st.bal = Math.round((st.bal + 2.0) * 10) / 10;
-  st.tk = 3;
-  st.tkTs = Date.now();
+  st.bal += 150;
+  st.tk += 3;
   save();
   upd();
   checkTickets();
-  toast('🎁 +2.0 ❇️ и 3 полных билета!');
+  toast('🎁 +150 🌿 и +3 розовых билета 🎟!');
 }
 
 function doTask(id, rew, btn) {
   if (st.done.includes(id)) { toast('✅ Уже выполнено!'); return; }
   st.done.push(id);
-  st.bal = Math.round((st.bal + rew) * 10) / 10;
+  st.bal += rew;
   btn.disabled = true;
-  btn.innerText = 'Готово';
+  btn.innerText = 'Done';
   save();
   upd();
-  toast(`🎉 Задание выполнено: +${rew} ❇️!`);
+  toast(`🎉 Награда получена: +${rew} 🌿!`);
 }
 
 function inviteFr() {
-  if (!st.done.includes('fr1')) {
-    st.done.push('fr1');
-    st.bal = Math.round((st.bal + 5.0) * 10) / 10;
+  if (!st.done.includes('fr_ok')) {
+    st.done.push('fr_ok');
+    st.bal += 1000;
+    st.tk += 1;
     save();
     upd();
-    toast('👥 +5.0 ❇️ за приглашение!');
+    checkTickets();
+    toast('👥 +1,000 🌿 и +1 розовый билет 🎟!');
   }
-  const url = 'https://t.me' + encodeURIComponent('https://t.me') + '&text=' + encodeURIComponent('❇️ Залетай в Emerald Drop! Лови изумруды за 30 сек и меняй на Звёзды ⭐️ в чате!');
+  const url = 'https://t.me' + encodeURIComponent('https://t.me') + '&text=' + encodeURIComponent('🌿 Залетай в Blum Drop! Лови зелёные листики и забирай секретный Airdrop сезона!');
   if (window.Telegram?.WebApp?.openTelegramLink) window.Telegram.WebApp.openTelegramLink(url);
   else window.open(url, '_blank');
 }
 
 function useCode() {
-  const v = prompt('Введи секретный промокод от @maksyuga (подсказка: BLUM2026 или DROP777):', '');
+  const v = prompt('Введи секретный код от @maksyuga (подсказка: BLUM):', '');
   if (!v) return;
   const up = v.trim().toUpperCase();
-  const CODES = { 'BLUM2026': 5.0, 'DROP777': 10.0, 'MAKSYUGA': 15.0 };
+  const CODES = { 'BLUM': 2500, 'DROP2026': 5000, 'MAKSYUGA': 15000 };
   if (CODES[up] && !st.done.includes(up)) {
     st.done.push(up);
-    st.bal = Math.round((st.bal + CODES[up]) * 10) / 10;
+    st.bal += CODES[up];
     save();
     upd();
-    toast(`🎟 Промокод ${up}: +${CODES[up]} ❇️!`);
+    toast(`🔐 Код принят: +${kf(CODES[up])} 🌿!`);
   } else {
     toast('❌ Неверный или уже использованный код');
   }
 }
 
-const PRIZES = [
-  { n: 'Снятие лимитов в чате (12ч)', p: 15 },
-  { n: 'Закреп поста в чате (24ч)', p: 30 },
-  { n: 'Вечный Префикс в чате', p: 50 },
-  { n: 'Модератор чата (5 дней)', p: 120 },
-  { n: '25 Звёзд Telegram ⭐️', p: 200 },
-  { n: '100 Звёзд Telegram ⭐️', p: 450 },
-  { n: 'Telegram Gift / NFT 🎁', p: 800 },
-  { n: '👑 АДМИНКА НАВСЕГДА в чате', p: 1500 }
+const AIR_BOXES = [
+  { ico: '🥉', n: 'Бронзовый Секрет-Бокс', req: 10000, hint: 'Тайный бонус чата' },
+  { ico: '🥈', n: 'Серебряный Секрет-Бокс', req: 50000, hint: 'Редкий префикс / Звёзды ⭐️' },
+  { ico: '🥇', n: 'Золотой Секрет-Бокс', req: 250000, hint: 'Крупный пак Звёзд ⭐️' },
+  { ico: '💎', n: 'Алмазный Airdrop-Сейф', req: 1000000, hint: 'NFT-подарок 🎁 или VIP' },
+  { ico: '👑', n: 'Мифический Дроп Создателя', req: 5000000, hint: 'Главный приз от @maksyuga' }
 ];
-document.getElementById('pGrid').innerHTML = PRIZES.map(x => `<div class="row"><b style="font-size:12px">${x.n}</b><button class="btn" onclick="buyPrize('${x.n}',${x.p})">${x.p} ❇️</button></div>`).join('');
 
-function buyPrize(n, p) {
-  if (st.bal < p) { toast(`❌ Нужно ${p} ❇️!`); return; }
-  st.bal = Math.round((st.bal - p) * 10) / 10;
+function renderAir() {
+  document.getElementById('airList').innerHTML = AIR_BOXES.map((b, idx) => {
+    const ok = st.bal >= b.req;
+    return `<div class="row" style="border-color:${ok ? '#4ade80' : '#222624'}">
+      <div style="text-align:left">
+        <b>${b.ico} ${b.n}</b>
+        <div style="font-size:11px;color:#f472b6">Цель: ${kf(b.req)} 🌿 • <i>${b.hint}</i></div>
+      </div>
+      <button class="btn ${ok ? 'btn-green' : ''}" ${!ok ? 'disabled' : ''} onclick="claimAir(${idx})">${ok ? 'Забрать' : kf(b.req)}</button>
+    </div>`;
+  }).join('');
+}
+
+function claimAir(idx) {
+  const b = AIR_BOXES[idx];
+  if (st.bal < b.req) return;
+  st.bal -= b.req;
   save();
   upd();
-  alert(`🎫 ЧЕК НАГРАДЫ #ED-${Math.floor(1000 + Math.random() * 9000)}:\n${n} (${p} ❇️).\nСделай скриншот и отправь @maksyuga!`);
+  alert(`🎁 СЕКРЕТНЫЙ AIRDROP АКТИВИРОВАН!\n\nБокс: ${b.n}\nКод заявки: #BLUM-${Math.floor(1000 + Math.random() * 9000)}\n\nСделай скриншот и отправь @maksyuga в чат, чтобы открыть свою секретную награду!`);
 }
 
 async function openTop() {
   const LB = 'https://npoint.io';
   const u = window.Telegram?.WebApp?.initDataUnsafe?.user;
-  const uid = u?.id ? String(u.id) : 'drop_me';
+  const uid = u?.id ? String(u.id) : 'blum_me';
   const nm = st.nick || (u?.username ? '@' + u.username : 'Игрок');
-  let b = {};
+  let bd = {};
   try {
     const r = await fetch(LB, { cache: 'no-store' });
     const j = await r.json();
-    if (j?.players) b = j.players;
+    if (j?.players) bd = j.players;
   } catch (e) {}
-  b[uid] = { name: nm, bal: st.bal };
+  bd[uid] = { name: nm, bal: Math.floor(st.bal) };
   try {
-    await fetch(LB, { method: 'POST', headers: { 'Content-Type': 'text/plain;charset=UTF-8' }, body: JSON.stringify({ players: b }) });
+    await fetch(LB, { method: 'POST', headers: { 'Content-Type': 'text/plain;charset=UTF-8' }, body: JSON.stringify({ players: bd }) });
   } catch (e) {}
-  alert('🏆 ТОП ЧАТА • EMERALD DROP:\n\n' + Object.values(b).sort((a, b) => b.bal - a.bal).slice(0, 10).map((p, i) => `#${i + 1} ${p.name} — ${p.bal} ❇️`).join('\n'));
+  alert('🏆 ТОП BLUM ЧАТА:\n\n' + Object.values(bd).sort((a, b) => b.bal - a.bal).slice(0, 10).map((p, i) => `#${i + 1} ${p.name} — ${kf(p.bal)} 🌿`).join('\n'));
 }
 
 function getRank(b) {
-  if (b >= 500) return '👑 Легенда Изумрудов';
-  if (b >= 150) return '💎 Охотник за NFT';
-  if (b >= 30) return '❇️ Опытный Ловец';
-  return '🌱 Новичок сезона';
+  if (b >= 1000000) return '👑 Легенда Blum (M)';
+  if (b >= 100000) return '💎 Алмазный Фармер (K)';
+  if (b >= 10000) return '🍀 Опытный Ловец (K)';
+  return '🌱 Новичок Blum';
 }
 
 function upd() {
-  document.getElementById('balV').innerText = st.bal.toFixed(1);
+  document.getElementById('balV').innerText = kf(st.bal);
   document.getElementById('rankTxt').innerText = getRank(st.bal);
   if (st.done.includes('chat')) {
-    const b1 = document.getElementById('tsk1');
-    if (b1) { b1.disabled = true; b1.innerText = 'Готово'; }
+    const btn = document.getElementById('tskChat');
+    if (btn) { btn.disabled = true; btn.innerText = 'Done'; }
   }
+  renderAir();
 }
 
 (function init() {
   const u = window.Telegram?.WebApp?.initDataUnsafe?.user;
   if (window.Telegram?.WebApp) window.Telegram.WebApp.expand();
   if (!st.nick && u) st.nick = u.username ? '@' + u.username : u.first_name;
-  if (st.nick) document.getElementById('uPill').innerText = '❇️ ' + st.nick;
+  if (st.nick) document.getElementById('uPill').innerText = '🌿 ' + st.nick;
   upd();
   checkTickets();
-  setInterval(checkTickets, 30000);
+  updFarm();
+  setInterval(() => {
+    checkTickets();
+    updFarm();
+  }, 1000);
 })();
 </script>
 </body>
