@@ -805,4 +805,42 @@ updFarm = function() {
 };
 updFarm();
 </script>
+<script>
+(function(){
+  const tasks = [
+    { id: 'tsk1', key: 'chat', rew: 50, txt: '+50 💎' },
+    { id: 'tsk2', key: 'react', rew: 25, txt: '+25 💎' },
+    { id: 'tsk3', key: 'msg', rew: 50, txt: '+50 💎' }
+  ];
+  tasks.forEach(t => {
+    const btn = document.getElementById(t.id);
+    if (!btn) return;
+    const sub = btn.parentElement.querySelector('div div');
+    if (sub) sub.innerText = t.txt;
+    btn.onclick = function() { doTask(t.key, t.rew, btn); };
+  });
+
+  const rows = document.querySelectorAll('#t-tasks .row');
+  if (rows) {
+    const invSub = rows.querySelector('div div');
+    if (invSub) invSub.innerText = '+50 💎 и +1 🎟';
+  }
+})();
+
+inviteFr = function() {
+  if (!st.done.includes('fr_ok')) {
+    st.done.push('fr_ok');
+    st.bal += 50;
+    st.tk += 1;
+    if (typeof sfx === 'function') sfx('win');
+    save();
+    upd();
+    checkTickets();
+    toast('👥 +50 💎 и +1 розовый билет 🎟!');
+  }
+  const url = 'https://t.me' + encodeURIComponent('https://t.me') + '&text=' + encodeURIComponent('💎 Залетай в Crystal Drop! Лови кристаллы, копи билетики и забирай тайный Airdrop сезона!');
+  if (window.Telegram?.WebApp?.openTelegramLink) window.Telegram.WebApp.openTelegramLink(url);
+  else window.open(url, '_blank');
+};
+</script>
 
