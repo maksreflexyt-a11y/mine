@@ -980,4 +980,182 @@ function cashoutSap() {
 
 renderGamesTab();
 </script>
+<style>
+.sb-arena{display:none;position:fixed;inset:0;background:radial-gradient(circle at top,#0c2d48,#02060d);z-index:240;flex-direction:column;padding:12px}
+.sb-arena.open{display:flex}
+.sb-field{flex:1;position:relative;overflow:hidden;border:2px solid var(--acc);border-radius:20px;margin-top:8px;touch-action:none;background:linear-gradient(180deg,rgba(255,255,255,0.06) 0%,transparent 30%,transparent 70%,rgba(255,255,255,0.12) 100%)}
+.sb-bot,.sb-me{position:absolute;font-size:44px;transform:translateX(-50%);pointer-events:none;filter:drop-shadow(0 4px 10px rgba(0,0,0,0.7))}
+.sb-bot{top:18px;transition:left 0.12s linear}
+.sb-me{bottom:18px}
+.sb-ball{position:absolute;width:16px;height:16px;border-radius:50%;transform:translate(-50%,-50%);pointer-events:none}
+.sb-ctrls{display:grid;grid-template-columns:1fr 1.4fr 1fr;gap:8px;margin-top:10px}
+</style>
+
+<div class="sb-arena" id="sbArena">
+  <div class="hud">
+    <span>🧣 Враг: <b id="botHp" style="color:#f87171">100</b></span>
+    <span>⏱ <b id="sbTime">40</b>с</span>
+    <span>❤️ Я: <b id="myHp" style="color:#4ade80">100</b></span>
+  </div>
+  <div class="sb-field" id="sbField">
+    <div class="sb-bot" id="sbBot" style="left:50%">🧣</div>
+    <div class="sb-me" id="sbMe" style="left:50%">🧥</div>
+  </div>
+  <div class="sb-ctrls">
+    <button class="btn" style="padding:14px;font-size:18px" onpointerdown="moveMe(-14)">⬅️</button>
+    <button class="btn btn-acc" style="padding:14px;font-size:15px" onpointerdown="fireBall()">⚪️ БРОСОК!</button>
+    <button class="btn" style="padding:14px;font-size:18px" onpointerdown="moveMe(14)">➡️</button>
+  </div>
+</div>
+
+<script>
+const _prevRenderGames = renderGamesTab;
+renderGamesTab = function() {
+  _prevRenderGames();
+  const gTab = document.getElementById('t-games');
+  if (!gTab) return;
+
+  const lastSb = parseInt(localStorage.getItem('cd_nokia_24h') || '0', 10);
+  const canSb = (Date.now() - lastSb) >= 86400000;
+  let btnHtml = '';
+
+  if (canSb) {
+    btnHtml = `<button class="btn btn-acc" style="width:100%;margin-top:10px" onclick="startNokiaSnow()">🧣 Дуэль в снежки (раз в 24ч)</button>`;
+  } else {
+    const rem = 86400000 - (Date.now() - lastSb);
+    const h = String(Math.floor(rem / 3600000)).padStart(2, '0');
+    const m = String(Math.floor((rem % 3600000) / 60000)).padStart(2, '0');
+    btnHtml = `<div style="margin-top:10px;padding:9px;background:rgba(0,0,0,0.4);border-radius:12px;font-size:12px;color:#94a3b8">⏳ Соперник греется! Реванш через <b>${h}:${m}</b></div>`;
+  }
+
+  const box = document.createElement('div');
+  box.className = 'game-box';
+  box.innerHTML = `
+    <div style="font-size:36px;margin-bottom:4px">🧣⚪️🧥</div>
+    <h3 style="font-size:17px">Snowball Fight • Как на Nokia</h3>
+    <p style="font-size:11px;color:#cbd5e1;margin-top:4px">Уворачивайся от снежков соперника и сбей его! Победа: <b>+45 💎 и +1 розовый билет 🎟</b>.</p>
+    ${btnHtml}
+  `;
+  gTab.appendChild(box);
+};
+renderGamesTab();
+
+let nkRun = false, meX = 50, botX = 50, botDir = 1.4, myHp = 100, botHp = 100, nkSec = 40, nkHits = 0;
+let balls = [], nkLoop = null, nkClock = null, nkEnemyFire = null, lastShot = 0;
+
+function moveMe(dx) {
+  if (!nkRun) return;
+  meX = Math.max(10, Math.min(90, meX + dx));
+  document.getElementById('sbMe').style.left = meX + '%';
+}
+
+const sbFld = document.getElementById('sbField');
+sbFld.addEventListener('pointermove', (ev) => {
+  if (!nkRun) return;
+  const rect = sbFld.getBoundingClientRect();
+  meX = Math.max(10, Math.min(90, ((ev.clientX - rect.left) / rect.width) * 100));
+  document.getElementById('sbMe').style.left = meX + '%';
+});
+sbFld.addEventListener('pointerdown', (ev) => {
+  if (nkRun) fireBall();
+});
+
+function fireBall() {
+  if (!nkRun || Date.now() - lastShot < 380) return;
+  lastShot = Date.now();
+  spawnBall(meX, 86, -2.4, true);
+  if (typeof sfx === 'function') sfx('gem');
+}
+
+function spawnBall(x, y, vy, fromMe) {
+  const el = document.createElement('div');
+  el.className = 'sb-ball';
+  el.style.left = x + '%';
+  el.style.top = y + '%';
+  el.style.background = fromMe ? 'radial-gradient(circle,#fff,#38bdf8)' : 'radial-gradient(circle,#fff,#f87171)';
+  el.style.boxShadow = fromMe ? '0 0 10px #38bdf8' : '0 0 10px #f87171';
+  sbFld.appendChild(el);
+  balls.push({ el, x, y, vy, fromMe });
+}
+
+function startNokiaSnow() {
+  const lastSb = parseInt(localStorage.getItem('cd_nokia_24h') || '0', 10);
+  if ((Date.now() - lastSb) < 86400000 || nkRun) return;
+  localStorage.setItem('cd_nokia_24h', String(Date.now()));
+
+  nkRun = true; meX = 50; botX = 50; myHp = 100; botHp = 100; nkSec = 40; nkHits = 0;
+  balls.forEach(b => b.el.remove()); balls = [];
+  document.getElementById('sbMe').style.left = '50%';
+  document.getElementById('sbBot').style.left = '50%';
+  document.getElementById('myHp').innerText = '100';
+  document.getElementById('botHp').innerText = '100';
+  document.getElementById('sbTime').innerText = '40';
+  document.getElementById('sbArena').classList.add('open');
+
+  nkClock = setInterval(() => {
+    nkSec--;
+    document.getElementById('sbTime').innerText = nkSec;
+    if (nkSec <= 0) finishNokia(false);
+  }, 1000);
+
+  nkEnemyFire = setInterval(() => {
+    if (!nkRun) return;
+    if (Math.random() < 0.35) botDir = -botDir;
+    spawnBall(botX, 14, 1.9, false);
+  }, 850);
+
+  nkLoop = setInterval(() => {
+    if (!nkRun) return;
+    botX += botDir;
+    if (botX <= 12 || botX >= 88) botDir = -botDir;
+    document.getElementById('sbBot').style.left = botX + '%';
+
+    for (let i = balls.length - 1; i >= 0; i--) {
+      const b = balls[i];
+      b.y += b.vy;
+      b.el.style.top = b.y + '%';
+
+      if (b.fromMe && b.y <= 14 && Math.abs(b.x - botX) < 9) {
+        botHp = Math.max(0, botHp - 15);
+        nkHits++;
+        document.getElementById('botHp').innerText = botHp;
+        if (typeof sfx === 'function') sfx('win');
+        b.el.remove(); balls.splice(i, 1);
+        if (botHp <= 0) { finishNokia(true); return; }
+        continue;
+      }
+      if (!b.fromMe && b.y >= 84 && Math.abs(b.x - meX) < 9) {
+        myHp = Math.max(0, myHp - 20);
+        document.getElementById('myHp').innerText = myHp;
+        if (typeof sfx === 'function') sfx('bm');
+        b.el.remove(); balls.splice(i, 1);
+        if (myHp <= 0) { finishNokia(false); return; }
+        continue;
+      }
+      if (b.y < 0 || b.y > 100) {
+        b.el.remove(); balls.splice(i, 1);
+      }
+    }
+  }, 30);
+}
+
+function finishNokia(win) {
+  clearInterval(nkLoop); clearInterval(nkClock); clearInterval(nkEnemyFire);
+  nkRun = false;
+  balls.forEach(b => b.el.remove()); balls = [];
+  document.getElementById('sbArena').classList.remove('open');
+
+  if (win) {
+    st.bal += 45; st.tk += 1;
+    if (typeof sfx === 'function') sfx('win');
+    save(); upd(); checkTickets();
+    toast('🏆 ПОБЕДА В СНЕЖКИ! +45 💎 и +1 🎟!');
+  } else {
+    const cons = nkHits * 2;
+    if (cons > 0) { st.bal += cons; save(); upd(); }
+    toast(`❄️ Бой окончен! За попадания: +${cons} 💎`);
+  }
+  renderGamesTab();
+}
+</script>
 
