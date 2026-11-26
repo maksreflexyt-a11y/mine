@@ -843,4 +843,28 @@ inviteFr = function() {
   else window.open(url, '_blank');
 };
 </script>
+<script>
+// 1. Чистая подпись для накопительных билетов каждые 24ч
+checkTickets = function() {
+  const diff = Date.now() - (st.tkTs || Date.now());
+  if (diff >= 86400000) {
+    const days = Math.floor(diff / 86400000);
+    st.tk += days * 3;
+    st.tkTs += days * 86400000;
+    save();
+  }
+  document.getElementById('tkV').innerText = st.tk;
+  document.getElementById('playBtn').disabled = st.tk <= 0;
+  document.getElementById('tkTimer').innerText = '+3 розовых билета каждые 24 часа';
+};
+checkTickets();
+
+// 2. Сброс старого зависшего таймера от 2ч-теста на чистый 8-часовой цикл (57.6)
+if (st.farmEnd && (st.farmEnd - Date.now() > 28800000 || !localStorage.getItem('farm_8h_ok'))) {
+  st.farmEnd = 0;
+  localStorage.setItem('farm_8h_ok', '1');
+  save();
+}
+updFarm();
+</script>
 
