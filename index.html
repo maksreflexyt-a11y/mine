@@ -606,4 +606,141 @@ function upd() {
 </script>
 </body>
 </html>
+<style>
+@keyframes coinGlow{0%,100%{transform:scale(1);box-shadow:0 0 10px rgba(250,204,21,0.4)}50%{transform:scale(1.06);box-shadow:0 0 20px rgba(250,204,21,0.85)}}
+.air-badge{display:inline-flex;align-items:center;gap:5px;background:linear-gradient(135deg,#f59e0b,#d97706);color:#000;padding:4px 10px;border-radius:12px;font-size:11px;font-weight:900;animation:coinGlow 2s infinite}
+</style>
+
+<script>
+// 1. Светящаяся монетка Airdrop в строке лиги
+(function(){
+  const lgBar = document.querySelector('.lg-bar');
+  if (lgBar && lgBar.firstElementChild) {
+    const topLine = lgBar.firstElementChild;
+    const badge = document.createElement('span');
+    badge.className = 'air-badge';
+    badge.innerHTML = '🪙 Airdrop';
+    topLine.insertBefore(badge, topLine.lastElementChild);
+  }
+})();
+
+// 2. Фарминг на 12 часов (+300 кристаллов)
+handleFarm = function() {
+  const now = Date.now();
+  if (!st.farmEnd) {
+    st.farmEnd = now + 43200000;
+    save();
+    updFarm();
+    toast('💎 Фарминг запущен на 12 часов!');
+  } else if (now >= st.farmEnd) {
+    st.farmEnd = 0;
+    st.bal += 300;
+    if (typeof sfx === 'function') sfx('win');
+    save();
+    upd();
+    updFarm();
+    toast('🎉 Собрано +300 💎!');
+  } else {
+    toast('⏳ Фарминг ещё идёт...');
+  }
+};
+
+updFarm = function() {
+  const btn = document.getElementById('farmBtn');
+  if (!btn) return;
+  if (!st.farmEnd) {
+    btn.className = 'farm-btn';
+    btn.innerText = 'Start Farming 12ч (💎 +300)';
+  } else if (Date.now() >= st.farmEnd) {
+    btn.className = 'farm-btn ready';
+    btn.innerText = 'Claim 300 💎';
+  } else {
+    const rem = st.farmEnd - Date.now();
+    const h = String(Math.floor(rem / 3600000)).padStart(2, '0');
+    const m = String(Math.floor((rem % 3600000) / 60000)).padStart(2, '0');
+    const s = String(Math.floor((rem % 60000) / 1000)).padStart(2, '0');
+    const prog = Math.floor(((43200000 - rem) / 43200000) * 300);
+    btn.className = 'farm-btn';
+    btn.innerText = `Farming 💎 ${prog}/300 • ${h}:${m}:${s}`;
+  }
+};
+updFarm();
+
+// 3. Игра: кристаллы до +3 максимум и бомба -5
+startDrop = function() {
+  checkTickets();
+  if (gRun || st.tk <= 0) { toast('🎟 Нужен розовый билет!'); return; }
+  st.tk--;
+  save();
+  checkTickets();
+
+  gRun = true;
+  gScore = 0;
+  gSec = 30;
+  gFrozen = false;
+  document.getElementById('scV').innerText = '0';
+  document.getElementById('tmV').innerText = '30';
+  document.getElementById('frzTag').style.display = 'none';
+  const fld = document.getElementById('field');
+  fld.innerHTML = '';
+  document.getElementById('arena').classList.add('open');
+
+  tInt = setInterval(() => {
+    if (gFrozen) return;
+    gSec--;
+    document.getElementById('tmV').innerText = gSec;
+    if (gSec <= 0) endDrop();
+  }, 1000);
+
+  sInt = setInterval(() => {
+    if (!gRun) return;
+    const r = Math.random();
+    let type = 'gem', ico = '💎', val = 1;
+    if (r < 0.20) { type = 'bm'; ico = '💣'; }
+    else if (r < 0.26) { type = 'fr'; ico = '❄️'; }
+    else if (r < 0.44) { type = 'g3'; ico = '💠'; val = 3; }
+    else if (r < 0.72) { type = 'g2'; ico = '💎'; val = 2; }
+
+    const el = document.createElement('div');
+    el.className = 'item';
+    el.innerText = ico;
+    const maxW = Math.max(240, fld.clientWidth - 52);
+    el.style.left = (8 + Math.floor(Math.random() * maxW)) + 'px';
+    const spd = gFrozen ? 4.2 : (1.7 + Math.random() * 0.7);
+    el.style.transition = `top ${spd}s linear`;
+    fld.appendChild(el);
+
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => {
+        el.style.top = (fld.clientHeight + 50) + 'px';
+      });
+    });
+
+    el.onpointerdown = (ev) => {
+      ev.preventDefault();
+      if (!gRun || el.dataset.hit) return;
+      el.dataset.hit = '1';
+      try { window.Telegram?.WebApp?.HapticFeedback?.impactOccurred('light'); } catch (e) {}
+      if (type === 'bm') {
+        gScore = Math.max(0, gScore - 5);
+        popTxt(ev.clientX, ev.clientY, '-5 💣', '#f87171');
+      } else if (type === 'fr') {
+        gFrozen = true;
+        document.getElementById('frzTag').style.display = 'inline';
+        popTxt(ev.clientX, ev.clientY, '❄️ FREEZE!', '#38bdf8');
+        setTimeout(() => {
+          gFrozen = false;
+          document.getElementById('frzTag').style.display = 'none';
+        }, 3000);
+      } else {
+        gScore += val;
+        popTxt(ev.clientX, ev.clientY, `+${val}`, val === 3 ? '#fde047' : '#38bdf8');
+      }
+      document.getElementById('scV').innerText = gScore;
+      el.remove();
+    };
+    setTimeout(() => { if (el.parentNode) el.remove(); }, 4500);
+  }, 360);
+};
+</script>
 
