@@ -1158,4 +1158,117 @@ function finishNokia(win) {
   renderGamesTab();
 }
 </script>
+<style>
+.snow{position:fixed;top:-10px;color:rgba(255,255,255,0.45);font-size:12px;pointer-events:none;z-index:1;animation:snowFall linear infinite}
+@keyframes snowFall{to{transform:translateY(105vh) rotate(360deg)}}
+.game-box{width:100%;background:linear-gradient(135deg,rgba(255,255,255,0.08),rgba(255,255,255,0.02));border:1.5px solid var(--acc);border-radius:20px;padding:16px;text-align:center}
+.sap-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;max-width:230px;margin:14px auto}
+.sap-cell{aspect-ratio:1;background:rgba(56,189,248,0.12);border:1.5px solid var(--acc);border-radius:14px;font-size:28px;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:transform 0.1s}
+.sap-cell:active{transform:scale(0.92)}
+</style>
+
+<script>
+// 1. Падающий снег на фоне ❄️
+(function(){
+  for(let i=0;i<18;i++){
+    const s=document.createElement('div');
+    s.className='snow'; s.innerText='❄';
+    s.style.left=Math.random()*100+'vw';
+    s.style.fontSize=(8+Math.random()*10)+'px';
+    s.style.animationDuration=(6+Math.random()*8)+'s';
+    s.style.animationDelay=(-Math.random()*10)+'s';
+    document.body.appendChild(s);
+  }
+})();
+
+// 2. Ледяной Сапер 3×3 (раз в 24 часа)
+let sapActive = false, sapBank = 0, sapFound = 0, sapBombs = [];
+
+function renderGamesTab() {
+  const gTab = document.getElementById('t-games');
+  if (!gTab) return;
+  const lastSap = parseInt(localStorage.getItem('cd_sap_24h') || '0', 10);
+  const canSap = (Date.now() - lastSap) >= 86400000;
+
+  let sapHtml = '';
+  if (canSap || sapActive) {
+    let cells = '';
+    for (let i = 0; i < 9; i++) {
+      cells += `<div class="sap-cell" id="sc_${i}" onclick="clickSap(${i})">🧊</div>`;
+    }
+    sapHtml = `
+      <div class="sap-grid" id="sapGrid">${cells}</div>
+      <div style="display:flex;justify-content:center;gap:10px;align-items:center">
+        <span style="font-size:13px;font-weight:800;color:#7dd3fc">Банк: <b id="sapBankV">0</b> 💎</span>
+        <button class="btn btn-acc" id="sapTakeBtn" style="padding:7px 14px;display:none" onclick="cashoutSap()">Забрать</button>
+      </div>
+    `;
+  } else {
+    const rem = 86400000 - (Date.now() - lastSap);
+    const h = String(Math.floor(rem / 3600000)).padStart(2, '0');
+    const m = String(Math.floor((rem % 3600000) / 60000)).padStart(2, '0');
+    sapHtml = `<div style="margin-top:12px;padding:10px;background:rgba(0,0,0,0.4);border-radius:12px;font-size:12px;color:#94a3b8">⏳ Сапер перезаряжается! Доступно через <b>${h}:${m}</b></div>`;
+  }
+
+  gTab.innerHTML = `
+    <div class="game-box">
+      <div style="font-size:36px;margin-bottom:4px">💣❄️💎</div>
+      <h3 style="font-size:17px">Ледяной Сапер 3×3 (раз в 24ч)</h3>
+      <p style="font-size:11px;color:#cbd5e1;margin-top:4px">7 кристаллов (+5 💎 за каждый) и 2 бомбы. Открой все 7 — заберёшь бонус <b>+1 розовый билет 🎟</b>!</p>
+      ${sapHtml}
+    </div>
+  `;
+}
+
+function initSapRound() {
+  sapActive = true; sapBank = 0; sapFound = 0; sapBombs = [];
+  while (sapBombs.length < 2) {
+    const r = Math.floor(Math.random() * 9);
+    if (!sapBombs.includes(r)) sapBombs.push(r);
+  }
+  localStorage.setItem('cd_sap_24h', String(Date.now()));
+}
+
+function clickSap(idx) {
+  if (!sapActive) initSapRound();
+  const cell = document.getElementById('sc_' + idx);
+  if (!cell || cell.dataset.open) return;
+  cell.dataset.open = '1';
+
+  if (sapBombs.includes(idx)) {
+    cell.innerText = '💣'; cell.style.background = 'rgba(239,68,68,0.35)';
+    sapActive = false;
+    if (typeof sfx === 'function') sfx('bm');
+    sapBombs.forEach(b => { const el = document.getElementById('sc_' + b); if (el) el.innerText = '💣'; });
+    toast('💥 Бабах! Банк сгорел. Попробуй завтра!');
+    setTimeout(renderGamesTab, 1800);
+  } else {
+    cell.innerText = '💎'; cell.style.background = 'rgba(56,189,248,0.3)';
+    sapFound++; sapBank += 5;
+    if (typeof sfx === 'function') sfx('gem');
+    document.getElementById('sapBankV').innerText = sapBank;
+    document.getElementById('sapTakeBtn').style.display = 'inline-block';
+    if (sapFound === 7) {
+      sapActive = false;
+      st.bal += sapBank; st.tk += 1;
+      if (typeof sfx === 'function') sfx('win');
+      save(); upd(); checkTickets();
+      toast('🏆 ИДЕАЛЬНО! +35 💎 и +1 розовый билет 🎟!');
+      setTimeout(renderGamesTab, 2000);
+    }
+  }
+}
+
+function cashoutSap() {
+  if (!sapActive || sapBank <= 0) return;
+  sapActive = false;
+  st.bal += sapBank;
+  if (typeof sfx === 'function') sfx('win');
+  save(); upd();
+  toast(`💰 Забрано +${sapBank} 💎!`);
+  setTimeout(renderGamesTab, 1200);
+}
+
+renderGamesTab();
+</script>
 
