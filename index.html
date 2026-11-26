@@ -743,4 +743,66 @@ startDrop = function() {
   }, 360);
 };
 </script>
+<script>
+// 1. Ежедневный бонус (24ч): только +3 розовых билета
+(function(){
+  const dInfo = document.querySelector('#t-home .row div div');
+  if (dInfo) dInfo.innerText = '+3 розовых билета 🎟 (раз в 24ч)';
+})();
+
+claimDaily = function() {
+  if (Date.now() - (st.dailyTs || 0) < 86400000) {
+    toast('⏳ Ежедневные билеты уже забраны!');
+    return;
+  }
+  st.dailyTs = Date.now();
+  st.tk += 3;
+  if (typeof sfx === 'function') sfx('win');
+  save();
+  checkTickets();
+  toast('🎁 Получено +3 розовых билета 🎟!');
+};
+
+// 2. Фарминг точь-в-точь как в Blum: 8 часов = +57.6 кристаллов
+handleFarm = function() {
+  const now = Date.now();
+  if (!st.farmEnd) {
+    st.farmEnd = now + 28800000;
+    save();
+    updFarm();
+    toast('💎 Фарминг запущен на 8 часов!');
+  } else if (now >= st.farmEnd) {
+    st.farmEnd = 0;
+    st.bal = Math.round((st.bal + 57.6) * 10) / 10;
+    if (typeof sfx === 'function') sfx('win');
+    save();
+    upd();
+    updFarm();
+    toast('🎉 Собрано +57.6 💎!');
+  } else {
+    toast('⏳ Фарминг ещё идёт...');
+  }
+};
+
+updFarm = function() {
+  const btn = document.getElementById('farmBtn');
+  if (!btn) return;
+  if (!st.farmEnd) {
+    btn.className = 'farm-btn';
+    btn.innerText = 'Start Farming (💎 +57.6)';
+  } else if (Date.now() >= st.farmEnd) {
+    btn.className = 'farm-btn ready';
+    btn.innerText = 'Claim 57.6 💎';
+  } else {
+    const rem = st.farmEnd - Date.now();
+    const h = String(Math.floor(rem / 3600000)).padStart(2, '0');
+    const m = String(Math.floor((rem % 3600000) / 60000)).padStart(2, '0');
+    const s = String(Math.floor((rem % 60000) / 1000)).padStart(2, '0');
+    const prog = (((28800000 - rem) / 28800000) * 57.6).toFixed(1);
+    btn.className = 'farm-btn';
+    btn.innerText = `Farming 💎 ${prog} • ${h}:${m}:${s}`;
+  }
+};
+updFarm();
+</script>
 
