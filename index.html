@@ -1155,5 +1155,100 @@ body>*:not(.bg-scene):not(.snow):not(.arena):not(.modal):not(.nav):not(.toast){p
   document.body.prepend(sc);
 })();
 </script>
+<script>
+const LIVE_LB = 'https://npoint.io';
+let topRefreshTmr = null;
+
+function getPlayerLeagueTag(bal) {
+  if (bal >= 20000000) return 'XIII • Создатель';
+  if (bal >= 10000000) return 'XII • Миф';
+  if (bal >= 5000000) return 'XI • Легенда';
+  if (bal >= 3000000) return 'X • Император';
+  if (bal >= 1000000) return 'IX • Титан';
+  if (bal >= 500000) return 'VIII • Лорд';
+  if (bal >= 350000) return 'VII • Барон';
+  if (bal >= 250000) return 'VI • Магнат';
+  if (bal >= 100000) return 'V • Элита';
+  if (bal >= 50000) return 'IV • Мастер';
+  if (bal >= 25000) return 'III • Охотник';
+  if (bal >= 10000) return 'II • Искатель';
+  if (bal >= 5000) return 'I • Старт';
+  return 'Новичок';
+}
+
+async function syncLeaderboard(showModal, silent) {
+  const u = window.Telegram?.WebApp?.initDataUnsafe?.user;
+  const uid = u?.id ? 'cd_' + u.id : ('cd_' + (st.nick || 'player_' + Math.floor(Math.random()*999)).replace(/\s+/g, '_'));
+  const nm = st.nick || (u?.username ? '@' + u.username : (u?.first_name || 'Игрок'));
+
+  if (showModal && !silent) {
+    document.getElementById('topModal').classList.add('open');
+    document.getElementById('topListBox').innerHTML = '<div style="text-align:center;padding:20px;color:#7dd3fc">⏳ Синхронизация топа...</div>';
+  }
+
+  let bd = {};
+  try {
+    const r = await fetch(LIVE_LB + '?t=' + Date.now(), { cache: 'no-store' });
+    const j = await r.json();
+    if (j && j.players) bd = j.players;
+  } catch (e) {}
+
+  // Автоматически записываем и обновляем текущего игрока
+  const curBal = Math.floor(st.bal);
+  if (!bd[uid] || bd[uid].bal !== curBal || bd[uid].name !== nm) {
+    bd[uid] = { name: nm, bal: curBal, ts: Date.now() };
+    try {
+      await fetch(LIVE_LB, {
+        method: 'POST',
+        headers: { 'Content-Type': 'text/plain;charset=UTF-8' },
+        body: JSON.stringify({ players: bd })
+      });
+    } catch (e) {}
+  }
+
+  if (showModal && document.getElementById('topModal').classList.contains('open')) {
+    const list = Object.values(bd)
+      .filter(v => v && v.name && !String(v.name).includes('🐱'))
+      .sort((a, b) => b.bal - a.bal)
+      .slice(0, 50);
+
+    const medals = ['🥇', '🥈', '🥉'];
+    document.getElementById('topListBox').innerHTML = list.length ? list.map((p, i) => {
+      const m = medals[i] || `<span style="color:#64748b">#${i + 1}</span>`;
+      const isMe = (p.name === nm);
+      return `<div class="row" style="padding:9px 12px;border-color:${isMe ? '#38bdf8' : (i < 3 ? '#fbbf24' : 'rgba(255,255,255,0.08)')}">
+        <div style="display:flex;align-items:center;gap:8px;overflow:hidden">
+          <b style="font-size:15px;min-width:24px">${m}</b>
+          <div style="overflow:hidden">
+            <div style="font-size:13px;font-weight:800;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${p.name} ${isMe ? '(Вы)' : ''}</div>
+            <div style="font-size:10px;color:#94a3b8">${getPlayerLeagueTag(p.bal)}</div>
+          </div>
+        </div>
+        <b style="color:#38bdf8;font-size:13px;white-space:nowrap">${kf(p.bal)} 💎</b>
+      </div>`;
+    }).join('') : '<div style="text-align:center;padding:16px;color:#94a3b8">Загрузка участников...</div>';
+  }
+}
+
+openTop = function() {
+  syncLeaderboard(true, false);
+  clearInterval(topRefreshTmr);
+  topRefreshTmr = setInterval(() => {
+    if (document.getElementById('topModal').classList.contains('open')) {
+      syncLeaderboard(true, true);
+    } else {
+      clearInterval(topRefreshTmr);
+    }
+  }, 5000);
+};
+
+// Автосинхронизация при входе и после любых начислений
+setTimeout(() => syncLeaderboard(false, true), 1000);
+const _origUpdTop = upd;
+upd = function() {
+  _origUpdTop();
+  syncLeaderboard(false, true);
+};
+</script>
 
 
